@@ -15,6 +15,8 @@ import { errorHandler } from './middleware/error.js';
 import { isDBConnected } from './config/db.js';
 import { isRedisConnected } from './config/redis.js';
 import { ApiError } from './utils/ApiError.js';
+import { authRouter } from './modules/auth/auth.routes.js';
+import { userRouter } from './modules/users/user.routes.js';
 
 export const app = express();
 
@@ -156,6 +158,10 @@ if (env.NODE_ENV !== 'production') {
     res.status(200).json({ success: true, body: req.body });
   });
 }
+
+// API v1 Routers
+app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/users', userRouter);
 
 // 404 Route Catch-all
 app.use((_req: Request, res: Response) => {

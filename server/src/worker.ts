@@ -3,6 +3,7 @@ import { env, validateEnv } from './config/env.js';
 import { logger } from './config/logger.js';
 import { connectDB, disconnectDB } from './config/db.js';
 import { connectRedis, disconnectRedis } from './config/redis.js';
+import { createEmailWorker, stopEmailWorker } from './jobs/worker.js';
 
 // 1. Validate environment
 if (process.env.NODE_ENV !== 'test') {
@@ -26,6 +27,9 @@ export async function startWorker() {
     await connectDB();
     await connectRedis();
 
+    // Start BullMQ workers
+    createEmailWorker();
+
     logger.info({
       msg: '[Worker] Background worker listening for jobs',
       queues: ['email_queue', 'order_status_queue'],
@@ -34,6 +38,7 @@ export async function startWorker() {
 
     const shutdown = async (signal: string) => {
       logger.info({ msg: `[Worker] Received ${signal}. Draining queue jobs and stopping...` });
+      await stopEmailWorker();
       await disconnectRedis();
       await disconnectDB();
       logger.info('[Worker] Shutdown complete.');
