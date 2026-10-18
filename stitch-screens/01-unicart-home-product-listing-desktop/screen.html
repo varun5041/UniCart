@@ -1,0 +1,1160 @@
+<!DOCTYPE html><html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>UniCart — Modern B2C Indian Marketplace | Audio &amp; Wearables</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Inter Google Font -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config directly from Theme Configuration -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "secondary": "#006c49",
+            "inverse-on-surface": "#eef0ff",
+            "on-background": "#131b2e",
+            "tertiary-fixed-dim": "#ffb95f",
+            "on-primary": "#ffffff",
+            "on-error": "#ffffff",
+            "error-container": "#ffdad6",
+            "surface-tint": "#4d44e3",
+            "tertiary": "#684000",
+            "surface-bright": "#faf8ff",
+            "tertiary-fixed": "#ffddb8",
+            "surface-dim": "#d2d9f4",
+            "on-secondary-fixed": "#002113",
+            "surface-container": "#eaedff",
+            "secondary-fixed": "#6ffbbe",
+            "on-tertiary-fixed": "#2a1700",
+            "surface-container-highest": "#dae2fd",
+            "error": "#ba1a1a",
+            "surface-container-lowest": "#ffffff",
+            "on-surface-variant": "#464555",
+            "surface-container-low": "#f2f3ff",
+            "on-secondary": "#ffffff",
+            "surface": "#faf8ff",
+            "surface-container-high": "#e2e7ff",
+            "primary-container": "#4f46e5",
+            "inverse-surface": "#283044",
+            "on-primary-container": "#dad7ff",
+            "on-surface": "#131b2e",
+            "background": "#faf8ff",
+            "on-tertiary-fixed-variant": "#653e00",
+            "inverse-primary": "#c3c0ff",
+            "primary-fixed-dim": "#c3c0ff",
+            "outline": "#777587",
+            "surface-variant": "#dae2fd",
+            "primary": "#3525cd",
+            "on-primary-fixed": "#0f0069",
+            "outline-variant": "#c7c4d8",
+            "on-tertiary-container": "#ffd4a4",
+            "on-tertiary": "#ffffff",
+            "on-secondary-fixed-variant": "#005236",
+            "on-secondary-container": "#00714d",
+            "primary-fixed": "#e2dfff",
+            "tertiary-container": "#885500",
+            "secondary-container": "#6cf8bb",
+            "secondary-fixed-dim": "#4edea3",
+            "on-primary-fixed-variant": "#3323cc",
+            "on-error-container": "#93000a"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-sm": "0.5rem",
+            "space-md": "1rem",
+            "margin": "2rem",
+            "space-2xl": "3rem",
+            "space-lg": "1.5rem",
+            "gutter": "1.5rem",
+            "margin-mobile": "1rem",
+            "space-xs": "0.25rem",
+            "space-xl": "2rem",
+            "gutter-mobile": "1rem"
+          },
+          "fontFamily": {
+            "body-lg": ["Inter", "sans-serif"],
+            "caption": ["Inter", "sans-serif"],
+            "headline-sm": ["Inter", "sans-serif"],
+            "headline-lg": ["Inter", "sans-serif"],
+            "headline-xl-mobile": ["Inter", "sans-serif"],
+            "price-display": ["Inter", "sans-serif"],
+            "body-md-medium": ["Inter", "sans-serif"],
+            "headline-xl": ["Inter", "sans-serif"],
+            "headline-md": ["Inter", "sans-serif"],
+            "label-sm": ["Inter", "sans-serif"],
+            "headline-lg-mobile": ["Inter", "sans-serif"],
+            "label-md": ["Inter", "sans-serif"],
+            "body-lg-medium": ["Inter", "sans-serif"],
+            "title-md": ["Inter", "sans-serif"],
+            "body-md": ["Inter", "sans-serif"]
+          },
+          "fontSize": {
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "caption": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+            "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+            "headline-lg": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+            "headline-xl-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "price-display": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "body-md-medium": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+            "headline-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+            "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "600" }],
+            "body-lg-medium": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+            "title-md": ["18px", { "lineHeight": "26px", "fontWeight": "600" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .material-symbols-outlined.fill-icon {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    .animate-shimmer {
+      animation: shimmer 1.75s infinite;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased min-h-screen flex flex-col selection:bg-primary-container selection:text-on-primary">
+<!-- TOP PROMO STRIP: Trust & Fulfillment Guarantee for India -->
+<div class="bg-primary text-on-primary text-caption font-caption py-1.5 px-4 text-center">
+<div class="max-w-7xl mx-auto flex items-center justify-between">
+<div class="hidden sm:flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+<span>100% Genuine Electronics Guaranteed • Pan-India Express Delivery</span>
+</div>
+<div class="flex items-center gap-4 mx-auto sm:mx-0">
+<span class="flex items-center gap-1 font-body-md-medium text-caption"><span class="material-symbols-outlined text-[14px]">local_shipping</span> Free Shipping on orders over ₹499</span>
+<span class="hidden md:inline text-outline-variant">|</span>
+<span class="hidden md:flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">shield</span> 7-Day Hassle-Free Returns</span>
+</div>
+<div class="hidden lg:flex items-center gap-3">
+<span>24x7 Support: 1800-890-CART</span>
+</div>
+</div>
+</div>
+<!-- SHARED COMPONENT: TopNavBar -->
+<header class="bg-surface-container-lowest text-primary docked full-width top-0 sticky z-50 shadow-sm border-b border-outline-variant">
+<div class="w-full px-4 md:px-8 max-w-7xl mx-auto flex items-center justify-between h-20 gap-4">
+<!-- Brand Logo Anchor -->
+<a class="flex items-center gap-2.5 text-headline-md font-headline-md text-primary tracking-tight font-bold shrink-0" href="#">
+<div class="w-10 h-10 rounded-lg bg-primary-container flex items-center justify-center text-on-primary shadow-sm">
+<span class="material-symbols-outlined text-[24px]">shopping_bag</span>
+</div>
+<span class="tracking-tight text-primary">UniCart</span>
+</a>
+<!-- Search & Category Selector Bar (Center) -->
+<div class="flex-1 max-w-2xl mx-2 hidden md:block">
+<form class="flex items-center border border-outline-variant rounded-lg bg-surface-container-lowest focus-within:ring-2 focus-within:ring-primary-container focus-within:border-transparent transition-all">
+<div class="relative border-r border-outline-variant shrink-0">
+<select aria-label="Product Category" class="h-11 pl-3 pr-8 bg-transparent text-label-md font-label-md text-on-surface border-none focus:ring-0 cursor-pointer appearance-none">
+<option>All Categories</option>
+<option selected="">Electronics</option>
+<option>Fashion</option>
+<option>Home &amp; Kitchen</option>
+<option>Beauty</option>
+</select>
+<span class="material-symbols-outlined pointer-events-none absolute right-2 top-3 text-[18px] text-outline">expand_more</span>
+</div>
+<div class="relative flex-1 flex items-center">
+<input class="w-full h-11 px-3.5 bg-transparent text-body-md font-body-md text-on-surface placeholder:text-outline border-none focus:ring-0 focus:outline-none" placeholder="Search for electronics, fashion, home essentials &amp; more..." type="text" value="Audio &amp; Wearables">
+<button aria-label="Execute search" class="h-9 px-4 mr-1 bg-primary text-on-primary rounded-lg flex items-center justify-center hover:bg-primary-container transition-colors duration-150 active:scale-95" type="submit">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</button>
+</div>
+</form>
+</div>
+<!-- Right Navigation Cluster -->
+<div class="flex items-center gap-3 lg:gap-5 shrink-0">
+<!-- Delivery Location Selector (Pincode Pin) -->
+<button class="hidden xl:flex items-center gap-1.5 text-left py-1 px-2 rounded-lg hover:bg-surface-container-low transition-colors duration-150">
+<span class="material-symbols-outlined text-primary text-[22px]">location_on</span>
+<div class="leading-tight">
+<span class="text-caption font-caption text-on-surface-variant block">Deliver to</span>
+<span class="text-label-sm font-label-sm text-on-surface block font-semibold">Mumbai 400001</span>
+</div>
+</button>
+<!-- Navigation Links per JSON schema -->
+<nav class="hidden lg:flex items-center gap-5">
+<a class="text-on-surface-variant font-body-md text-body-md hover:text-primary transition-colors duration-150" href="#wishlist">Wishlist</a>
+<a class="text-on-surface-variant font-body-md text-body-md hover:text-primary transition-colors duration-150" href="#help">Help</a>
+<a class="text-on-surface-variant font-body-md text-body-md hover:text-primary transition-colors duration-150" href="#orders">My Orders</a>
+</nav>
+<div class="h-6 w-px bg-outline-variant hidden sm:block"></div>
+<!-- Trailing Icon Actions: Wishlist Icon with count badge -->
+<a aria-label="Wishlist" class="relative p-2 text-on-surface-variant hover:text-primary rounded-lg hover:bg-surface-container-low transition-colors duration-150" href="#wishlist">
+<span class="material-symbols-outlined text-[24px]">favorite</span>
+<span class="absolute top-1 right-1 w-4 h-4 bg-tertiary-container text-on-tertiary font-label-sm text-[10px] rounded-full flex items-center justify-center font-bold">2</span>
+</a>
+<!-- Cart Button with Emerald badge "3" -->
+<a aria-label="Cart" class="relative flex items-center gap-2 px-3 py-2 bg-surface-container-low hover:bg-surface-container text-primary rounded-lg border border-outline-variant transition-colors duration-150" href="#cart">
+<span class="material-symbols-outlined text-[24px]">shopping_cart</span>
+<span class="hidden sm:inline font-label-md text-label-md font-semibold">Cart</span>
+<span class="bg-secondary text-on-secondary px-1.5 py-0.5 rounded-full text-caption font-label-sm font-bold min-w-[20px] text-center shadow-xs">3</span>
+</a>
+<!-- Account Profile Dropdown (Active state: Rahul) -->
+<div class="relative group">
+<button class="flex items-center gap-2 p-1.5 rounded-lg border border-outline-variant hover:border-primary transition-colors duration-150 bg-surface-container-lowest focus:outline-none">
+<div class="w-8 h-8 rounded-full bg-surface-container-high text-primary flex items-center justify-center font-label-md font-bold">
+              R
+            </div>
+<div class="hidden md:block text-left pr-1">
+<span class="text-caption font-caption text-on-surface-variant block leading-none">Namaste,</span>
+<span class="text-label-md font-label-md text-on-surface block leading-tight font-semibold">Rahul</span>
+</div>
+<span class="material-symbols-outlined text-[18px] text-outline">arrow_drop_down</span>
+</button>
+<!-- Flyout Dropdown Menu -->
+<div class="absolute right-0 top-full mt-2 w-64 bg-surface-container-lowest border border-outline-variant rounded-lg shadow-lg p-2 z-50 hidden group-hover:block transition-all">
+<div class="p-2 border-b border-outline-variant mb-2">
+<p class="text-label-md font-label-md text-on-surface font-semibold">Rahul Sharma</p>
+<p class="text-caption font-caption text-on-surface-variant">rahul.sharma@example.com</p>
+<span class="inline-flex items-center gap-1 mt-1 text-[11px] font-label-sm bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full font-medium">
+<span class="material-symbols-outlined text-[12px]">verified</span> UniCart Prime Member
+              </span>
+</div>
+<div class="space-y-1">
+<a class="flex items-center gap-2.5 px-3 py-2 text-body-md font-body-md text-on-surface hover:bg-surface-container-low rounded-lg transition-colors" href="#orders">
+<span class="material-symbols-outlined text-[18px] text-outline">receipt_long</span>
+                My Orders
+              </a>
+<a class="flex items-center gap-2.5 px-3 py-2 text-body-md font-body-md text-on-surface hover:bg-surface-container-low rounded-lg transition-colors" href="#profile">
+<span class="material-symbols-outlined text-[18px] text-outline">person</span>
+                Profile &amp; Addresses
+              </a>
+<a class="flex items-center justify-between px-3 py-2 text-body-md font-body-md text-on-surface hover:bg-surface-container-low rounded-lg transition-colors" href="#admin">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-[18px] text-primary">storefront</span>
+<span>Seller Dashboard</span>
+</div>
+<span class="text-[10px] font-label-sm bg-primary-fixed text-on-primary-fixed px-1.5 py-0.5 rounded">Pro</span>
+</a>
+<a class="flex items-center gap-2.5 px-3 py-2 text-body-md font-body-md text-on-surface hover:bg-surface-container-low rounded-lg transition-colors" href="#settings">
+<span class="material-symbols-outlined text-[18px] text-outline">settings</span>
+                Saved UPI &amp; Cards
+              </a>
+</div>
+<div class="border-t border-outline-variant mt-2 pt-2 flex items-center justify-between px-1">
+<button class="text-caption font-caption text-error hover:underline flex items-center gap-1 p-1">
+<span class="material-symbols-outlined text-[16px]">logout</span> Log Out
+              </button>
+<button class="text-caption font-caption text-primary hover:underline" title="Switch to Guest mode">Switch Account</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- BREADCRUMBS & SYSTEM BANNER CONTAINER -->
+<div class="w-full bg-surface-container-lowest border-b border-outline-variant">
+<div class="max-w-7xl mx-auto px-4 md:px-8 py-3">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+<!-- Breadcrumb Hierarchy -->
+<nav aria-label="Breadcrumb" class="flex items-center gap-2 text-caption font-caption text-on-surface-variant">
+<a class="hover:text-primary flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">home</span>
+<span>Home</span>
+</a>
+<span class="material-symbols-outlined text-[14px] text-outline">chevron_right</span>
+<a class="hover:text-primary" href="#">Electronics</a>
+<span class="material-symbols-outlined text-[14px] text-outline">chevron_right</span>
+<span class="font-body-md-medium text-on-surface font-semibold">Audio &amp; Wearables</span>
+</nav>
+<!-- Right Trust Snippet -->
+<div class="flex items-center gap-3 text-caption font-caption text-on-surface-variant">
+<span class="inline-flex items-center gap-1 text-secondary font-medium">
+<span class="material-symbols-outlined text-[16px]">bolt</span> Instant UPI Refunds
+          </span>
+<span>•</span>
+<span>GST Invoice Available</span>
+</div>
+</div>
+</div>
+</div>
+<!-- INLINE ERROR STATE NOTIFICATION BANNER (Requested in spec) -->
+<aside aria-label="System Alert" class="w-full bg-error-container/40 border-b border-error/20 py-2.5 px-4">
+<div class="max-w-7xl mx-auto flex items-center justify-between gap-3 text-on-error-container">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-error text-[20px] shrink-0">error</span>
+<p class="text-body-md font-body-md">
+<span class="font-semibold">Sync notice:</span> Unable to update cart quantity for item <span class="font-semibold underline">'Boat Rockerz 450'</span>. Please check your internet connection or retry.
+        </p>
+</div>
+<div class="flex items-center gap-3 shrink-0">
+<button class="px-3 py-1 bg-error text-on-error text-label-sm font-label-sm rounded-lg hover:opacity-95 transition-opacity active:scale-95 font-semibold">
+          Retry
+        </button>
+<button aria-label="Dismiss error notice" class="text-on-surface-variant hover:text-on-surface p-1">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+</div>
+</aside>
+<!-- MAIN VIEWPORT CONTAINER (12-Column Responsive Desktop Architecture) -->
+<main class="w-full max-w-7xl mx-auto px-4 md:px-8 py-6 flex-1">
+<div class="flex flex-col lg:flex-row gap-8 items-start">
+<!-- ============================================== -->
+<!-- LEFT SIDEBAR: Faceted Filters (280px Fixed Width) -->
+<!-- ============================================== -->
+<aside class="w-full lg:w-72 shrink-0 bg-surface-container-lowest border border-outline-variant rounded-lg p-5 shadow-xs sticky top-24 space-y-6">
+<!-- Header & Reset Action -->
+<div class="flex items-center justify-between pb-3 border-b border-outline-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">filter_alt</span>
+<h2 class="text-title-md font-title-md text-on-surface font-semibold">Filters</h2>
+</div>
+<button class="text-label-sm font-label-sm text-primary hover:underline font-semibold">Clear All</button>
+</div>
+<!-- Facet Section: Categories -->
+<div class="space-y-3 pb-5 border-b border-outline-variant">
+<h3 class="text-label-md font-label-md text-on-surface font-semibold tracking-wide">Category</h3>
+<div class="space-y-2">
+<label class="flex items-center justify-between group cursor-pointer">
+<span class="flex items-center gap-2 text-body-md font-body-md text-on-surface group-hover:text-primary transition-colors">
+<input checked="" class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary-container" type="checkbox">
+                Wireless Headphones
+              </span>
+<span class="text-caption font-caption text-outline bg-surface-container-low px-2 py-0.5 rounded-full font-medium">42</span>
+</label>
+<label class="flex items-center justify-between group cursor-pointer">
+<span class="flex items-center gap-2 text-body-md font-body-md text-on-surface group-hover:text-primary transition-colors">
+<input checked="" class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary-container" type="checkbox">
+                Smartwatches
+              </span>
+<span class="text-caption font-caption text-outline bg-surface-container-low px-2 py-0.5 rounded-full font-medium">28</span>
+</label>
+<label class="flex items-center justify-between group cursor-pointer">
+<span class="flex items-center gap-2 text-body-md font-body-md text-on-surface group-hover:text-primary transition-colors">
+<input class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary-container" type="checkbox">
+                Bluetooth Speakers
+              </span>
+<span class="text-caption font-caption text-outline bg-surface-container-low px-2 py-0.5 rounded-full font-medium">19</span>
+</label>
+<label class="flex items-center justify-between group cursor-pointer">
+<span class="flex items-center gap-2 text-body-md font-body-md text-on-surface group-hover:text-primary transition-colors">
+<input checked="" class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary-container" type="checkbox">
+                Earbuds
+              </span>
+<span class="text-caption font-caption text-outline bg-surface-container-low px-2 py-0.5 rounded-full font-medium">35</span>
+</label>
+<label class="flex items-center justify-between group cursor-pointer">
+<span class="flex items-center gap-2 text-body-md font-body-md text-on-surface group-hover:text-primary transition-colors">
+<input class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary-container" type="checkbox">
+                Power Banks
+              </span>
+<span class="text-caption font-caption text-outline bg-surface-container-low px-2 py-0.5 rounded-full font-medium">14</span>
+</label>
+</div>
+</div>
+<!-- Facet Section: Price Range (Accessible labels & currency) -->
+<div class="space-y-3 pb-5 border-b border-outline-variant">
+<div class="flex items-center justify-between">
+<h3 class="text-label-md font-label-md text-on-surface font-semibold">Price Range</h3>
+<span class="text-caption font-caption text-on-surface-variant">INR (₹)</span>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<div>
+<label class="block text-caption font-caption text-on-surface-variant mb-1 font-medium" for="min-price-input">Min Price (₹)</label>
+<input class="w-full h-10 px-3 border border-outline-variant rounded-lg text-body-md font-body-md text-on-surface focus:ring-2 focus:ring-primary-container focus:border-transparent" id="min-price-input" placeholder="499" type="number" value="499">
+</div>
+<div>
+<label class="block text-caption font-caption text-on-surface-variant mb-1 font-medium" for="max-price-input">Max Price (₹)</label>
+<input class="w-full h-10 px-3 border border-outline-variant rounded-lg text-body-md font-body-md text-on-surface focus:ring-2 focus:ring-primary-container focus:border-transparent" id="max-price-input" placeholder="9999" type="number" value="9999">
+</div>
+</div>
+<!-- Quick presets slider simulator -->
+<div class="pt-1">
+<div class="w-full bg-surface-container-high h-1.5 rounded-full relative">
+<div class="bg-primary h-1.5 rounded-full absolute left-1/12 right-1/4"></div>
+</div>
+<div class="flex justify-between text-[11px] font-caption text-outline mt-1.5">
+<span>₹499</span>
+<span>₹9,999+</span>
+</div>
+</div>
+<button class="w-full py-2 bg-surface-container text-primary font-label-md text-label-md rounded-lg hover:bg-surface-container-high transition-colors font-semibold">
+            Apply Price Filter
+          </button>
+</div>
+<!-- Facet Section: Availability -->
+<div class="space-y-3 pb-5 border-b border-outline-variant">
+<h3 class="text-label-md font-label-md text-on-surface font-semibold">Availability</h3>
+<div class="space-y-2">
+<label class="flex items-center gap-2 cursor-pointer">
+<input checked="" class="w-4 h-4 text-primary border-outline-variant focus:ring-primary" name="stock_availability" type="radio">
+<span class="text-body-md font-body-md text-on-surface">In Stock only</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer">
+<input class="w-4 h-4 text-primary border-outline-variant focus:ring-primary" name="stock_availability" type="radio">
+<span class="text-body-md font-body-md text-on-surface">Include Out of Stock</span>
+</label>
+</div>
+</div>
+<!-- Facet Section: Customer Ratings -->
+<div class="space-y-3 pb-4">
+<h3 class="text-label-md font-label-md text-on-surface font-semibold">Customer Ratings</h3>
+<div class="space-y-2">
+<label class="flex items-center justify-between group cursor-pointer">
+<div class="flex items-center gap-2">
+<input checked="" class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary-container" type="checkbox">
+<span class="flex items-center text-tertiary-fixed-dim text-body-md">
+<span class="material-symbols-outlined fill-icon text-[18px]">star</span>
+<span class="material-symbols-outlined fill-icon text-[18px]">star</span>
+<span class="material-symbols-outlined fill-icon text-[18px]">star</span>
+<span class="material-symbols-outlined fill-icon text-[18px]">star</span>
+<span class="material-symbols-outlined text-[18px] text-outline-variant">star</span>
+</span>
+<span class="text-body-md font-body-md text-on-surface group-hover:text-primary">4★ &amp; above</span>
+</div>
+<span class="text-caption font-caption text-outline">62</span>
+</label>
+<label class="flex items-center justify-between group cursor-pointer">
+<div class="flex items-center gap-2">
+<input class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary-container" type="checkbox">
+<span class="flex items-center text-tertiary-fixed-dim text-body-md">
+<span class="material-symbols-outlined fill-icon text-[18px]">star</span>
+<span class="material-symbols-outlined fill-icon text-[18px]">star</span>
+<span class="material-symbols-outlined fill-icon text-[18px]">star</span>
+<span class="material-symbols-outlined text-[18px] text-outline-variant">star</span>
+<span class="material-symbols-outlined text-[18px] text-outline-variant">star</span>
+</span>
+<span class="text-body-md font-body-md text-on-surface group-hover:text-primary">3★ &amp; above</span>
+</div>
+<span class="text-caption font-caption text-outline">81</span>
+</label>
+</div>
+</div>
+<!-- Express Delivery Filter -->
+<div class="pt-2 border-t border-outline-variant">
+<label class="flex items-center justify-between cursor-pointer p-2.5 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[20px]">electric_bolt</span>
+<div>
+<span class="text-label-sm font-label-sm text-on-surface block font-bold">UniCart Quick</span>
+<span class="text-[11px] font-caption text-on-surface-variant block">Delivery by tomorrow</span>
+</div>
+</div>
+<input class="w-4 h-4 rounded border-outline-variant text-secondary focus:ring-secondary" type="checkbox">
+</label>
+</div>
+</aside>
+<!-- ============================================== -->
+<!-- MAIN PRODUCT LISTING AREA                      -->
+<!-- ============================================== -->
+<section class="flex-1 w-full space-y-6">
+<!-- Header Bar: Result Count, Active Filter Tags, and Sort Selector -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs">
+<div>
+<h1 class="text-headline-sm font-headline-sm text-on-surface font-semibold tracking-tight">Audio &amp; Wearables</h1>
+<p class="text-caption font-caption text-on-surface-variant mt-0.5">Showing 84 items found in Mumbai 400001</p>
+</div>
+<!-- Active Filter Pill Tags -->
+<div class="flex flex-wrap items-center gap-2">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 bg-surface-container text-primary border border-primary/20 rounded-full text-caption font-label-sm font-medium">
+              ₹499 - ₹4,999
+              <button aria-label="Remove price filter" class="hover:text-error">
+<span class="material-symbols-outlined text-[14px]">close</span>
+</button>
+</span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 bg-surface-container text-primary border border-primary/20 rounded-full text-caption font-label-sm font-medium">
+              In Stock
+              <button aria-label="Remove stock filter" class="hover:text-error">
+<span class="material-symbols-outlined text-[14px]">close</span>
+</button>
+</span>
+<button class="text-caption font-caption text-outline hover:text-primary underline ml-1">Clear All</button>
+</div>
+<!-- Sort Select Dropdown -->
+<div class="flex items-center gap-2 shrink-0">
+<label class="text-body-md font-body-md text-on-surface-variant shrink-0" for="sort-by-select">Sort by:</label>
+<div class="relative">
+<select aria-label="Sort products by" class="h-10 pl-3 pr-8 bg-surface-container-lowest border border-outline-variant rounded-lg text-body-md font-body-md-medium text-on-surface focus:ring-2 focus:ring-primary-container focus:border-transparent appearance-none cursor-pointer" id="sort-by-select">
+<option>Newest</option>
+<option>Price: Low to High</option>
+<option>Price: High to Low</option>
+<option selected="">Popularity</option>
+<option>Customer Rating</option>
+</select>
+<span class="material-symbols-outlined pointer-events-none absolute right-2 top-2.5 text-[18px] text-outline">unfold_more</span>
+</div>
+</div>
+</div>
+<!-- 4-COLUMN PRODUCT GRID (Desktop 1440px view) -->
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+<!-- PRODUCT CARD 1 -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 flex flex-col justify-between hover:border-outline hover:shadow-md transition-all duration-200 group">
+<div>
+<!-- Image Container -->
+<div class="relative w-full aspect-square bg-[#F8FAFC] rounded-lg overflow-hidden mb-3">
+<img class="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-300" data-alt="Modern matte black wireless over-ear active noise cancelling headphones showcased on a crisp minimalist white podium with soft natural lighting, elegant metallic accents, and high-fidelity studio lighting against a clean, light-mode background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuARRhKQu54Yi9juu9-UdMoe39Wg7tM3fEMyrbD4_xTcqHLeLUWEpFOrLk5b5_c6YTY0rbTko_2uRLOZCC24v8qVYQGDS6D4SlRUHY_rtrzputu3zWKOIj0PZaKjq-BdqVyKPzVoxSJ9HRNVj9n5Tsn0q32DTllc-i_ccvhUdwbZJ1XN3hUk5hl4DdzKmxH9or2zAhufLFLoMsoLy6kqz3p0q9w-djWqXU9woby1mPEJk5VCalySWvWRjA">
+<button aria-label="Save to Wishlist" class="absolute top-2 right-2 w-8 h-8 rounded-full bg-surface-container-lowest/90 border border-outline-variant flex items-center justify-center text-outline hover:text-error hover:bg-surface-container-lowest transition-colors shadow-xs">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+<span class="absolute top-2 left-2 px-2 py-0.5 bg-primary text-on-primary text-[10px] font-label-sm rounded uppercase font-bold tracking-wider">Top Deal</span>
+</div>
+<!-- Stock Status Badge -->
+<div class="mb-2">
+<span class="inline-flex items-center gap-1.5 text-caption font-label-sm font-semibold text-[#047857] bg-[#ECFDF5] border border-[#A7F3D0] px-2 py-0.5 rounded-full">
+<span class="w-1.5 h-1.5 rounded-full bg-[#047857]"></span> In stock
+                </span>
+</div>
+<!-- Product Details -->
+<h3 class="text-body-md font-body-md text-on-surface font-semibold line-clamp-2 group-hover:text-primary transition-colors">
+                Wireless Over-Ear ANC Headphones with 40H Playtime
+              </h3>
+<!-- Ratings -->
+<div class="flex items-center gap-1.5 mt-1.5">
+<span class="inline-flex items-center gap-0.5 bg-secondary text-on-secondary px-1.5 py-0.2 rounded text-[11px] font-bold">
+                  4.5 <span class="material-symbols-outlined fill-icon text-[11px]">star</span>
+</span>
+<span class="text-caption font-caption text-outline">(1,420)</span>
+</div>
+</div>
+<div class="mt-4 pt-3 border-t border-outline-variant/60">
+<!-- Price Hierarchy -->
+<div class="flex items-baseline gap-2 mb-3">
+<span class="text-headline-sm font-price-display text-on-surface font-bold">₹2,499.00</span>
+<span class="text-caption font-caption text-outline line-through">₹4,999.00</span>
+<span class="text-caption font-caption text-secondary font-bold">50% off</span>
+</div>
+<!-- Action CTA -->
+<button class="w-full h-11 bg-primary text-on-primary rounded-lg font-label-md text-label-md font-semibold flex items-center justify-center gap-2 hover:bg-primary-container transition-colors duration-150 active:scale-95 shadow-xs">
+<span class="material-symbols-outlined text-[18px]">shopping_cart</span>
+                Add to Cart
+              </button>
+</div>
+</article>
+<!-- PRODUCT CARD 2 -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 flex flex-col justify-between hover:border-outline hover:shadow-md transition-all duration-200 group">
+<div>
+<div class="relative w-full aspect-square bg-[#F8FAFC] rounded-lg overflow-hidden mb-3">
+<img class="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-300" data-alt="Sleek modern smartwatch with vibrant glowing AMOLED high-resolution display, obsidian black silicone strap, and metallic bezel sitting gracefully on a pure white architectural plinth, lit with soft diffused light in an ultra-clean retail studio." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYWCbpgPB-6GcT8LxI6Jfe32-L-mHhjQ-YKu5TTHQVmJLvlakr7eJXzTu5UCUxmAZg-_HI7uFgUBVbOKKv0o1KhEjnFKKeC5_ifc9DPZDv60xN0g7_7plvC2UUUEr9NGBDriYs7DgR9BSXgzo4JXziE3MwtF_JcEgKIwAnlhFpjThn_zigTQKlfG89yBnENwKikjXAgsOGdfsfQkSf_pKLJBdEXeyQ0aqj6k_0cBXm9rkN4bPcqzVHDw">
+<button aria-label="Save to Wishlist" class="absolute top-2 right-2 w-8 h-8 rounded-full bg-surface-container-lowest/90 border border-outline-variant flex items-center justify-center text-outline hover:text-error hover:bg-surface-container-lowest transition-colors shadow-xs">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+</div>
+<!-- Stock Status Badge (Amber / Limited Stock) -->
+<div class="mb-2">
+<span class="inline-flex items-center gap-1.5 text-caption font-label-sm font-semibold text-[#B45309] bg-[#FFFBEB] border border-[#FDE68A] px-2 py-0.5 rounded-full">
+<span class="w-1.5 h-1.5 rounded-full bg-[#B45309]"></span> Only 3 left
+                </span>
+</div>
+<h3 class="text-body-md font-body-md text-on-surface font-semibold line-clamp-2 group-hover:text-primary transition-colors">
+                Smart Fitness Watch with 1.43" AMOLED Display &amp; BT Calling
+              </h3>
+<div class="flex items-center gap-1.5 mt-1.5">
+<span class="inline-flex items-center gap-0.5 bg-secondary text-on-secondary px-1.5 py-0.2 rounded text-[11px] font-bold">
+                  4.3 <span class="material-symbols-outlined fill-icon text-[11px]">star</span>
+</span>
+<span class="text-caption font-caption text-outline">(890)</span>
+</div>
+</div>
+<div class="mt-4 pt-3 border-t border-outline-variant/60">
+<div class="flex items-baseline gap-2 mb-3">
+<span class="text-headline-sm font-price-display text-on-surface font-bold">₹3,199.00</span>
+<span class="text-caption font-caption text-outline line-through">₹5,999.00</span>
+<span class="text-caption font-caption text-secondary font-bold">46% off</span>
+</div>
+<button class="w-full h-11 bg-primary text-on-primary rounded-lg font-label-md text-label-md font-semibold flex items-center justify-center gap-2 hover:bg-primary-container transition-colors duration-150 active:scale-95 shadow-xs">
+<span class="material-symbols-outlined text-[18px]">shopping_cart</span>
+                Add to Cart
+              </button>
+</div>
+</article>
+<!-- PRODUCT CARD 3 (Out of Stock State) -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 flex flex-col justify-between hover:border-outline hover:shadow-md transition-all duration-200 group opacity-90">
+<div>
+<div class="relative w-full aspect-square bg-[#F8FAFC] rounded-lg overflow-hidden mb-3">
+<img class="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-300" data-alt="Pair of futuristic white true wireless in-ear earbuds with open charging case displaying subtle LED battery indicators on a pale gray smooth stone background, bathed in crisp daylight with soft clean reflections." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2UO7ZzBJq2gWSksXanpSCuuixIMSpV5MZEdTE8IGbRzWDiZU7ZdRxsPor7BnG15AO-Eo8O6yEEivUZiLr0QC8hAtFlgtbaHQpiv9lyPOcqhZQtw4P0zXSUHxp1w_U_3W_1ZHdG_zR__firIQzqkb4Sq6vwEbM-9NsZmoU4AptoN663IggkWnqGk9J95dvKY9_sizZYPlBAp1FLYpT6PYQvVom_Yd08gjzGXdl71joTep2lqKTtNipfw">
+<button aria-label="Save to Wishlist" class="absolute top-2 right-2 w-8 h-8 rounded-full bg-surface-container-lowest/90 border border-outline-variant flex items-center justify-center text-outline hover:text-error hover:bg-surface-container-lowest transition-colors shadow-xs">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+</div>
+<!-- Stock Status Badge: Out of Stock -->
+<div class="mb-2">
+<span class="inline-flex items-center gap-1.5 text-caption font-label-sm font-semibold text-[#B91C1C] bg-[#FEF2F2] border border-[#FECACA] px-2 py-0.5 rounded-full">
+<span class="w-1.5 h-1.5 rounded-full bg-[#B91C1C]"></span> Out of stock
+                </span>
+</div>
+<h3 class="text-body-md font-body-md text-on-surface font-semibold line-clamp-2">
+                True Wireless Earbuds with Dual ENC Mic &amp; Ultra Low Latency
+              </h3>
+<div class="flex items-center gap-1.5 mt-1.5">
+<span class="inline-flex items-center gap-0.5 bg-secondary text-on-secondary px-1.5 py-0.2 rounded text-[11px] font-bold">
+                  4.1 <span class="material-symbols-outlined fill-icon text-[11px]">star</span>
+</span>
+<span class="text-caption font-caption text-outline">(645)</span>
+</div>
+</div>
+<div class="mt-4 pt-3 border-t border-outline-variant/60">
+<div class="flex items-baseline gap-2 mb-3">
+<span class="text-headline-sm font-price-display text-on-surface font-bold">₹1,299.00</span>
+<span class="text-caption font-caption text-outline line-through">₹2,999.00</span>
+<span class="text-caption font-caption text-secondary font-bold">56% off</span>
+</div>
+<!-- Out of Stock Disabled Button -->
+<button class="w-full h-11 bg-surface-container text-outline rounded-lg font-label-md text-label-md font-semibold flex items-center justify-center gap-2 cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined text-[18px]">block</span>
+                Out of Stock
+              </button>
+</div>
+</article>
+<!-- PRODUCT CARD 4 -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 flex flex-col justify-between hover:border-outline hover:shadow-md transition-all duration-200 group">
+<div>
+<div class="relative w-full aspect-square bg-[#F8FAFC] rounded-lg overflow-hidden mb-3">
+<img class="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-300" data-alt="Rugged cylindrical navy blue portable Bluetooth speaker with metallic woven mesh exterior resting near subtle water droplets on a pristine white surface, highlighting IPX7 waterproof rating in clear modern commercial lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbKFmBWkgDAACH9E-R9V490jtPygBvR71B2wnTKQkNPMkcWh5zOhORdsqGfnZkvMxcM1WjCNSSj0XFPQ_ESTZSnWXYbDRq5sqx6LedbHsSvWXT-cGLu4XhS4140qCpivzVHrjCaiOxpyrV16FsOlcTgSNcWXxjl6t8sFemay5664WaL-M3htsIWZjtxW90MLZpwO-FRK-uWM2kdoRWYSt2iyi0gketcvxFAczFd_-4UAwvMs6khcbLTw">
+<button aria-label="Save to Wishlist" class="absolute top-2 right-2 w-8 h-8 rounded-full bg-surface-container-lowest/90 border border-outline-variant flex items-center justify-center text-outline hover:text-error hover:bg-surface-container-lowest transition-colors shadow-xs">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+</div>
+<div class="mb-2">
+<span class="inline-flex items-center gap-1.5 text-caption font-label-sm font-semibold text-[#047857] bg-[#ECFDF5] border border-[#A7F3D0] px-2 py-0.5 rounded-full">
+<span class="w-1.5 h-1.5 rounded-full bg-[#047857]"></span> In stock
+                </span>
+</div>
+<h3 class="text-body-md font-body-md text-on-surface font-semibold line-clamp-2 group-hover:text-primary transition-colors">
+                Portable Waterproof Bluetooth Speaker 20W with Deep Bass
+              </h3>
+<div class="flex items-center gap-1.5 mt-1.5">
+<span class="inline-flex items-center gap-0.5 bg-secondary text-on-secondary px-1.5 py-0.2 rounded text-[11px] font-bold">
+                  4.6 <span class="material-symbols-outlined fill-icon text-[11px]">star</span>
+</span>
+<span class="text-caption font-caption text-outline">(2,110)</span>
+</div>
+</div>
+<div class="mt-4 pt-3 border-t border-outline-variant/60">
+<div class="flex items-baseline gap-2 mb-3">
+<span class="text-headline-sm font-price-display text-on-surface font-bold">₹1,899.00</span>
+<span class="text-caption font-caption text-outline line-through">₹3,499.00</span>
+<span class="text-caption font-caption text-secondary font-bold">45% off</span>
+</div>
+<button class="w-full h-11 bg-primary text-on-primary rounded-lg font-label-md text-label-md font-semibold flex items-center justify-center gap-2 hover:bg-primary-container transition-colors duration-150 active:scale-95 shadow-xs">
+<span class="material-symbols-outlined text-[18px]">shopping_cart</span>
+                Add to Cart
+              </button>
+</div>
+</article>
+<!-- PRODUCT CARD 5 -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 flex flex-col justify-between hover:border-outline hover:shadow-md transition-all duration-200 group">
+<div>
+<div class="relative w-full aspect-square bg-[#F8FAFC] rounded-lg overflow-hidden mb-3">
+<img class="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-300" data-alt="Professional grade studio monitor wired headphones with gold-plated connectors, supple plush leather earcups resting against a neutral warm gray geometric pedestal under soft studio flash illumination." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqQOHS9RvNw0HUbNkWKfyRr29epgkVqTheQ6xY1D0wP6C3PU7wL8u-UKNUvvn1GLKjwpLXNhwAo5am2zf05JKQeCY2PQ5Aagy9zHw4i0M3-sSar1W2y1gQg2IqvD0Hq71zNp-q7KHuCpOIMh31Zg0dVdIJ7LMM5agTn0c34v6RbUE68ZqRjGDkgueY9csBIAZmTcaNwBHIslAQCjzzcZZDkGRJfplTDrzXbcAUXRFPaXlkexgfuU-4sw">
+<button aria-label="Save to Wishlist" class="absolute top-2 right-2 w-8 h-8 rounded-full bg-surface-container-lowest/90 border border-outline-variant flex items-center justify-center text-outline hover:text-error hover:bg-surface-container-lowest transition-colors shadow-xs">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+</div>
+<div class="mb-2">
+<span class="inline-flex items-center gap-1.5 text-caption font-label-sm font-semibold text-[#047857] bg-[#ECFDF5] border border-[#A7F3D0] px-2 py-0.5 rounded-full">
+<span class="w-1.5 h-1.5 rounded-full bg-[#047857]"></span> In stock
+                </span>
+</div>
+<h3 class="text-body-md font-body-md text-on-surface font-semibold line-clamp-2 group-hover:text-primary transition-colors">
+                Studio Monitor Wired Headphones with 50mm Neodymium Drivers
+              </h3>
+<div class="flex items-center gap-1.5 mt-1.5">
+<span class="inline-flex items-center gap-0.5 bg-secondary text-on-secondary px-1.5 py-0.2 rounded text-[11px] font-bold">
+                  4.8 <span class="material-symbols-outlined fill-icon text-[11px]">star</span>
+</span>
+<span class="text-caption font-caption text-outline">(520)</span>
+</div>
+</div>
+<div class="mt-4 pt-3 border-t border-outline-variant/60">
+<div class="flex items-baseline gap-2 mb-3">
+<span class="text-headline-sm font-price-display text-on-surface font-bold">₹4,499.00</span>
+<span class="text-caption font-caption text-outline line-through">₹6,999.00</span>
+<span class="text-caption font-caption text-secondary font-bold">35% off</span>
+</div>
+<button class="w-full h-11 bg-primary text-on-primary rounded-lg font-label-md text-label-md font-semibold flex items-center justify-center gap-2 hover:bg-primary-container transition-colors duration-150 active:scale-95 shadow-xs">
+<span class="material-symbols-outlined text-[18px]">shopping_cart</span>
+                Add to Cart
+              </button>
+</div>
+</article>
+<!-- PRODUCT CARD 6 -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 flex flex-col justify-between hover:border-outline hover:shadow-md transition-all duration-200 group">
+<div>
+<div class="relative w-full aspect-square bg-[#F8FAFC] rounded-lg overflow-hidden mb-3">
+<img class="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-300" data-alt="Aggressive ergonomic gaming headset featuring subtle RGB rim glow, detachable noise-cancelling boom microphone, and premium memory foam head cushioning isolated against a pristine white studio background with soft rim shadows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNIMkODXbMmvXnpenMHO8EYPYo6g9GFPxFxVaURmI0ThHi7gb-EMzxw0jQSIMWvaVL8y1w1UCLfWdb0F8ygVZsY3WEiajzlif3z8CnOGNKACLvxAAq5Jf2L9seNHkCC182pCaACcjpXyD9NJ10LW9VxHfmkrVmLiN2ps8ZF4t3l1wAZFql5fpxQxXfU1RQbkNojfymMMlf6bzqK9Spc666JMR3QP4l1wKdsXIxCArjE8M6L2kHmSmwQA">
+<button aria-label="Save to Wishlist" class="absolute top-2 right-2 w-8 h-8 rounded-full bg-surface-container-lowest/90 border border-outline-variant flex items-center justify-center text-outline hover:text-error hover:bg-surface-container-lowest transition-colors shadow-xs">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+</div>
+<!-- Stock: Limited (Amber) -->
+<div class="mb-2">
+<span class="inline-flex items-center gap-1.5 text-caption font-label-sm font-semibold text-[#B45309] bg-[#FFFBEB] border border-[#FDE68A] px-2 py-0.5 rounded-full">
+<span class="w-1.5 h-1.5 rounded-full bg-[#B45309]"></span> Only 2 left
+                </span>
+</div>
+<h3 class="text-body-md font-body-md text-on-surface font-semibold line-clamp-2 group-hover:text-primary transition-colors">
+                Noise Cancelling Gaming Headset with Boom Mic &amp; Spatial Audio
+              </h3>
+<div class="flex items-center gap-1.5 mt-1.5">
+<span class="inline-flex items-center gap-0.5 bg-secondary text-on-secondary px-1.5 py-0.2 rounded text-[11px] font-bold">
+                  4.4 <span class="material-symbols-outlined fill-icon text-[11px]">star</span>
+</span>
+<span class="text-caption font-caption text-outline">(1,048)</span>
+</div>
+</div>
+<div class="mt-4 pt-3 border-t border-outline-variant/60">
+<div class="flex items-baseline gap-2 mb-3">
+<span class="text-headline-sm font-price-display text-on-surface font-bold">₹2,199.00</span>
+<span class="text-caption font-caption text-outline line-through">₹4,299.00</span>
+<span class="text-caption font-caption text-secondary font-bold">48% off</span>
+</div>
+<button class="w-full h-11 bg-primary text-on-primary rounded-lg font-label-md text-label-md font-semibold flex items-center justify-center gap-2 hover:bg-primary-container transition-colors duration-150 active:scale-95 shadow-xs">
+<span class="material-symbols-outlined text-[18px]">shopping_cart</span>
+                Add to Cart
+              </button>
+</div>
+</article>
+<!-- PRODUCT CARD 7 -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 flex flex-col justify-between hover:border-outline hover:shadow-md transition-all duration-200 group">
+<div>
+<div class="relative w-full aspect-square bg-[#F8FAFC] rounded-lg overflow-hidden mb-3">
+<img class="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-300" data-alt="Lightweight flexible wireless neckband earphones in charcoal black with metallic magnetic earbuds and textured inline controls laid out cleanly on pure white reflective tile, captured in high-key daylight." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCB3PfhWUj8hsSMqNxGdpO8bi_g8_e-7Vr9wZ_fmyZ7Ah-aBQvoIzOcxCKpjA-V_3thwIhOKQxhVdEjehav5XKZYtFk1bkEMxT71fUY2G0f1gQ73ARUtJpcK0_KQElBs9Khiy-wzv5kCMsEa2VMsiTIXV1yF8Zkx0M_XArFbaujRzrzM_gsWMGrSVjTh7qrCF3s82_JIaA2K1sLvXA87HP8mYrliFs2_I06vpjLqOuOXhwN99gdmECmug">
+<button aria-label="Save to Wishlist" class="absolute top-2 right-2 w-8 h-8 rounded-full bg-surface-container-lowest/90 border border-outline-variant flex items-center justify-center text-outline hover:text-error hover:bg-surface-container-lowest transition-colors shadow-xs">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+</div>
+<div class="mb-2">
+<span class="inline-flex items-center gap-1.5 text-caption font-label-sm font-semibold text-[#047857] bg-[#ECFDF5] border border-[#A7F3D0] px-2 py-0.5 rounded-full">
+<span class="w-1.5 h-1.5 rounded-full bg-[#047857]"></span> In stock
+                </span>
+</div>
+<h3 class="text-body-md font-body-md text-on-surface font-semibold line-clamp-2 group-hover:text-primary transition-colors">
+                BassBoost Neckband Earphones with 10-Min Fast Charging
+              </h3>
+<div class="flex items-center gap-1.5 mt-1.5">
+<span class="inline-flex items-center gap-0.5 bg-secondary text-on-secondary px-1.5 py-0.2 rounded text-[11px] font-bold">
+                  4.2 <span class="material-symbols-outlined fill-icon text-[11px]">star</span>
+</span>
+<span class="text-caption font-caption text-outline">(3,890)</span>
+</div>
+</div>
+<div class="mt-4 pt-3 border-t border-outline-variant/60">
+<div class="flex items-baseline gap-2 mb-3">
+<span class="text-headline-sm font-price-display text-on-surface font-bold">₹899.00</span>
+<span class="text-caption font-caption text-outline line-through">₹1,999.00</span>
+<span class="text-caption font-caption text-secondary font-bold">55% off</span>
+</div>
+<button class="w-full h-11 bg-primary text-on-primary rounded-lg font-label-md text-label-md font-semibold flex items-center justify-center gap-2 hover:bg-primary-container transition-colors duration-150 active:scale-95 shadow-xs">
+<span class="material-symbols-outlined text-[18px]">shopping_cart</span>
+                Add to Cart
+              </button>
+</div>
+</article>
+<!-- PRODUCT CARD 8 (Out of Stock State) -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 flex flex-col justify-between hover:border-outline hover:shadow-md transition-all duration-200 group opacity-90">
+<div>
+<div class="relative w-full aspect-square bg-[#F8FAFC] rounded-lg overflow-hidden mb-3">
+<img class="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-300" data-alt="Slim architectural home theater wireless soundbar system paired with a compact down-firing subwoofer, finished in brushed dark aluminum resting in a minimal sunlit living room setup with neutral tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhDzXvAAqPZRDWji9LRE2gpI5VjmdwL6jcwu1gLsS1e-HfpoXlS9ikESrfZ-Om0l8ZC9fyFe61TDTrD4Jq-UDRmkgLrxRGUg2ypKpm9xlIsnGITsaW5Qz7QZLMDQUdnYBY_Ydvu5OJy8ckAFL13bEX5ClQHO3tJqgID2qVQj2wNq-LeUmnXHOHHQmutmRTxaM2QqXsIzvXxJPod9ELpqmXaeGCyDMMTplD6nT5R5sdWZv_fQMpLVdceg">
+<button aria-label="Save to Wishlist" class="absolute top-2 right-2 w-8 h-8 rounded-full bg-surface-container-lowest/90 border border-outline-variant flex items-center justify-center text-outline hover:text-error hover:bg-surface-container-lowest transition-colors shadow-xs">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+</div>
+<!-- Out of stock badge -->
+<div class="mb-2">
+<span class="inline-flex items-center gap-1.5 text-caption font-label-sm font-semibold text-[#B91C1C] bg-[#FEF2F2] border border-[#FECACA] px-2 py-0.5 rounded-full">
+<span class="w-1.5 h-1.5 rounded-full bg-[#B91C1C]"></span> Out of stock
+                </span>
+</div>
+<h3 class="text-body-md font-body-md text-on-surface font-semibold line-clamp-2">
+                High-Res Wireless Soundbar with 6.5" Dedicated Subwoofer (160W)
+              </h3>
+<div class="flex items-center gap-1.5 mt-1.5">
+<span class="inline-flex items-center gap-0.5 bg-secondary text-on-secondary px-1.5 py-0.2 rounded text-[11px] font-bold">
+                  4.7 <span class="material-symbols-outlined fill-icon text-[11px]">star</span>
+</span>
+<span class="text-caption font-caption text-outline">(312)</span>
+</div>
+</div>
+<div class="mt-4 pt-3 border-t border-outline-variant/60">
+<div class="flex items-baseline gap-2 mb-3">
+<span class="text-headline-sm font-price-display text-on-surface font-bold">₹8,999.00</span>
+<span class="text-caption font-caption text-outline line-through">₹14,999.00</span>
+<span class="text-caption font-caption text-secondary font-bold">40% off</span>
+</div>
+<button class="w-full h-11 bg-surface-container text-outline rounded-lg font-label-md text-label-md font-semibold flex items-center justify-center gap-2 cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined text-[18px]">block</span>
+                Out of Stock
+              </button>
+</div>
+</article>
+</div>
+<!-- ACCESSIBLE PAGINATION CONTROLS -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 shadow-xs">
+<p class="text-body-md font-body-md text-on-surface-variant">
+            Showing <span class="font-semibold text-on-surface">1–8</span> of <span class="font-semibold text-on-surface">84</span> products
+          </p>
+<nav aria-label="Pagination" class="flex items-center gap-1.5">
+<button class="px-3 py-1.5 rounded-lg border border-outline-variant text-body-md font-body-md text-outline cursor-not-allowed flex items-center gap-1" disabled="">
+<span class="material-symbols-outlined text-[16px]">chevron_left</span>
+              Previous
+            </button>
+<button class="w-9 h-9 rounded-lg bg-primary text-on-primary font-label-md text-label-md font-semibold flex items-center justify-center shadow-xs">
+              1
+            </button>
+<button class="w-9 h-9 rounded-lg border border-outline-variant text-on-surface hover:bg-surface-container font-label-md text-label-md flex items-center justify-center transition-colors">
+              2
+            </button>
+<button class="w-9 h-9 rounded-lg border border-outline-variant text-on-surface hover:bg-surface-container font-label-md text-label-md flex items-center justify-center transition-colors">
+              3
+            </button>
+<button class="w-9 h-9 rounded-lg border border-outline-variant text-on-surface hover:bg-surface-container font-label-md text-label-md flex items-center justify-center transition-colors">
+              4
+            </button>
+<span class="px-1 text-outline">...</span>
+<button class="w-9 h-9 rounded-lg border border-outline-variant text-on-surface hover:bg-surface-container font-label-md text-label-md flex items-center justify-center transition-colors">
+              11
+            </button>
+<button class="px-3 py-1.5 rounded-lg border border-outline-variant text-body-md font-body-md text-on-surface hover:bg-surface-container transition-colors flex items-center gap-1">
+              Next
+              <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</nav>
+</div>
+</section>
+</div>
+<!-- ============================================== -->
+<!-- DEDICATED UI STATE SHOWCASE SECTION            -->
+<!-- (Interactive Demonstration: Skeletons & Empty) -->
+<!-- ============================================== -->
+<section class="mt-16 pt-8 border-t border-outline-variant">
+<div class="flex items-center justify-between mb-6">
+<div>
+<span class="text-caption font-caption text-primary font-bold uppercase tracking-wider">System State Gallery</span>
+<h2 class="text-headline-md font-headline-md text-on-surface font-semibold">Real-world UX Edge States</h2>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-low p-1 rounded-lg border border-outline-variant">
+<button class="px-3 py-1.5 rounded-md text-label-md font-label-md bg-surface-container-lowest text-primary shadow-xs font-semibold" id="btn-tab-skeleton" onclick="toggleStateDemo('skeleton')">
+            Loading Skeleton
+          </button>
+<button class="px-3 py-1.5 rounded-md text-label-md font-label-md text-on-surface-variant hover:text-primary transition-colors" id="btn-tab-empty" onclick="toggleStateDemo('empty')">
+            Empty Search State
+          </button>
+<button class="px-3 py-1.5 rounded-md text-label-md font-label-md text-on-surface-variant hover:text-primary transition-colors" id="btn-tab-error" onclick="toggleStateDemo('error')">
+            Error Diagnostic State
+          </button>
+</div>
+</div>
+<!-- PANEL 1: LOADING SKELETON STATE (4-Column Shimmer) -->
+<div class="space-y-4" id="state-skeleton-panel">
+<p class="text-caption font-caption text-on-surface-variant">Live Shimmer Skeleton simulating high-speed catalog fetch:</p>
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+<!-- Skeleton Card 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 space-y-3 relative overflow-hidden">
+<div class="w-full aspect-square bg-[#F1F5F9] rounded-lg relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-[#E2E8F0] to-transparent animate-shimmer"></div>
+</div>
+<div class="h-4 bg-[#F1F5F9] rounded w-1/3 relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-[#E2E8F0] to-transparent animate-shimmer"></div>
+</div>
+<div class="h-4 bg-[#F1F5F9] rounded w-5/6 relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-[#E2E8F0] to-transparent animate-shimmer"></div>
+</div>
+<div class="h-4 bg-[#F1F5F9] rounded w-1/2 relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-[#E2E8F0] to-transparent animate-shimmer"></div>
+</div>
+<div class="h-10 bg-[#F1F5F9] rounded-lg mt-4 relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-[#E2E8F0] to-transparent animate-shimmer"></div>
+</div>
+</div>
+<!-- Skeleton Card 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 space-y-3 relative overflow-hidden">
+<div class="w-full aspect-square bg-[#F1F5F9] rounded-lg relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-[#E2E8F0] to-transparent animate-shimmer"></div>
+</div>
+<div class="h-4 bg-[#F1F5F9] rounded w-1/4 relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-[#E2E8F0] to-transparent animate-shimmer"></div>
+</div>
+<div class="h-4 bg-[#F1F5F9] rounded w-3/4 relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-[#E2E8F0] to-transparent animate-shimmer"></div>
+</div>
+<div class="h-4 bg-[#F1F5F9] rounded w-1/2 relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-[#E2E8F0] to-transparent animate-shimmer"></div>
+</div>
+<div class="h-10 bg-[#F1F5F9] rounded-lg mt-4 relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-[#E2E8F0] to-transparent animate-shimmer"></div>
+</div>
+</div>
+<!-- Skeleton Card 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 space-y-3 relative overflow-hidden">
+<div class="w-full aspect-square bg-[#F1F5F9] rounded-lg relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-[#E2E8F0] to-transparent animate-shimmer"></div>
+</div>
+<div class="h-4 bg-[#F1F5F9] rounded w-1/3 relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-[#E2E8F0] to-transparent animate-shimmer"></div>
+</div>
+<div class="h-4 bg-[#F1F5F9] rounded w-4/5 relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-[#E2E8F0] to-transparent animate-shimmer"></div>
+</div>
+<div class="h-4 bg-[#F1F5F9] rounded w-2/5 relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-[#E2E8F0] to-transparent animate-shimmer"></div>
+</div>
+<div class="h-10 bg-[#F1F5F9] rounded-lg mt-4 relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-[#E2E8F0] to-transparent animate-shimmer"></div>
+</div>
+</div>
+<!-- Skeleton Card 4 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 space-y-3 relative overflow-hidden">
+<div class="w-full aspect-square bg-[#F1F5F9] rounded-lg relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-[#E2E8F0] to-transparent animate-shimmer"></div>
+</div>
+<div class="h-4 bg-[#F1F5F9] rounded w-2/5 relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-[#E2E8F0] to-transparent animate-shimmer"></div>
+</div>
+<div class="h-4 bg-[#F1F5F9] rounded w-3/4 relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-[#E2E8F0] to-transparent animate-shimmer"></div>
+</div>
+<div class="h-4 bg-[#F1F5F9] rounded w-1/3 relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-[#E2E8F0] to-transparent animate-shimmer"></div>
+</div>
+<div class="h-10 bg-[#F1F5F9] rounded-lg mt-4 relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-[#E2E8F0] to-transparent animate-shimmer"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- PANEL 2: EMPTY FILTER SEARCH STATE (Hidden by default) -->
+<div class="hidden bg-surface-container-lowest border border-outline-variant rounded-lg p-12 text-center max-w-2xl mx-auto my-6" id="state-empty-panel">
+<div class="w-16 h-16 rounded-full bg-surface-container-low text-outline flex items-center justify-center mx-auto mb-4">
+<span class="material-symbols-outlined text-[36px]">search_off</span>
+</div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface font-semibold mb-2">No products found matching your filters</h3>
+<p class="text-body-md font-body-md text-on-surface-variant max-w-md mx-auto mb-6">
+          We couldn't find any items matching your selected criteria. Try loosening your price bounds or removing specific filters.
+        </p>
+<div class="flex items-center justify-center gap-3">
+<button class="px-5 py-2.5 bg-primary text-on-primary font-label-md text-label-md rounded-lg font-semibold hover:bg-primary-container transition-colors shadow-xs">
+            Reset All Filters
+          </button>
+<button class="px-5 py-2.5 bg-surface-container text-primary font-label-md text-label-md rounded-lg font-semibold hover:bg-surface-container-high transition-colors">
+            Browse All Electronics
+          </button>
+</div>
+</div>
+<!-- PANEL 3: ERROR DIAGNOSTIC STATE (Hidden by default) -->
+<div class="hidden bg-surface-container-lowest border border-outline-variant rounded-lg p-8 max-w-2xl mx-auto my-6" id="state-error-panel">
+<div class="flex items-start gap-4">
+<div class="w-12 h-12 rounded-full bg-error-container text-error flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[28px]">wifi_off</span>
+</div>
+<div class="flex-1">
+<span class="text-caption font-caption text-error font-bold uppercase tracking-wider">Error 503 • Gateway Timeout</span>
+<h3 class="text-headline-sm font-headline-sm text-on-surface font-semibold mt-0.5 mb-2">Inventory Sync Interrupted</h3>
+<p class="text-body-md font-body-md text-on-surface-variant mb-4">
+              Our regional inventory node in Western India (Mumbai-1) is temporarily unresponsive. Saved items and prices remain intact.
+            </p>
+<div class="flex items-center gap-3">
+<button class="px-4 py-2 bg-primary text-on-primary font-label-md text-label-md rounded-lg font-semibold hover:bg-primary-container transition-colors">
+                Retry Connection
+              </button>
+<button class="px-4 py-2 border border-outline-variant text-on-surface font-label-md text-label-md rounded-lg hover:bg-surface-container-low transition-colors">
+                Contact Customer Care
+              </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- ============================================== -->
+<!-- TRUST VALUE PROPOSITIONS BAR                   -->
+<!-- ============================================== -->
+<section class="w-full bg-surface-container-low border-t border-outline-variant py-8 px-4 md:px-8 mt-16">
+<div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6">
+<div class="flex items-center gap-4 bg-surface-container-lowest p-4 rounded-lg border border-outline-variant shadow-xs">
+<div class="w-12 h-12 rounded-lg bg-surface-container text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[28px]">rocket_launch</span>
+</div>
+<div>
+<h4 class="text-label-md font-label-md text-on-surface font-bold">Fast Pan-India Delivery</h4>
+<p class="text-caption font-caption text-on-surface-variant">Over 19,000+ PIN codes served</p>
+</div>
+</div>
+<div class="flex items-center gap-4 bg-surface-container-lowest p-4 rounded-lg border border-outline-variant shadow-xs">
+<div class="w-12 h-12 rounded-lg bg-surface-container text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[28px]">published_with_changes</span>
+</div>
+<div>
+<h4 class="text-label-md font-label-md text-on-surface font-bold">7-Day Easy Returns</h4>
+<p class="text-caption font-caption text-on-surface-variant">No questions asked doorstep pickup</p>
+</div>
+</div>
+<div class="flex items-center gap-4 bg-surface-container-lowest p-4 rounded-lg border border-outline-variant shadow-xs">
+<div class="w-12 h-12 rounded-lg bg-surface-container text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[28px]">lock</span>
+</div>
+<div>
+<h4 class="text-label-md font-label-md text-on-surface font-bold">100% Safe Payments</h4>
+<p class="text-caption font-caption text-on-surface-variant">Instant UPI, RuPay &amp; EMI</p>
+</div>
+</div>
+<div class="flex items-center gap-4 bg-surface-container-lowest p-4 rounded-lg border border-outline-variant shadow-xs">
+<div class="w-12 h-12 rounded-lg bg-surface-container text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[28px]">support_agent</span>
+</div>
+<div>
+<h4 class="text-label-md font-label-md text-on-surface font-bold">Dedicated 24/7 Support</h4>
+<p class="text-caption font-caption text-on-surface-variant">Toll-free helpline and chat</p>
+</div>
+</div>
+</div>
+</section>
+<!-- ============================================== -->
+<!-- SHARED COMPONENT: Footer                       -->
+<!-- ============================================== -->
+<footer class="bg-surface-container-low text-primary border-t border-outline-variant">
+<div class="w-full px-4 md:px-8 max-w-7xl mx-auto py-12 md:py-16">
+<div class="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
+<!-- Col 1: Brand & Narrative -->
+<div class="col-span-2 space-y-4">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded bg-primary-container flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-[20px]">shopping_bag</span>
+</div>
+<span class="text-headline-md font-headline-md text-primary font-bold">UniCart</span>
+</div>
+<p class="text-body-md font-body-md text-on-surface-variant max-w-sm">
+            India's most trusted electronic retail platform. Engineered for swift product discovery, verified warranty tracking, and secure UPI transactions nationwide.
+          </p>
+<div class="pt-2">
+<span class="text-caption font-caption text-on-surface-variant block mb-1 font-semibold">Payment Partners:</span>
+<div class="flex items-center gap-2 text-outline">
+<span class="px-2 py-1 bg-surface-container-lowest border border-outline-variant rounded text-caption font-bold">UPI</span>
+<span class="px-2 py-1 bg-surface-container-lowest border border-outline-variant rounded text-caption font-bold">RuPay</span>
+<span class="px-2 py-1 bg-surface-container-lowest border border-outline-variant rounded text-caption font-bold">Visa</span>
+<span class="px-2 py-1 bg-surface-container-lowest border border-outline-variant rounded text-caption font-bold">NetBanking</span>
+</div>
+</div>
+</div>
+<!-- Col 2: Navigation Links -->
+<div>
+<h4 class="text-title-md font-title-md text-on-surface font-semibold mb-4">About UniCart</h4>
+<ul class="space-y-2 text-body-md font-body-md">
+<li><a class="text-on-surface-variant hover:text-primary transition-colors duration-150" href="#">About UniCart</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors duration-150" href="#">Careers</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors duration-150" href="#">Press Releases</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors duration-150" href="#">Corporate Governance</a></li>
+</ul>
+</div>
+<!-- Col 3: Customer Care Links -->
+<div>
+<h4 class="text-title-md font-title-md text-on-surface font-semibold mb-4">Customer Care</h4>
+<ul class="space-y-2 text-body-md font-body-md">
+<li><a class="text-on-surface-variant hover:text-primary transition-colors duration-150" href="#">Customer Support</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors duration-150" href="#">Shipping Rates</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors duration-150" href="#">Return Policy</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors duration-150" href="#">Track Shipment</a></li>
+</ul>
+</div>
+<!-- Col 4: Legal & Merchant -->
+<div>
+<h4 class="text-title-md font-title-md text-on-surface font-semibold mb-4">Policies &amp; Partners</h4>
+<ul class="space-y-2 text-body-md font-body-md">
+<li><a class="text-on-surface-variant hover:text-primary transition-colors duration-150" href="#">Terms of Service</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors duration-150" href="#">Privacy Policy</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors duration-150" href="#">Sell on UniCart</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors duration-150" href="#">Affiliate Program</a></li>
+</ul>
+</div>
+</div>
+<!-- Copyright Section per JSON -->
+<div class="pt-8 border-t border-outline-variant flex flex-col md:flex-row items-center justify-between gap-4">
+<p class="text-caption font-caption text-on-surface-variant text-center md:text-left">
+          © 2024 UniCart Retail Internet Private Limited. All rights reserved. Fast Shipping across India, 7-Day Returns &amp; Secure UPI Payments.
+        </p>
+<div class="flex items-center gap-4 text-caption font-caption text-on-surface-variant">
+<span>CIN: U51909KA2024PTC123456</span>
+<span>•</span>
+<span>Registered Office: Bengaluru, Karnataka</span>
+</div>
+</div>
+</div>
+</footer>
+<!-- MOBILE BOTTOM NAV BAR (Shared Component: Responsive Anchor) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-1 md:hidden bg-surface-container-lowest text-primary border-t border-outline-variant shadow-md">
+<a class="flex flex-col items-center justify-center text-primary font-label-sm text-label-sm py-1" href="#">
+<span class="material-symbols-outlined text-[20px] fill-icon">storefront</span>
+<span>Shop</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant font-caption text-caption py-1 hover:text-primary" href="#">
+<span class="material-symbols-outlined text-[20px]">grid_view</span>
+<span>Categories</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant font-caption text-caption py-1 hover:text-primary relative" href="#">
+<span class="material-symbols-outlined text-[20px]">favorite</span>
+<span class="absolute top-0 right-2 w-2 h-2 rounded-full bg-tertiary-container"></span>
+<span>Wishlist</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant font-caption text-caption py-1 hover:text-primary" href="#">
+<span class="material-symbols-outlined text-[20px]">receipt_long</span>
+<span>Orders</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant font-caption text-caption py-1 hover:text-primary" href="#">
+<span class="material-symbols-outlined text-[20px]">person</span>
+<span>Account</span>
+</a>
+</nav>
+<!-- Interactive JavaScript for UI State Showcase Tab Switching -->
+<script>
+    function toggleStateDemo(state) {
+      const skeletonPanel = document.getElementById('state-skeleton-panel');
+      const emptyPanel = document.getElementById('state-empty-panel');
+      const errorPanel = document.getElementById('state-error-panel');
+
+      const btnSkeleton = document.getElementById('btn-tab-skeleton');
+      const btnEmpty = document.getElementById('btn-tab-empty');
+      const btnError = document.getElementById('btn-tab-error');
+
+      // Hide all panels
+      skeletonPanel.classList.add('hidden');
+      emptyPanel.classList.add('hidden');
+      errorPanel.classList.add('hidden');
+
+      // Reset button styles
+      [btnSkeleton, btnEmpty, btnError].forEach(btn => {
+        btn.className = "px-3 py-1.5 rounded-md text-label-md font-label-md text-on-surface-variant hover:text-primary transition-colors";
+      });
+
+      // Activate chosen tab
+      if (state === 'skeleton') {
+        skeletonPanel.classList.remove('hidden');
+        btnSkeleton.className = "px-3 py-1.5 rounded-md text-label-md font-label-md bg-surface-container-lowest text-primary shadow-xs font-semibold";
+      } else if (state === 'empty') {
+        emptyPanel.classList.remove('hidden');
+        btnEmpty.className = "px-3 py-1.5 rounded-md text-label-md font-label-md bg-surface-container-lowest text-primary shadow-xs font-semibold";
+      } else if (state === 'error') {
+        errorPanel.classList.remove('hidden');
+        btnError.className = "px-3 py-1.5 rounded-md text-label-md font-label-md bg-surface-container-lowest text-primary shadow-xs font-semibold";
+      }
+    }
+  </script>
+</body></html>

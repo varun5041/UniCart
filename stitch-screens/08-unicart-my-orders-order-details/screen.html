@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>UniCart - My Orders &amp; Order Details</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with configuration -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary-container": "#dad7ff",
+            "on-secondary-fixed-variant": "#005236",
+            "on-secondary-container": "#00714d",
+            "on-error-container": "#93000a",
+            "on-tertiary-fixed": "#2a1700",
+            "secondary-fixed-dim": "#4edea3",
+            "on-error": "#ffffff",
+            "surface-container-lowest": "#ffffff",
+            "inverse-surface": "#283044",
+            "secondary-fixed": "#6ffbbe",
+            "on-surface-variant": "#464555",
+            "surface-container-high": "#e2e7ff",
+            "surface-bright": "#faf8ff",
+            "surface-container": "#eaedff",
+            "on-surface": "#131b2e",
+            "outline-variant": "#c7c4d8",
+            "tertiary-container": "#885500",
+            "tertiary-fixed": "#ffddb8",
+            "surface-dim": "#d2d9f4",
+            "surface-tint": "#4d44e3",
+            "primary-fixed": "#e2dfff",
+            "secondary": "#006c49",
+            "on-primary": "#ffffff",
+            "surface-container-low": "#f2f3ff",
+            "primary-fixed-dim": "#c3c0ff",
+            "background": "#faf8ff",
+            "on-tertiary": "#ffffff",
+            "inverse-on-surface": "#eef0ff",
+            "surface-container-highest": "#dae2fd",
+            "on-background": "#131b2e",
+            "on-tertiary-fixed-variant": "#653e00",
+            "secondary-container": "#6cf8bb",
+            "surface": "#faf8ff",
+            "primary": "#3525cd",
+            "primary-container": "#4f46e5",
+            "on-primary-fixed": "#0f0069",
+            "tertiary-fixed-dim": "#ffb95f",
+            "tertiary": "#684000",
+            "on-primary-fixed-variant": "#3323cc",
+            "inverse-primary": "#c3c0ff",
+            "error": "#ba1a1a",
+            "on-tertiary-container": "#ffd4a4",
+            "on-secondary": "#ffffff",
+            "surface-variant": "#dae2fd",
+            "outline": "#777587",
+            "error-container": "#ffdad6",
+            "on-secondary-fixed": "#002113"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "margin": "2rem",
+            "space-sm": "0.5rem",
+            "space-xl": "2rem",
+            "space-2xl": "3rem",
+            "gutter": "1.5rem",
+            "space-lg": "1.5rem",
+            "space-xs": "0.25rem",
+            "space-md": "1rem",
+            "gutter-mobile": "1rem",
+            "margin-mobile": "1rem"
+          },
+          "fontFamily": {
+            "headline-lg-mobile": ["Inter"],
+            "body-md": ["Inter"],
+            "headline-xl": ["Inter"],
+            "headline-lg": ["Inter"],
+            "headline-md": ["Inter"],
+            "price-display": ["Inter"],
+            "body-lg": ["Inter"],
+            "headline-xl-mobile": ["Inter"],
+            "body-md-medium": ["Inter"],
+            "body-lg-medium": ["Inter"],
+            "title-md": ["Inter"],
+            "label-md": ["Inter"],
+            "label-sm": ["Inter"],
+            "caption": ["Inter"],
+            "headline-sm": ["Inter"]
+          },
+          "fontSize": {
+            "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "headline-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "headline-lg": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+            "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "price-display": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "headline-xl-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "body-md-medium": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+            "body-lg-medium": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+            "title-md": ["18px", { "lineHeight": "26px", "fontWeight": "600" }],
+            "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "600" }],
+            "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "caption": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+            "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .material-symbols-outlined.fill {
+      font-variation-settings: 'FILL' 1;
+    }
+  </style>
+</head>
+<body class="bg-surface font-body-md text-on-surface antialiased min-h-screen flex flex-col">
+<!-- GLOBAL TOP NAV BAR (Shared Component JSON compliant) -->
+<header class="docked full-width top-0 sticky z-50 bg-surface-container-lowest shadow-sm">
+<div class="w-full px-4 md:px-8 max-w-7xl mx-auto flex items-center justify-between h-20 gap-4">
+<!-- Brand & Pincode Anchor -->
+<div class="flex items-center gap-6">
+<a class="text-headline-md font-headline-md text-primary tracking-tight font-bold flex items-center gap-1" href="#">
+<span>UniCart</span>
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+</a>
+<!-- Location Badge (India Pincode Context) -->
+<div class="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-low text-on-surface-variant hover:bg-surface-container transition-colors duration-150 cursor-pointer">
+<span class="material-symbols-outlined text-primary text-[20px]">location_on</span>
+<div class="flex flex-col text-left">
+<span class="text-caption font-caption text-outline leading-tight">Deliver to</span>
+<span class="text-label-sm font-label-sm text-on-surface font-semibold">Mumbai 400001</span>
+</div>
+</div>
+</div>
+<!-- Search Bar on Left/Center (JSON specification) -->
+<div class="flex-1 max-w-xl mx-2 hidden sm:block">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3.5 text-outline pointer-events-none">search</span>
+<input class="w-full pl-11 pr-4 py-2 bg-surface-container-low rounded-lg text-body-md font-body-md placeholder:text-outline border-none focus:ring-2 focus:ring-primary focus:bg-surface-container-lowest transition-all" placeholder="Search for orders, electronics, apparel, or Order ID (#UC-...)" type="text"/>
+</div>
+</div>
+<!-- Trailing Action Navigation (JSON compliant labels and icons) -->
+<nav class="flex items-center gap-6">
+<div class="hidden md:flex items-center space-x-6">
+<a class="text-on-surface-variant font-body-md text-body-md hover:text-primary transition-colors duration-150" href="#">Wishlist</a>
+<a class="text-on-surface-variant font-body-md text-body-md hover:text-primary transition-colors duration-150" href="#">Help</a>
+<a class="text-primary font-body-md-medium text-body-md-medium border-b-2 border-primary pb-1" href="#">My Orders</a>
+</div>
+<div class="flex items-center gap-3">
+<!-- Cart Icon with badge -->
+<a aria-label="Cart" class="relative p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[24px]">shopping_cart</span>
+<span class="absolute top-1 right-1 w-4 h-4 rounded-full bg-primary text-on-primary text-[10px] font-bold flex items-center justify-center">2</span>
+</a>
+<!-- User Account Menu -->
+<div class="flex items-center gap-2 pl-2 cursor-pointer hover:bg-surface-container-low p-1.5 rounded-lg transition-colors duration-150">
+<div class="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-on-primary-fixed font-bold text-label-sm">
+              RN
+            </div>
+<div class="hidden xl:flex flex-col text-left">
+<span class="text-caption font-caption text-outline leading-tight">Namaste</span>
+<span class="text-label-sm font-label-sm font-semibold text-on-surface">Rahul N.</span>
+</div>
+<span class="material-symbols-outlined text-outline text-[18px]">expand_more</span>
+</div>
+</div>
+</nav></div>
+</header>
+<!-- INTERACTIVE DEMO VIEW CONTROLLER (TOP SWITCHER TAB BAR) -->
+<aside aria-label="View Switcher" class="bg-surface-container-high py-2.5 px-4 shadow-inner">
+<div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">tune</span>
+<span class="text-label-sm font-label-sm text-on-surface font-semibold tracking-wide">STATE PREVIEW CONTROLLER:</span>
+</div>
+<div class="flex items-center flex-wrap gap-1.5">
+<button class="px-3 py-1.5 rounded-lg text-label-sm font-label-sm bg-primary text-on-primary shadow-sm transition-all" id="tab-btn-list" onclick="switchView('list-view')">
+          Order History (All Orders)
+        </button>
+<button class="px-3 py-1.5 rounded-lg text-label-sm font-label-sm bg-surface-container-lowest text-on-surface-variant hover:text-primary transition-all" id="tab-btn-pending" onclick="switchView('detail-pending')">
+          Order Details: Pending Payment (#UC-89214)
+        </button>
+<button class="px-3 py-1.5 rounded-lg text-label-sm font-label-sm bg-surface-container-lowest text-on-surface-variant hover:text-primary transition-all" id="tab-btn-delivered" onclick="switchView('detail-delivered')">
+          Order Details: Delivered (#UC-74190)
+        </button>
+<button class="px-3 py-1.5 rounded-lg text-label-sm font-label-sm bg-error-container text-on-error-container hover:brightness-95 transition-all flex items-center gap-1" onclick="toggleCancelModal(true)">
+<span class="material-symbols-outlined text-[16px]">cancel</span>
+          Cancel Order Dialog
+        </button>
+<button class="px-3 py-1.5 rounded-lg text-label-sm font-label-sm bg-surface-container-lowest text-on-surface-variant hover:text-primary transition-all" id="tab-btn-empty" onclick="switchView('empty-view')">
+          Empty Orders State
+        </button>
+</div>
+</div>
+</aside>
+<!-- MAIN CANVAS -->
+<main class="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-8">
+<!-- ==========================================
+         VIEW 1: ORDER HISTORY / MY ORDERS LIST
+         ========================================== -->
+<section class="space-y-6" id="view-orders-list">
+<!-- Breadcrumb & Title Cluster -->
+<div>
+<nav class="flex items-center gap-2 text-caption font-caption text-outline mb-2">
+<a class="hover:text-primary transition-colors" href="#">Home</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">My Account</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-on-surface font-medium">My Orders</span>
+</nav>
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<h1 class="text-headline-lg font-headline-lg text-on-surface tracking-tight">My Orders</h1>
+<p class="text-body-md font-body-md text-on-surface-variant">View order tracking, download GST tax invoices, and initiate 7-day hassle-free returns.</p>
+</div>
+<div class="flex items-center gap-3">
+<label class="text-caption font-caption text-outline" for="time-range">Show:</label>
+<select class="bg-surface-container-lowest text-label-md font-label-md text-on-surface rounded-lg py-2 pl-3 pr-8 focus:ring-primary" id="time-range">
+<option selected="">Past 3 months</option>
+<option>Year 2024</option>
+<option>Year 2023</option>
+<option>Archived Orders</option>
+</select>
+</div>
+</div>
+</div>
+<!-- Filters & Search Toolbar -->
+<div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
+<!-- Status Filter Pills -->
+<div class="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0 scrollbar-none">
+<button class="px-3.5 py-1.5 rounded-full text-label-sm font-label-sm bg-primary text-on-primary transition-colors whitespace-nowrap">
+            All Orders (14)
+          </button>
+<button class="px-3.5 py-1.5 rounded-full text-label-sm font-label-sm bg-surface-container-low text-on-surface-variant hover:bg-surface-container transition-colors whitespace-nowrap">
+            Pending Payment (1)
+          </button>
+<button class="px-3.5 py-1.5 rounded-full text-label-sm font-label-sm bg-surface-container-low text-on-surface-variant hover:bg-surface-container transition-colors whitespace-nowrap">
+            In Transit / Shipped (2)
+          </button>
+<button class="px-3.5 py-1.5 rounded-full text-label-sm font-label-sm bg-surface-container-low text-on-surface-variant hover:bg-surface-container transition-colors whitespace-nowrap">
+            Delivered (10)
+          </button>
+<button class="px-3.5 py-1.5 rounded-full text-label-sm font-label-sm bg-surface-container-low text-on-surface-variant hover:bg-surface-container transition-colors whitespace-nowrap">
+            Cancelled (1)
+          </button>
+</div>
+<!-- Search Order ID Input -->
+<div class="relative min-w-[280px]">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-outline text-[20px]">search</span>
+<input class="w-full pl-9 pr-3 py-1.5 text-body-md font-body-md bg-surface-container-low rounded-lg focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest transition-all" placeholder="Search orders or products..." type="text"/>
+</div>
+</div>
+<!-- ORDER CARDS STACK -->
+<div class="space-y-4">
+<!-- ORDER CARD 1: PENDING PAYMENT (State A) -->
+<article class="bg-surface-container-lowest rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
+<!-- Card Header Bar -->
+<div class="bg-surface-container-low px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-6 text-left">
+<div>
+<span class="text-caption font-caption text-outline uppercase tracking-wider block">Order Placed</span>
+<span class="text-label-md font-label-md text-on-surface">14 Oct 2024, 02:45 PM</span>
+</div>
+<div>
+<span class="text-caption font-caption text-outline uppercase tracking-wider block">Total Amount</span>
+<span class="text-label-md font-label-md text-on-surface font-bold text-primary">₹9,497.00</span>
+</div>
+<div>
+<span class="text-caption font-caption text-outline uppercase tracking-wider block">Ship To</span>
+<span class="text-label-md font-label-md text-on-surface truncate block max-w-[120px]" title="Rahul Sharma">Rahul Sharma</span>
+</div>
+<div>
+<span class="text-caption font-caption text-outline uppercase tracking-wider block">Order ID</span>
+<div class="flex items-center gap-1">
+<span class="text-label-md font-label-md text-on-surface font-mono">#UC-89214</span>
+<button class="text-outline hover:text-primary transition-colors" title="Copy Order ID">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+</div>
+</div>
+<!-- View Details Anchor -->
+<button class="text-primary font-label-md text-label-md hover:underline flex items-center gap-1" onclick="switchView('detail-pending')">
+              View Order Details
+              <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+<!-- Card Content Body -->
+<div class="p-6">
+<div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+<!-- Left: Items info -->
+<div class="flex-1 space-y-4">
+<!-- Status Badge -->
+<div class="flex items-center gap-3">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-caption font-caption font-semibold bg-amber-50 text-amber-800">
+<span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                    Pending payment
+                  </span>
+<span class="text-caption font-caption text-error font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+                    Pay within 28 mins to secure your reserved items
+                  </span>
+</div>
+<!-- Products in this Order -->
+<div class="flex items-center gap-4">
+<div class="relative w-20 h-20 rounded-lg bg-surface-container-low overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A modern pair of matte black over-ear wireless noise-cancelling headphones resting on a minimalist studio podium. High-key soft white commercial product lighting with subtle indigo reflections. Ultra-clean Indian digital commerce aesthetic, razor-sharp focus." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2G0ff-WU61IZKOFPfCuq7o7E69ZrMEaQgTxEJyG1oAMFY62t4aQopkvMlw5F7kPl3ZsT7of0zQ0vmQ6jQ_KTPyWXGPUQOrGrL3lyFJgRsMrTJ48KUK6PEKHv-0HqApJ4RCqtu8J-vt6zti81B57XJPKhIZw0Wetqz-L7x6ciSpy6hp2vkLQHPUEPc6L4i895oRCD7gCqUVhOruWKa62sp0IEcRLyTN-d5TeqR8LJtPbP05IZStTQnRQ"/>
+</div>
+<div class="relative w-20 h-20 rounded-lg bg-surface-container-low overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A premium braided nylon USB-C fast charging braided cable coiled neatly alongside an ultra-compact 65W GaN wall charger. Pristine white studio surface with soft diffused shadows and crisp corporate tech lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSYbs4JfIzcjSJFV-RtV6vrC0gcSC6Ly97cb3iZgk4o0SwdR0cxRXNYeZ8CNJgFyzCzjIxcaZM0ruRyAKqpSwbFMV6OtyAhFr5xK8PA-4CCYqtz9nSocXAlnk-RDwqkbsHTl7Qd_k5YhSMpideNnyyALPPsBSNXUiYED8Fvvcy2eo8bm4ALsp9BPprBsG653a2izKSymghv5aoNq-pCXkaUKhGYW6n9atv_SyiaLu0iqbghf1weLrZWQ"/>
+</div>
+<div class="flex flex-col justify-center">
+<h3 class="text-title-md font-title-md text-on-surface line-clamp-1">SonicPro Wireless ANC Over-Ear Headphones + 65W GaN Duo</h3>
+<p class="text-body-md font-body-md text-on-surface-variant">Qty: 2 Items • Seller: UniCart Retail India Tech</p>
+<p class="text-label-sm font-label-sm text-outline mt-0.5">UPI / NetBanking / Cards Accepted</p>
+</div>
+</div>
+</div>
+<!-- Right: Contextual Action Buttons for Pending State -->
+<div class="flex flex-row lg:flex-col items-center lg:items-end gap-3 w-full lg:w-auto pt-4 lg:pt-0 border-t lg:border-t-0">
+<button class="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-primary-container text-on-primary font-label-md text-label-md hover:bg-primary transition-all flex items-center justify-center gap-2 shadow-sm" onclick="switchView('detail-pending')">
+<span class="material-symbols-outlined text-[20px]">bolt</span>
+                  Pay Now (₹9,497.00)
+                </button>
+<div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+<button class="px-3 py-2 text-label-md font-label-md text-error hover:bg-error-container/20 rounded-lg transition-colors" onclick="toggleCancelModal(true)">
+                    Cancel Order
+                  </button>
+<button class="px-4 py-2 text-label-md font-label-md text-on-surface hover:bg-surface-container-low rounded-lg transition-colors" onclick="switchView('detail-pending')">
+                    View Details
+                  </button>
+</div>
+</div>
+</div>
+</div>
+</article>
+<!-- ORDER CARD 2: DELIVERED (State B) -->
+<article class="bg-surface-container-lowest rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
+<div class="bg-surface-container-low px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-6 text-left">
+<div>
+<span class="text-caption font-caption text-outline uppercase tracking-wider block">Order Placed</span>
+<span class="text-label-md font-label-md text-on-surface">28 Sep 2024, 10:12 AM</span>
+</div>
+<div>
+<span class="text-caption font-caption text-outline uppercase tracking-wider block">Total Amount</span>
+<span class="text-label-md font-label-md text-on-surface font-bold">₹3,249.00</span>
+</div>
+<div>
+<span class="text-caption font-caption text-outline uppercase tracking-wider block">Ship To</span>
+<span class="text-label-md font-label-md text-on-surface truncate block max-w-[120px]">Rahul Sharma</span>
+</div>
+<div>
+<span class="text-caption font-caption text-outline uppercase tracking-wider block">Order ID</span>
+<div class="flex items-center gap-1">
+<span class="text-label-md font-label-md text-on-surface font-mono">#UC-74190</span>
+<button class="text-outline hover:text-primary transition-colors" title="Copy Order ID">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+</div>
+</div>
+<button class="text-primary font-label-md text-label-md hover:underline flex items-center gap-1" onclick="switchView('detail-delivered')">
+              View Order Details
+              <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+<div class="p-6">
+<div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+<div class="flex-1 space-y-4">
+<div class="flex items-center gap-3">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-caption font-caption font-semibold bg-emerald-50 text-emerald-800">
+<span class="material-symbols-outlined text-[16px] text-emerald-600 fill">check_circle</span>
+                    Delivered on 02 Oct 2024
+                  </span>
+<span class="text-caption font-caption text-outline">Package was handed directly to resident</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative w-20 h-20 rounded-lg bg-surface-container-low overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A sleek stainless steel smart fitness tracker watch with olive green silicone strap displayed on a pristine white ceramic block. Bright studio commercial illumination with high-definition glass screen reflections." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1UNOMbBUDxoHAy_geZaKqXkiuoxe9fmxli45XgoL2OOeVRxABjdvRb-MuTe_92wVuvfR5NDLCHS5FstFoK2gNwRWBueHbT7ARWuFxxxpkKjnmXwS0tjp_XK9ECb-dXS_AANV6q1KRLzsMH2v19GLC93LmNlh78lb6UzkTvr4KfYXU3BFHJK2u4_w4T38uP7J8YFstCrh-mLYzB_dSSkHZVsnENBNYZQ465O_wkWSH3oeeQ0XAO6EQdQ"/>
+</div>
+<div class="flex flex-col justify-center">
+<h3 class="text-title-md font-title-md text-on-surface line-clamp-1">PulseFit AMOLED Rugged Smartwatch - Olive Active Edition</h3>
+<p class="text-body-md font-body-md text-on-surface-variant">Qty: 1 • Return window closed on 09 Oct 2024</p>
+<p class="text-caption font-caption text-secondary font-medium">Delivered via BlueDart Express (AWB: BLR-8923019)</p>
+</div>
+</div>
+</div>
+<!-- Contextual Action Buttons for Delivered -->
+<div class="flex flex-wrap lg:flex-nowrap items-center gap-2.5 w-full lg:w-auto pt-4 lg:pt-0 border-t lg:border-t-0">
+<button class="px-4 py-2 rounded-lg bg-surface-container text-primary font-label-md text-label-md hover:bg-surface-container-high transition-colors">
+                  Buy It Again
+                </button>
+<button class="px-4 py-2 rounded-lg text-on-surface font-label-md text-label-md hover:bg-surface-container-low transition-colors flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px]">rate_review</span>
+                  Write Review
+                </button>
+<button class="p-2 rounded-lg text-outline hover:text-on-surface hover:bg-surface-container-low transition-colors" title="Download Invoice (PDF)">
+<span class="material-symbols-outlined text-[20px]">download</span>
+</button>
+</div>
+</div>
+</div>
+</article>
+<!-- ORDER CARD 3: SHIPPED / IN TRANSIT (State C) -->
+<article class="bg-surface-container-lowest rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
+<div class="bg-surface-container-low px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-6 text-left">
+<div>
+<span class="text-caption font-caption text-outline uppercase tracking-wider block">Order Placed</span>
+<span class="text-label-md font-label-md text-on-surface">12 Oct 2024, 08:30 AM</span>
+</div>
+<div>
+<span class="text-caption font-caption text-outline uppercase tracking-wider block">Total Amount</span>
+<span class="text-label-md font-label-md text-on-surface font-bold">₹1,899.00</span>
+</div>
+<div>
+<span class="text-caption font-caption text-outline uppercase tracking-wider block">Ship To</span>
+<span class="text-label-md font-label-md text-on-surface truncate block max-w-[120px]">Rahul Sharma</span>
+</div>
+<div>
+<span class="text-caption font-caption text-outline uppercase tracking-wider block">Order ID</span>
+<div class="flex items-center gap-1">
+<span class="text-label-md font-label-md text-on-surface font-mono">#UC-85012</span>
+<button class="text-outline hover:text-primary transition-colors" title="Copy Order ID">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+</div>
+</div>
+<a class="text-primary font-label-md text-label-md hover:underline flex items-center gap-1" href="#">
+              View Order Details
+              <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</a>
+</div>
+<div class="p-6">
+<div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+<div class="flex-1 space-y-4">
+<div class="flex items-center gap-3">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-caption font-caption font-semibold bg-blue-50 text-blue-800">
+<span class="material-symbols-outlined text-[16px] text-blue-600">local_shipping</span>
+                    Shipped • Arriving Tomorrow by 8 PM
+                  </span>
+<span class="text-caption font-caption text-outline">In Transit: Mumbai Hub Facility</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative w-20 h-20 rounded-lg bg-surface-container-low overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="An ergonomic mechanical wireless keyboard with subtle backlighting and warm grey keycaps set on a clean modern wooden desk background. Soft balanced architectural studio lighting, premium B2C retail styling." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDm4DrUAZWCldunAxHrxNs1NOpD5Hpt_iExkDFtQYqBFhgl0U-d0RBhkiyIlClx3svKDKglkPAZLau54Tlb3LT2qCTeDGlHscX9MZJ3IBV2BLNGhw2_0EHHH-XK9Da8Cfs2ZWZmx2xhxISttfcQL9pPvlXPDXJVOZHbbPg6S-aJampN0allPxoZFDc76-4nyw-7LYXFO83axmdq8yrJD6oTSE7OF-dQgWOpym2s8PzOu6giRiZUZcw8qw"/>
+</div>
+<div class="flex flex-col justify-center">
+<h3 class="text-title-md font-title-md text-on-surface line-clamp-1">KeyCraft Pro Wireless Mechanical Keyboard (Hot-swappable)</h3>
+<p class="text-body-md font-body-md text-on-surface-variant">Qty: 1 • Courier: Delhivery Surface Express</p>
+<p class="text-caption font-caption text-outline">AWB: DEL-830219401</p>
+</div>
+</div>
+</div>
+<!-- Contextual Action Buttons for Shipped -->
+<div class="flex items-center gap-3 w-full lg:w-auto pt-4 lg:pt-0 border-t lg:border-t-0">
+<button class="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">distance</span>
+                  Track Live Shipment
+                </button>
+<button class="px-4 py-2.5 rounded-lg text-on-surface font-label-md text-label-md hover:bg-surface-container-low transition-colors">
+                  Need Help?
+                </button>
+</div>
+</div>
+</div>
+</article>
+</div>
+<!-- NUMBERED PAGINATION BAR -->
+<div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+<span class="text-caption font-caption text-on-surface-variant">
+          Showing <span class="font-semibold text-on-surface">1 - 3</span> of <span class="font-semibold text-on-surface">14</span> orders
+        </span>
+<nav aria-label="Pagination Navigation" class="flex items-center gap-1.5">
+<button class="px-3 py-1.5 rounded-lg text-label-sm font-label-sm text-outline hover:bg-surface-container-low transition-colors disabled:opacity-40" disabled="">
+            Prev
+          </button>
+<button class="w-9 h-9 rounded-lg text-label-sm font-label-sm bg-primary text-on-primary font-bold">
+            1
+          </button>
+<button class="w-9 h-9 rounded-lg text-label-sm font-label-sm text-on-surface hover:bg-surface-container-low transition-colors">
+            2
+          </button>
+<button class="w-9 h-9 rounded-lg text-label-sm font-label-sm text-on-surface hover:bg-surface-container-low transition-colors">
+            3
+          </button>
+<button class="w-9 h-9 rounded-lg text-label-sm font-label-sm text-on-surface hover:bg-surface-container-low transition-colors">
+            4
+          </button>
+<button class="px-3 py-1.5 rounded-lg text-label-sm font-label-sm text-on-surface hover:bg-surface-container-low transition-colors">
+            Next
+          </button>
+</nav>
+</div>
+</section>
+<!-- ==========================================
+         VIEW 2: ORDER DETAILS (Pending Payment Demo)
+         ========================================== -->
+<section class="hidden space-y-6" id="view-order-detail-pending">
+<!-- Breadcrumbs -->
+<nav class="flex items-center gap-2 text-caption font-caption text-outline">
+<a class="hover:text-primary transition-colors" href="#" onclick="switchView('list-view')">Home</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#" onclick="switchView('list-view')">My Account</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#" onclick="switchView('list-view')">My Orders</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-on-surface font-medium">Order #UC-89214</span>
+</nav>
+<!-- Detail Header Box -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<div class="flex items-center gap-3">
+<h1 class="text-headline-md font-headline-md text-on-surface font-bold">Order Details — #UC-89214</h1>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-caption font-caption font-semibold bg-amber-50 text-amber-800">
+<span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+              Pending payment
+            </span>
+</div>
+<p class="text-body-md font-body-md text-on-surface-variant mt-1">Placed on 14 October 2024 at 02:45 PM • Total: ₹9,497.00</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-4 py-2 rounded-lg text-on-surface font-label-md text-label-md hover:bg-surface-container-low transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]">print</span>
+            Print Invoice
+          </button>
+<button class="px-4 py-2 rounded-lg bg-surface-container-low text-primary font-label-md text-label-md hover:bg-surface-container transition-colors flex items-center gap-1" onclick="switchView('list-view')">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+            Back to Orders
+          </button>
+</div>
+</div>
+<!-- Urgent Payment Expiry Banner -->
+<div class="bg-amber-50 p-4 rounded-xl flex items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-amber-700 text-[28px]">timer</span>
+<div>
+<h2 class="text-label-md font-label-md text-amber-900">Payment Authorization Required</h2>
+<p class="text-caption font-caption text-amber-800">Payment expires in <strong class="font-mono text-label-sm font-semibold">28:40 mins</strong> to avoid inventory release.</p>
+</div>
+</div>
+<button class="px-5 py-2 rounded-lg bg-primary-container text-on-primary font-label-md text-label-md hover:bg-primary transition-all flex items-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">credit_card</span>
+          Complete Payment (₹9,497.00)
+        </button>
+</div>
+<!-- Visual Fulfillment Stepper (Pending State) -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm">
+<h2 class="text-label-md font-label-md text-on-surface mb-6">Order Status Timeline</h2>
+<div class="relative flex items-center justify-between max-w-4xl mx-auto">
+<!-- Stepper Background Bar -->
+<div class="absolute left-6 right-6 top-1/2 -translate-y-1/2 h-1 bg-surface-container-high -z-0"></div>
+<!-- Completed Line overlay (just first segment) -->
+<div class="absolute left-6 top-1/2 -translate-y-1/2 h-1 bg-primary w-1/4 -z-0"></div>
+<!-- Step 1: Placed (Done) -->
+<div class="flex flex-col items-center relative z-10 text-center">
+<div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[20px] fill">check</span>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface font-semibold mt-2">Order Placed</span>
+<span class="text-caption font-caption text-outline">14 Oct, 02:45 PM</span>
+</div>
+<!-- Step 2: Payment (Active Warning) -->
+<div class="flex flex-col items-center relative z-10 text-center">
+<div class="w-10 h-10 rounded-full bg-amber-500 text-on-primary ring-4 ring-amber-100 flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[20px]">hourglass_top</span>
+</div>
+<span class="text-label-sm font-label-sm text-amber-800 font-bold mt-2">Awaiting Payment</span>
+<span class="text-caption font-caption text-error font-medium">Action Required</span>
+</div>
+<!-- Step 3: Packed (Pending) -->
+<div class="flex flex-col items-center relative z-10 text-center opacity-45">
+<div class="w-10 h-10 rounded-full bg-surface-container text-outline flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">inventory_2</span>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface mt-2">Processing</span>
+<span class="text-caption font-caption text-outline">Pending</span>
+</div>
+<!-- Step 4: Shipped (Pending) -->
+<div class="flex flex-col items-center relative z-10 text-center opacity-45">
+<div class="w-10 h-10 rounded-full bg-surface-container text-outline flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">local_shipping</span>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface mt-2">Shipped</span>
+<span class="text-caption font-caption text-outline">Pending</span>
+</div>
+<!-- Step 5: Delivered (Pending) -->
+<div class="flex flex-col items-center relative z-10 text-center opacity-45">
+<div class="w-10 h-10 rounded-full bg-surface-container text-outline flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">home</span>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface mt-2">Delivered</span>
+<span class="text-caption font-caption text-outline">Expected 17 Oct</span>
+</div>
+</div>
+</div>
+<!-- Main Content Split (7 / 5 Grid) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+<!-- Left Column: Items (7 cols) -->
+<div class="lg:col-span-7 space-y-4">
+<div class="bg-surface-container-lowest rounded-xl shadow-sm p-6">
+<h2 class="text-title-md font-title-md text-on-surface mb-4">Ordered Items (2)</h2>
+<div class="divide-y divide-outline-variant/30">
+<!-- Item 1 -->
+<div class="py-4 first:pt-0 last:pb-0 flex items-start gap-4">
+<div class="w-20 h-20 rounded-lg bg-surface-container-low overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A modern pair of matte black over-ear wireless noise-cancelling headphones resting on a minimalist studio podium. High-key soft white commercial product lighting with subtle indigo reflections. Ultra-clean Indian digital commerce aesthetic, razor-sharp focus." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbs5bgMrIgJx20WcYogy5g67-tyxNA9eV-YYwuYNqi3TdWMgwCMTNmvTvjlM0HohCOx3JnX2-C4OlDc2ewk5vsBWXnxfycL06kY3mw9GmkZkd4UL6RZefbpHSXMmRpiQ9uZLBr0BhgWuahHNfLnyG9weM3aDcOrcrrHXjoGggBKqzoKz0bSeoVO7EoYUnz5oHIWp1hi1KlXVgIfjQM9VGkod6h7o-A5KSzaHDJo7C3AVtvxGmpaV1Ubw"/>
+</div>
+<div class="flex-1">
+<div class="flex items-start justify-between">
+<div>
+<h3 class="text-label-md font-label-md text-on-surface font-semibold">SonicPro Wireless ANC Over-Ear Headphones</h3>
+<p class="text-caption font-caption text-outline">Midnight Black • 40mm Dynamic Drivers • 60hr Playtime</p>
+<p class="text-caption font-caption text-on-surface-variant mt-1">Sold by: <span class="text-primary font-medium">UniCart Retail Tech Pvt Ltd</span></p>
+</div>
+<div class="text-right">
+<span class="text-label-md font-label-md text-on-surface font-bold">₹7,499.00</span>
+<span class="text-caption font-caption text-outline line-through block">₹11,999.00</span>
+</div>
+</div>
+<div class="mt-3 flex items-center justify-between text-caption font-caption">
+<span class="text-on-surface-variant font-medium">Qty: 1</span>
+<span class="text-secondary font-medium">Free 7-Day Replacement Guarantee</span>
+</div>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="py-4 first:pt-0 last:pb-0 flex items-start gap-4">
+<div class="w-20 h-20 rounded-lg bg-surface-container-low overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A premium braided nylon USB-C fast charging braided cable coiled neatly alongside an ultra-compact 65W GaN wall charger. Pristine white studio surface with soft diffused shadows and crisp corporate tech lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPiKh-2kJGmCIEjqvZ-aM9nVrwO5HzpbIRmLnCEw_6YJdxf0ZWRa-__AVen3N_bDN6SV3TBqlM_4n3BpZYy_h8KMh3Pk-SN1z_ONT8uRKAFnvVR1W8JEfn0_7W7JeHvNcxnqCbnkMgOmoD0QbdeRyRg3_2MooRMTcGoxIWgc935TQ4VS1XOEDu7DiXSPBiKJhss-M-52Y1MZ7t0jBJ0kseFFGMKT93VC9tc7WhyyAYjRddTaCK27Engw"/>
+</div>
+<div class="flex-1">
+<div class="flex items-start justify-between">
+<div>
+<h3 class="text-label-md font-label-md text-on-surface font-semibold">TurboCharge 65W Dual USB-C GaN Charger</h3>
+<p class="text-caption font-caption text-outline">Matte White • PPS Protocol • BIS Certified</p>
+<p class="text-caption font-caption text-on-surface-variant mt-1">Sold by: <span class="text-primary font-medium">ElectroStore Hub</span></p>
+</div>
+<div class="text-right">
+<span class="text-label-md font-label-md text-on-surface font-bold">₹1,998.00</span>
+<span class="text-caption font-caption text-outline line-through block">₹2,499.00</span>
+</div>
+</div>
+<div class="mt-3 flex items-center justify-between text-caption font-caption">
+<span class="text-on-surface-variant font-medium">Qty: 1</span>
+<span class="text-secondary font-medium">1 Year Manufacturer Warranty</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Address & Fulfillment Card -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+<div>
+<span class="text-caption font-caption text-outline uppercase tracking-wider block mb-1">Delivery Address</span>
+<p class="text-label-md font-label-md text-on-surface font-semibold">Rahul Sharma</p>
+<p class="text-body-md font-body-md text-on-surface-variant mt-1 leading-relaxed">
+                Flat 402, Lotus Grandeur, Veera Desai Road,<br/>
+                Andheri West, Mumbai, Maharashtra 400053<br/>
+                Phone: <span class="font-medium text-on-surface">+91 98765 43210</span>
+</p>
+</div>
+<div>
+<span class="text-caption font-caption text-outline uppercase tracking-wider block mb-1">Shipping Method</span>
+<div class="flex items-center gap-2 mt-1">
+<span class="material-symbols-outlined text-secondary text-[22px]">rocket_launch</span>
+<span class="text-label-md font-label-md text-on-surface font-semibold">UniCart Prime Guaranteed Speed</span>
+</div>
+<p class="text-caption font-caption text-on-surface-variant mt-1">
+                Dispatches immediately once UPI / Card payment verification clears.
+              </p>
+</div>
+</div>
+</div>
+<!-- Right Column: Payment & Breakdown (5 cols) -->
+<div class="lg:col-span-5 space-y-4">
+<!-- Price Summary Card -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm p-6">
+<h2 class="text-title-md font-title-md text-on-surface mb-4">Payment Summary</h2>
+<div class="space-y-3 text-body-md font-body-md">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span>Items Subtotal (2 items)</span>
+<span class="text-on-surface">₹13,997.00</span>
+</div>
+<div class="flex items-center justify-between text-secondary">
+<span>Product Instant Discount</span>
+<span>- ₹4,300.00</span>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant">
+<span>Delivery Charges</span>
+<span class="text-secondary font-medium">FREE</span>
+</div>
+<div class="flex items-center justify-between text-secondary">
+<span class="flex items-center gap-1">
+                  Coupon <span class="font-mono font-bold text-label-sm bg-secondary/10 px-1.5 py-0.5 rounded">UNICARTNEW</span>
+</span>
+<span>- ₹200.00</span>
+</div>
+<div class="pt-3 border-t flex items-center justify-between text-title-md font-title-md font-bold text-on-surface">
+<span>Total Payable</span>
+<span class="text-primary text-headline-sm font-headline-sm">₹9,497.00</span>
+</div>
+<p class="text-caption font-caption text-outline text-right">Inclusive of all Indian taxes &amp; GST</p>
+</div>
+<!-- Payment Method Indicator -->
+<div class="mt-6 p-4 rounded-lg bg-surface-container-low border border-amber-200">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-amber-700 text-[20px]">account_balance_wallet</span>
+<span class="text-label-sm font-label-sm text-on-surface font-semibold">Payment Mode: UPI Instant (Pending)</span>
+</div>
+<p class="text-caption font-caption text-on-surface-variant mt-1">
+                Selected VPA: <span class="font-mono text-on-surface">rahul.sharma@okaxis</span>
+</p>
+</div>
+<!-- Action Bar (Pending Payment specific) -->
+<div class="mt-6 space-y-3">
+<button class="w-full py-3 rounded-lg bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-all flex items-center justify-center gap-2 shadow-sm font-semibold">
+<span class="material-symbols-outlined text-[20px]">lock</span>
+                Pay Now (₹9,497.00)
+              </button>
+<button class="w-full py-2.5 rounded-lg text-error hover:bg-error-container/20 font-label-md text-label-md transition-colors flex items-center justify-center gap-1.5" onclick="toggleCancelModal(true)">
+<span class="material-symbols-outlined text-[18px]">cancel</span>
+                Cancel Order
+              </button>
+</div>
+</div>
+<!-- Trust & Help Assist -->
+<div class="bg-surface-container-low p-4 rounded-xl flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-[24px]">support_agent</span>
+<div class="text-caption font-caption text-on-surface-variant">
+              Need assistance with this transaction? <a class="text-primary font-medium hover:underline" href="#">Chat with UniCart 24x7 Support</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ==========================================
+         VIEW 3: ORDER DETAILS (Delivered Demo)
+         ========================================== -->
+<section class="hidden space-y-6" id="view-order-detail-delivered">
+<!-- Breadcrumbs -->
+<nav class="flex items-center gap-2 text-caption font-caption text-outline">
+<a class="hover:text-primary transition-colors" href="#" onclick="switchView('list-view')">Home</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#" onclick="switchView('list-view')">My Account</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#" onclick="switchView('list-view')">My Orders</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-on-surface font-medium">Order #UC-74190</span>
+</nav>
+<!-- Detail Header Box -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<div class="flex items-center gap-3">
+<h1 class="text-headline-md font-headline-md text-on-surface font-bold">Order Details — #UC-74190</h1>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-caption font-caption font-semibold bg-emerald-50 text-emerald-800">
+<span class="material-symbols-outlined text-[16px] text-emerald-600 fill">check_circle</span>
+              Delivered
+            </span>
+</div>
+<p class="text-body-md font-body-md text-on-surface-variant mt-1">Placed on 28 September 2024 • Total: ₹3,249.00 • Paid via HDFC Credit Card</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-4 py-2 rounded-lg bg-surface-container text-primary font-label-md text-label-md hover:bg-surface-container-high transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">download</span>
+            Download Tax Invoice
+          </button>
+<button class="px-4 py-2 rounded-lg bg-surface-container-low text-on-surface font-label-md text-label-md hover:bg-surface-container transition-colors flex items-center gap-1" onclick="switchView('list-view')">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+            Back to Orders
+          </button>
+</div>
+</div>
+<!-- Fulfilled Stepper (All Completed) -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-label-md font-label-md text-on-surface">Delivery Journey (BlueDart Express: AWB-BLR-8923019)</h2>
+<span class="text-caption font-caption text-secondary font-semibold">Delivered on 02 Oct 2024, 04:15 PM</span>
+</div>
+<div class="relative flex items-center justify-between max-w-4xl mx-auto py-2">
+<!-- Stepper Full Active Bar -->
+<div class="absolute left-6 right-6 top-1/2 -translate-y-1/2 h-1 bg-secondary -z-0"></div>
+<!-- Step 1 -->
+<div class="flex flex-col items-center relative z-10 text-center">
+<div class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[20px] fill">check</span>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface font-semibold mt-2">Ordered</span>
+<span class="text-caption font-caption text-outline">28 Sep</span>
+</div>
+<!-- Step 2 -->
+<div class="flex flex-col items-center relative z-10 text-center">
+<div class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[20px] fill">check</span>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface font-semibold mt-2">Paid</span>
+<span class="text-caption font-caption text-outline">28 Sep</span>
+</div>
+<!-- Step 3 -->
+<div class="flex flex-col items-center relative z-10 text-center">
+<div class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[20px] fill">check</span>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface font-semibold mt-2">Packed</span>
+<span class="text-caption font-caption text-outline">29 Sep</span>
+</div>
+<!-- Step 4 -->
+<div class="flex flex-col items-center relative z-10 text-center">
+<div class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[20px] fill">check</span>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface font-semibold mt-2">Shipped</span>
+<span class="text-caption font-caption text-outline">30 Sep</span>
+</div>
+<!-- Step 5 -->
+<div class="flex flex-col items-center relative z-10 text-center">
+<div class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[20px] fill">task_alt</span>
+</div>
+<span class="text-label-sm font-label-sm text-secondary font-bold mt-2">Delivered</span>
+<span class="text-caption font-caption text-secondary">02 Oct</span>
+</div>
+</div>
+</div>
+<!-- Detail Grid: Delivered View -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+<!-- Left: Item details -->
+<div class="lg:col-span-7 space-y-4">
+<div class="bg-surface-container-lowest rounded-xl shadow-sm p-6">
+<h2 class="text-title-md font-title-md text-on-surface mb-4">Delivered Item</h2>
+<div class="flex items-start gap-4">
+<div class="w-24 h-24 rounded-lg bg-surface-container-low overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A sleek stainless steel smart fitness tracker watch with olive green silicone strap displayed on a pristine white ceramic block. Bright studio commercial illumination with high-definition glass screen reflections." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqlnAWE9Or2voyOmbTqC-J-uWRWqqdAmAGTL5rW90c4dIOgUtNjOd7QoXbndUYCbAON7jR4lG1-GlVMdbaU_aCaaaV9EA7mn-7CKXC1eT7zCo3kVC180AMqnZIjSG9u4-oQCDCDHOGZNnUmXrBv2iP9eM69Qwvt7iikDrNnKTHhsQI-jV3ArjyK4bF5hNzFfE48r-SK38uprIVD0AbrmtQcFQrlaLkQqQbUG7wtZs9RDOoUqM7XJ4Ulg"/>
+</div>
+<div class="flex-1">
+<div class="flex items-start justify-between">
+<div>
+<h3 class="text-label-md font-label-md text-on-surface font-semibold">PulseFit AMOLED Rugged Smartwatch</h3>
+<p class="text-caption font-caption text-outline">Olive Green • SpO2 • 1.43" Always-on AMOLED Display</p>
+<p class="text-caption font-caption text-on-surface-variant mt-1">Sold by: <span class="text-primary font-medium">PulseFit Direct India</span></p>
+</div>
+<div class="text-right">
+<span class="text-label-md font-label-md text-on-surface font-bold">₹3,249.00</span>
+<span class="text-caption font-caption text-outline line-through block">₹5,999.00</span>
+</div>
+</div>
+<div class="mt-4 pt-4 border-t flex flex-wrap items-center gap-3">
+<button class="px-3 py-1.5 rounded-lg bg-primary text-on-primary font-label-sm text-label-sm hover:bg-primary-container transition-colors">
+                    Buy Again
+                  </button>
+<button class="px-3 py-1.5 rounded-lg text-on-surface font-label-sm text-label-sm hover:bg-surface-container-low transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">star</span>
+                    Rate &amp; Review
+                  </button>
+<button class="px-3 py-1.5 rounded-lg text-outline font-label-sm text-label-sm hover:bg-surface-container-low transition-colors">
+                    Return Window Closed (09 Oct)
+                  </button>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl shadow-sm p-6">
+<span class="text-caption font-caption text-outline uppercase tracking-wider block mb-1">Delivered To</span>
+<p class="text-label-md font-label-md text-on-surface font-semibold">Rahul Sharma</p>
+<p class="text-body-md font-body-md text-on-surface-variant mt-1">
+              Flat 402, Lotus Grandeur, Andheri West, Mumbai 400053<br/>
+              Received by: Self (OTP Verified Delivery)
+            </p>
+</div>
+</div>
+<!-- Right: Invoice & Summary for Delivered -->
+<div class="lg:col-span-5 space-y-4">
+<div class="bg-surface-container-lowest rounded-xl shadow-sm p-6">
+<h2 class="text-title-md font-title-md text-on-surface mb-4">Paid Summary</h2>
+<div class="space-y-3 text-body-md font-body-md">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span>MRP Subtotal</span>
+<span>₹5,999.00</span>
+</div>
+<div class="flex items-center justify-between text-secondary">
+<span>Special Festival Discount</span>
+<span>- ₹2,750.00</span>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant">
+<span>Shipping &amp; Handling</span>
+<span class="text-secondary font-medium">FREE</span>
+</div>
+<div class="pt-3 border-t flex items-center justify-between text-title-md font-title-md font-bold text-on-surface">
+<span>Total Paid</span>
+<span class="text-secondary text-headline-sm font-headline-sm">₹3,249.00</span>
+</div>
+</div>
+<div class="mt-6 p-4 rounded-lg bg-surface-container-low">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[20px] fill">check_circle</span>
+<span class="text-label-sm font-label-sm text-on-surface font-semibold">Paid via HDFC Bank Credit Card (ending in 8832)</span>
+</div>
+<p class="text-caption font-caption text-outline mt-1">Transaction Ref: TXN_HDFC_9302194819</p>
+</div>
+<!-- Action Bar (Delivered state: Pay Now & Cancel are HIDDEN) -->
+<div class="mt-6 space-y-3">
+<button class="w-full py-2.5 rounded-lg bg-surface-container text-primary font-label-md text-label-md hover:bg-surface-container-high transition-colors flex items-center justify-center gap-2 font-medium">
+<span class="material-symbols-outlined text-[20px]">download</span>
+                Download Tax Invoice (PDF)
+              </button>
+<button class="w-full py-2.5 rounded-lg text-on-surface hover:bg-surface-container-low font-label-md text-label-md transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]">local_shipping</span>
+                Track Delivery Journey
+              </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ==========================================
+         VIEW 4: EMPTY ORDERS STATE
+         ========================================== -->
+<section class="hidden py-16" id="view-empty-state">
+<div class="max-w-md mx-auto text-center space-y-4">
+<div class="w-20 h-20 rounded-full bg-surface-container-low flex items-center justify-center mx-auto text-outline">
+<span class="material-symbols-outlined text-[40px]">shopping_bag</span>
+</div>
+<h2 class="text-headline-md font-headline-md text-on-surface font-bold">No Orders Placed Yet</h2>
+<p class="text-body-md font-body-md text-on-surface-variant">
+          You haven't placed any orders in the selected period. Discover top deals in Indian electronics, fashion, and home essentials.
+        </p>
+<div class="pt-4 flex items-center justify-center gap-3">
+<button class="px-6 py-3 rounded-lg bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-all" onclick="switchView('list-view')">
+            Explore UniCart Catalog
+          </button>
+<button class="px-4 py-3 rounded-lg text-on-surface hover:bg-surface-container-low font-label-md text-label-md transition-colors" onclick="switchView('list-view')">
+            Reset Filters
+          </button>
+</div>
+</div>
+</section>
+</main>
+<!-- ==========================================
+       MODAL: CANCEL ORDER CONFIRMATION DIALOG
+       ========================================== -->
+<div aria-modal="true" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-inverse-surface/45 backdrop-blur-[2px] hidden" id="cancel-order-modal" role="dialog">
+<div class="bg-surface-container-lowest rounded-xl max-w-lg w-full p-6 shadow-xl space-y-6 relative animate-in fade-in zoom-in-95 duration-150">
+<!-- Modal Header -->
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-error-container text-on-error-container flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[22px]">warning</span>
+</div>
+<div>
+<h3 class="text-title-md font-title-md text-on-surface font-bold">Cancel Order #UC-89214?</h3>
+<p class="text-caption font-caption text-outline">Action cannot be reversed once confirmed.</p>
+</div>
+</div>
+<button class="text-outline hover:text-on-surface p-1 rounded-lg hover:bg-surface-container-low transition-colors" onclick="toggleCancelModal(false)">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Confirmation Body -->
+<div class="space-y-4 text-body-md font-body-md text-on-surface-variant">
+<p>
+          Are you sure you want to cancel this order? Any applied discount coupons (like <strong class="text-on-surface font-mono">UNICARTNEW</strong>) will be instantly restored to your account coupon vault.
+        </p>
+<!-- Reason Dropdown -->
+<div class="space-y-1.5">
+<label class="block text-label-sm font-label-sm text-on-surface font-semibold" for="cancel-reason">
+            Please select a reason for cancellation:
+          </label>
+<select class="w-full bg-surface-container-low text-body-md font-body-md text-on-surface rounded-lg py-2.5 px-3 focus:ring-primary" id="cancel-reason">
+<option value="mistake">Ordered by mistake / Change of mind</option>
+<option value="cheaper">Found a cheaper price elsewhere</option>
+<option value="shipping">Estimated delivery timeline is too slow</option>
+<option value="address">Need to change delivery address or phone number</option>
+<option value="payment">Facing payment gateway / UPI timeout issues</option>
+<option value="other">Other reason</option>
+</select>
+</div>
+<div class="p-3 bg-surface-container-low rounded-lg text-caption font-caption text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px]">verified_user</span>
+<span>Since payment is not yet captured, no refund processing wait time applies.</span>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex items-center justify-end gap-3 pt-2">
+<button class="px-4 py-2.5 rounded-lg text-on-surface font-label-md text-label-md hover:bg-surface-container-low transition-colors" onclick="toggleCancelModal(false)">
+          Nevermind, Keep Order
+        </button>
+<button class="px-5 py-2.5 rounded-lg bg-error text-on-error font-label-md text-label-md hover:bg-red-700 transition-all font-semibold shadow-sm" onclick="handleConfirmCancel()">
+          Confirm Cancellation
+        </button>
+</div>
+</div>
+</div>
+<!-- TRUST SIGNALS STRIP -->
+<section aria-label="UniCart Trust Credentials" class="bg-surface-container-lowest mt-12 py-8">
+<div class="max-w-7xl mx-auto px-4 md:px-8 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+<div class="flex flex-col items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[32px]">verified</span>
+<h4 class="text-label-md font-label-md font-bold text-on-surface">100% Genuine Products</h4>
+<p class="text-caption font-caption text-outline">Sourced directly from authorized brand distributors</p>
+</div>
+<div class="flex flex-col items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[32px]">published_with_changes</span>
+<h4 class="text-label-md font-label-md font-bold text-on-surface">7-Day Easy Returns</h4>
+<p class="text-caption font-caption text-outline">Instant doorstep pickup across 19,000+ Indian pincodes</p>
+</div>
+<div class="flex flex-col items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[32px]">lock</span>
+<h4 class="text-label-md font-label-md font-bold text-on-surface">256-Bit SSL Protection</h4>
+<p class="text-caption font-caption text-outline">Bank-grade encrypted tokenized payment rails</p>
+</div>
+<div class="flex flex-col items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[32px]">payments</span>
+<h4 class="text-label-md font-label-md font-bold text-on-surface">Fast UPI &amp; RuPay</h4>
+<p class="text-caption font-caption text-outline">Zero surcharge on UPI, NetBanking &amp; major cards</p>
+</div>
+</div>
+</section>
+<!-- GLOBAL FOOTER (Shared Component JSON compliant) -->
+<footer class="docked full-width bottom-0 bg-surface-container-low text-on-surface-variant">
+<div class="w-full px-4 md:px-8 max-w-7xl mx-auto py-12 md:py-16">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+<div>
+<h4 class="text-title-md font-title-md text-on-surface mb-4">About UniCart</h4>
+<ul class="space-y-2.5 text-body-md font-body-md">
+<li><a class="hover:text-primary transition-colors" href="#">About UniCart</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Careers</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Press Releases</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Corporate Governance</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-title-md font-title-md text-on-surface mb-4">Customer Care</h4>
+<ul class="space-y-2.5 text-body-md font-body-md">
+<li><a class="hover:text-primary transition-colors" href="#">Customer Support</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Shipping Rates</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Return Policy</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Track Shipment</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-title-md font-title-md text-on-surface mb-4">Policy &amp; Legal</h4>
+<ul class="space-y-2.5 text-body-md font-body-md">
+<li><a class="hover:text-primary transition-colors" href="#">Terms of Service</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Privacy Policy</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Security Standards</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Grievance Officer</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-title-md font-title-md text-on-surface mb-4">Indian Payment Partners</h4>
+<p class="text-body-md font-body-md text-on-surface-variant mb-4">
+            We support UPI (GPay, PhonePe, Paytm), RuPay, Visa, MasterCard, and NetBanking with all major banks.
+          </p>
+<div class="flex items-center gap-2 text-outline">
+<span class="material-symbols-outlined text-[28px]" title="UPI Accepted">account_balance</span>
+<span class="material-symbols-outlined text-[28px]" title="Cards Accepted">credit_card</span>
+<span class="material-symbols-outlined text-[28px]" title="Verified Merchant">verified</span>
+</div>
+</div>
+</div>
+<!-- Copyright text from JSON -->
+<div class="pt-8 border-t flex flex-col md:flex-row items-center justify-between gap-4 text-caption font-caption text-outline">
+<p>© 2024 UniCart Retail Internet Private Limited. All rights reserved. Fast Shipping across India, 7-Day Returns &amp; Secure UPI Payments.</p>
+<p class="flex items-center gap-1">
+<span>Engineered for Indian digital commerce</span>
+<span class="text-error font-bold">♥</span>
+</p>
+</div>
+</div>
+</footer>
+<!-- LIGHTWEIGHT INTERACTIVITY CONTROLLER (Vanilla JS) -->
+<script>
+    function switchView(viewName) {
+      const listView = document.getElementById('view-orders-list');
+      const detailPending = document.getElementById('view-order-detail-pending');
+      const detailDelivered = document.getElementById('view-order-detail-delivered');
+      const emptyView = document.getElementById('view-empty-state');
+
+      // Hide all
+      listView.classList.add('hidden');
+      detailPending.classList.add('hidden');
+      detailDelivered.classList.add('hidden');
+      emptyView.classList.add('hidden');
+
+      // Reset button styles
+      ['tab-btn-list', 'tab-btn-pending', 'tab-btn-delivered', 'tab-btn-empty'].forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) {
+          btn.classList.remove('bg-primary', 'text-on-primary');
+          btn.classList.add('bg-surface-container-lowest', 'text-on-surface-variant');
+        }
+      });
+
+      // Show selected & highlight active switcher pill
+      if (viewName === 'list-view') {
+        listView.classList.remove('hidden');
+        setActiveBtn('tab-btn-list');
+      } else if (viewName === 'detail-pending') {
+        detailPending.classList.remove('hidden');
+        setActiveBtn('tab-btn-pending');
+      } else if (viewName === 'detail-delivered') {
+        detailDelivered.classList.remove('hidden');
+        setActiveBtn('tab-btn-delivered');
+      } else if (viewName === 'empty-view') {
+        emptyView.classList.remove('hidden');
+        setActiveBtn('tab-btn-empty');
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function setActiveBtn(buttonId) {
+      const activeBtn = document.getElementById(buttonId);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-primary', 'text-on-primary');
+        activeBtn.classList.remove('bg-surface-container-lowest', 'text-on-surface-variant');
+      }
+    }
+
+    function toggleCancelModal(show) {
+      const modal = document.getElementById('cancel-order-modal');
+      if (show) {
+        modal.classList.remove('hidden');
+      } else {
+        modal.classList.add('hidden');
+      }
+    }
+
+    function handleConfirmCancel() {
+      toggleCancelModal(false);
+      alert('Order #UC-89214 has been cancelled. Your UNICARTNEW coupon has been refunded to your account.');
+      switchView('list-view');
+    }
+  </script>
+</body></html>

@@ -1,0 +1,188 @@
+{
+  "id": "783dca06724d4cb68417ebae897548e9",
+  "title": "UniCart - Product Listing (Mobile)",
+  "deviceType": "MOBILE",
+  "width": "780",
+  "height": "3266",
+  "prompt": "Design the responsive mobile version (390px viewport) of the Home / Product Listing screen for \"UniCart\", the Indian B2C e-commerce marketplace.\n\nKey mobile specifications:\n1. Mobile Header:\n   - UniCart logo with bag mark, search icon, wishlist icon, and shopping cart icon with \"3\" badge.\n   - Search bar input directly below header with camera/voice & search button.\n   - Location chip: \"Deliver to Mumbai 400001 ▾\".\n\n2. Inline Error banner (dismissible / with retry CTA):\n   - \"Unable to sync wishlist items. Tap to retry [Retry]\" in red-50 border/bg with red-600 text.\n\n3. Mobile Filter & Sorting Bar:\n   - Sticky top bar with quick category horizontal scroll chips (\"All\", \"Headphones\", \"Smartwatches\", \"Speakers\", \"Earbuds\").\n   - Filter button (\"Filters (2) ⚙\") showing active badge count and Sort dropdown (\"Sort: Low to High ▾\").\n   - Result count: \"84 products found\".\n\n4. Product Grid (2 columns as requested for mobile):\n   - Clean rounded-lg cards with subtle borders:\n     - Card 1: Wireless ANC Headphones. ₹2,499.00 (₹4,999.00 50% off). Green badge \"● In stock\". \"Add\" button (+ icon).\n     - Card 2: AMOLED Smartwatch. ₹3,199.00. Amber badge \"● Only 3 left\". \"Add\" button (+ icon).\n     - Card 3: TWS Earbuds. ₹1,299.00. Red badge \"● Out of stock\". Disabled \"Sold out\" button.\n     - Card 4: 20W Bluetooth Speaker. ₹1,899.00. Green badge \"● In stock\". \"Add\" button (+ icon).\n     - Card 5: Studio Headphones. ₹4,499.00. Green badge \"● In stock\". \"Add\" button (+ icon).\n     - Card 6: Gaming Headset. ₹2,199.00. Amber badge \"● Only 2 left\". \"Add\" button (+ icon).\n\n5. Interactive States Preview / Drawer / Section:\n   - Filter Bottom Sheet / Modal drawer preview showing Category checkboxes, Min ₹ and Max ₹ inputs, and \"Apply Filters\" button.\n   - Tab or toggle to view:\n     * Loading Skeleton (pulsing cards for mobile 2-col grid).\n     * Empty State (\"No products found\", Reset CTA).\n\n6. Mobile Bottom Pagination:\n   - Compact pagination: \"< Prev\", Page \"1 of 11\", \"Next >\".\n\n7. Mobile Bottom Navigation Bar:\n   - 5 icons: Home (active indigo), Categories, Wishlist (badge 2), Orders, Account.",
+  "theme": {
+    "colorMode": "LIGHT",
+    "font": "INTER",
+    "roundness": "ROUND_EIGHT",
+    "customColor": "#4f46e5",
+    "headlineFont": "INTER",
+    "bodyFont": "INTER",
+    "labelFont": "INTER",
+    "namedColors": {
+      "on_tertiary_fixed": "#2a1700",
+      "surface": "#faf8ff",
+      "on_error": "#ffffff",
+      "primary_container": "#4f46e5",
+      "inverse_surface": "#283044",
+      "on_tertiary_fixed_variant": "#653e00",
+      "surface_bright": "#faf8ff",
+      "primary_fixed": "#e2dfff",
+      "on_tertiary": "#ffffff",
+      "on_surface_variant": "#464555",
+      "on_secondary": "#ffffff",
+      "surface_dim": "#d2d9f4",
+      "primary_fixed_dim": "#c3c0ff",
+      "tertiary": "#684000",
+      "on_secondary_fixed_variant": "#005236",
+      "surface_variant": "#dae2fd",
+      "surface_container_low": "#f2f3ff",
+      "error_container": "#ffdad6",
+      "inverse_primary": "#c3c0ff",
+      "tertiary_fixed_dim": "#ffb95f",
+      "on_secondary_fixed": "#002113",
+      "on_error_container": "#93000a",
+      "secondary": "#006c49",
+      "outline_variant": "#c7c4d8",
+      "secondary_fixed": "#6ffbbe",
+      "on_background": "#131b2e",
+      "surface_container_lowest": "#ffffff",
+      "secondary_container": "#6cf8bb",
+      "tertiary_container": "#885500",
+      "error": "#ba1a1a",
+      "primary": "#3525cd",
+      "inverse_on_surface": "#eef0ff",
+      "surface_container_high": "#e2e7ff",
+      "background": "#faf8ff",
+      "surface_container_highest": "#dae2fd",
+      "on_primary_container": "#dad7ff",
+      "on_primary": "#ffffff",
+      "secondary_fixed_dim": "#4edea3",
+      "tertiary_fixed": "#ffddb8",
+      "on_tertiary_container": "#ffd4a4",
+      "on_secondary_container": "#00714d",
+      "on_primary_fixed_variant": "#3323cc",
+      "on_primary_fixed": "#0f0069",
+      "on_surface": "#131b2e",
+      "surface_container": "#eaedff",
+      "outline": "#777587",
+      "surface_tint": "#4d44e3"
+    },
+    "colorVariant": "FIDELITY",
+    "overridePrimaryColor": "#4f46e5",
+    "overrideSecondaryColor": "#10b981",
+    "overrideTertiaryColor": "#f59e0b",
+    "overrideNeutralColor": "#0f172a",
+    "spacingScale": 2,
+    "typography": {
+      "headline-md": {
+        "fontFamily": "Inter",
+        "fontSize": "24px",
+        "fontWeight": "600",
+        "lineHeight": "32px",
+        "letterSpacing": "-0.01em"
+      },
+      "price-display": {
+        "fontFamily": "Inter",
+        "fontSize": "24px",
+        "fontWeight": "700",
+        "lineHeight": "32px",
+        "letterSpacing": "-0.01em"
+      },
+      "body-md-medium": {
+        "fontFamily": "Inter",
+        "fontSize": "14px",
+        "fontWeight": "500",
+        "lineHeight": "20px"
+      },
+      "body-lg": {
+        "fontFamily": "Inter",
+        "fontSize": "16px",
+        "fontWeight": "400",
+        "lineHeight": "24px"
+      },
+      "headline-lg": {
+        "fontFamily": "Inter",
+        "fontSize": "30px",
+        "fontWeight": "600",
+        "lineHeight": "38px",
+        "letterSpacing": "-0.015em"
+      },
+      "headline-xl": {
+        "fontFamily": "Inter",
+        "fontSize": "36px",
+        "fontWeight": "700",
+        "lineHeight": "44px",
+        "letterSpacing": "-0.02em"
+      },
+      "body-md": {
+        "fontFamily": "Inter",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "lineHeight": "20px"
+      },
+      "headline-sm": {
+        "fontFamily": "Inter",
+        "fontSize": "20px",
+        "fontWeight": "600",
+        "lineHeight": "28px"
+      },
+      "headline-xl-mobile": {
+        "fontFamily": "Inter",
+        "fontSize": "28px",
+        "fontWeight": "700",
+        "lineHeight": "36px",
+        "letterSpacing": "-0.02em"
+      },
+      "body-lg-medium": {
+        "fontFamily": "Inter",
+        "fontSize": "16px",
+        "fontWeight": "500",
+        "lineHeight": "24px"
+      },
+      "title-md": {
+        "fontFamily": "Inter",
+        "fontSize": "18px",
+        "fontWeight": "600",
+        "lineHeight": "26px"
+      },
+      "label-sm": {
+        "fontFamily": "Inter",
+        "fontSize": "12px",
+        "fontWeight": "600",
+        "lineHeight": "16px",
+        "letterSpacing": "0.02em"
+      },
+      "headline-lg-mobile": {
+        "fontFamily": "Inter",
+        "fontSize": "24px",
+        "fontWeight": "600",
+        "lineHeight": "32px",
+        "letterSpacing": "-0.015em"
+      },
+      "label-md": {
+        "fontFamily": "Inter",
+        "fontSize": "14px",
+        "fontWeight": "600",
+        "lineHeight": "20px"
+      },
+      "caption": {
+        "fontFamily": "Inter",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "16px"
+      }
+    },
+    "spacing": {
+      "margin-mobile": "1rem",
+      "margin": "2rem",
+      "space-2xl": "3rem",
+      "space-xl": "2rem",
+      "space-lg": "1.5rem",
+      "gutter-mobile": "1rem",
+      "space-sm": "0.5rem",
+      "space-md": "1rem",
+      "space-xs": "0.25rem",
+      "gutter": "1.5rem"
+    },
+    "headlineFontFamily": "Inter",
+    "bodyFontFamily": "Inter",
+    "labelFontFamily": "Inter"
+  },
+  "generatedBy": "figaro_agent",
+  "screenType": "DESIGN"
+}

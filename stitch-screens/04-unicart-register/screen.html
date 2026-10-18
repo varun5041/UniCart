@@ -1,0 +1,412 @@
+<!DOCTYPE html><html class="h-full bg-background" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Create Account | UniCart India</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container": "#eaedff",
+            "surface-dim": "#d2d9f4",
+            "inverse-on-surface": "#eef0ff",
+            "primary-fixed": "#e2dfff",
+            "tertiary-fixed": "#ffddb8",
+            "on-secondary-container": "#00714d",
+            "primary": "#3525cd",
+            "outline": "#777587",
+            "inverse-surface": "#283044",
+            "secondary-fixed-dim": "#4edea3",
+            "surface-container-lowest": "#ffffff",
+            "on-error": "#ffffff",
+            "surface-tint": "#4d44e3",
+            "on-secondary-fixed-variant": "#005236",
+            "on-primary-container": "#dad7ff",
+            "error-container": "#ffdad6",
+            "on-error-container": "#93000a",
+            "primary-fixed-dim": "#c3c0ff",
+            "background": "#faf8ff",
+            "on-primary": "#ffffff",
+            "tertiary-container": "#885500",
+            "inverse-primary": "#c3c0ff",
+            "surface-container-highest": "#dae2fd",
+            "error": "#ba1a1a",
+            "secondary-fixed": "#6ffbbe",
+            "secondary-container": "#6cf8bb",
+            "tertiary-fixed-dim": "#ffb95f",
+            "surface-container-low": "#f2f3ff",
+            "on-secondary-fixed": "#002113",
+            "surface-container-high": "#e2e7ff",
+            "on-tertiary-fixed": "#2a1700",
+            "tertiary": "#684000",
+            "surface-variant": "#dae2fd",
+            "on-background": "#131b2e",
+            "on-secondary": "#ffffff",
+            "on-primary-fixed": "#0f0069",
+            "on-surface-variant": "#464555",
+            "surface-bright": "#faf8ff",
+            "secondary": "#006c49",
+            "on-tertiary": "#ffffff",
+            "on-surface": "#131b2e",
+            "on-tertiary-fixed-variant": "#653e00",
+            "surface": "#faf8ff",
+            "on-tertiary-container": "#ffd4a4",
+            "primary-container": "#4f46e5",
+            "outline-variant": "#c7c4d8",
+            "on-primary-fixed-variant": "#3323cc"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xs": "0.25rem",
+            "space-lg": "1.5rem",
+            "space-sm": "0.5rem",
+            "gutter": "1.5rem",
+            "space-xl": "2rem",
+            "gutter-mobile": "1rem",
+            "margin": "2rem",
+            "margin-mobile": "1rem",
+            "space-md": "1rem",
+            "space-2xl": "3rem"
+          },
+          "fontFamily": {
+            "headline-lg": ["Inter"],
+            "body-md-medium": ["Inter"],
+            "headline-sm": ["Inter"],
+            "body-lg-medium": ["Inter"],
+            "label-sm": ["Inter"],
+            "label-md": ["Inter"],
+            "body-lg": ["Inter"],
+            "headline-lg-mobile": ["Inter"],
+            "body-md": ["Inter"],
+            "headline-xl": ["Inter"],
+            "price-display": ["Inter"],
+            "caption": ["Inter"],
+            "headline-xl-mobile": ["Inter"],
+            "title-md": ["Inter"],
+            "headline-md": ["Inter"]
+          },
+          "fontSize": {
+            "headline-lg": ["30px", {"lineHeight": "38px", "letterSpacing": "-0.015em", "fontWeight": "600"}],
+            "body-md-medium": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+            "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+            "body-lg-medium": ["16px", {"lineHeight": "24px", "fontWeight": "500"}],
+            "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+            "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+            "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+            "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "600"}],
+            "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+            "headline-xl": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+            "price-display": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+            "caption": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+            "headline-xl-mobile": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+            "title-md": ["18px", {"lineHeight": "26px", "fontWeight": "600"}],
+            "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="min-h-full flex flex-col justify-between font-body-md text-body-md text-on-surface bg-background antialiased selection:bg-primary-fixed selection:text-primary">
+<!-- Header: Minimal UniCart header with Security & Account Switch -->
+<header class="w-full bg-surface-container-lowest border-b border-outline-variant/40 shadow-sm sticky top-0 z-40">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+<div class="flex items-center space-x-3">
+<a class="flex items-center gap-2 group focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-container rounded-lg p-1" href="/">
+<div class="w-9 h-9 rounded-lg bg-primary-container text-on-primary flex items-center justify-center font-headline-md text-headline-md tracking-tight font-bold shadow-sm">
+            U
+          </div>
+<span class="font-headline-md text-headline-md text-primary tracking-tight font-bold">UniCart</span>
+</a>
+<div class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-low text-secondary font-label-sm text-label-sm border border-outline-variant/30">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<span>Official Registration Portal</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<span class="hidden md:inline font-body-md text-body-md text-on-surface-variant">Already have an account?</span>
+<a class="inline-flex items-center justify-center px-4 py-2 font-label-md text-label-md text-primary hover:bg-surface-container-low rounded-lg transition-colors border border-outline-variant/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-container" href="#login">
+          Sign In
+        </a>
+</div>
+</div>
+</header>
+<!-- Main Content: Registration Focused Layout -->
+<main class="flex-1 flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12">
+<div class="w-full max-w-lg bg-surface-container-lowest rounded-xl border border-outline-variant/50 shadow-sm p-6 sm:p-8">
+<!-- Heading & Value Prop -->
+<div class="mb-6 text-center sm:text-left">
+<h1 class="font-headline-md text-headline-md text-on-surface tracking-tight mb-2">Create your UniCart account</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">
+          Shop millions of products with fast India delivery &amp; secure UPI payments
+        </p>
+</div>
+<!-- Quick Social Sign-up Buttons -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+<button class="w-full flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-lg border border-outline-variant/70 bg-surface-container-lowest hover:bg-surface-container-low font-label-md text-label-md text-on-surface transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-container" type="button">
+<svg class="w-4 h-4" viewBox="0 0 24 24">
+<path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+<path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+<path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"></path>
+<path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"></path>
+</svg>
+<span>Sign up with Google</span>
+</button>
+<button class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-outline-variant/70 bg-surface-container-lowest hover:bg-surface-container-low font-label-md text-label-md text-on-surface transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-container" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary">sms</span>
+<span>Continue with OTP</span>
+</button>
+</div>
+<!-- Divider -->
+<div class="relative flex items-center justify-center mb-6">
+<div class="w-full border-t border-outline-variant/40"></div>
+<span class="absolute bg-surface-container-lowest px-3 font-caption text-caption text-on-surface-variant uppercase tracking-wider">or with credentials</span>
+</div>
+<!-- Form -->
+<form class="space-y-4" id="registrationForm" onsubmit="event.preventDefault(); validateForm();">
+<!-- Full Name -->
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-1.5" for="fullName">Full Name</label>
+<div class="relative rounded-lg shadow-sm">
+<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-[20px]">person</span>
+</div>
+<input class="w-full pl-10 pr-3.5 py-2.5 bg-surface-container-lowest border border-outline-variant rounded-lg font-body-lg text-body-lg text-on-surface placeholder:text-outline focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all" id="fullName" name="fullName" placeholder="Rahul Sharma" required="" type="text">
+</div>
+</div>
+<!-- Email or Mobile Number -->
+<div>
+<div class="flex items-center justify-between mb-1.5">
+<label class="block font-label-md text-label-md text-on-surface" for="identifier">Email Address or Mobile Number</label>
+<span class="font-caption text-caption text-on-surface-variant">+91 supported</span>
+</div>
+<div class="relative rounded-lg shadow-sm">
+<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-[20px]">contact_mail</span>
+</div>
+<input class="w-full pl-10 pr-3.5 py-2.5 bg-surface-container-lowest border border-outline-variant rounded-lg font-body-lg text-body-lg text-on-surface placeholder:text-outline focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all" id="identifier" name="identifier" placeholder="rahul@example.com or 9876543210" required="" type="text">
+</div>
+</div>
+<!-- Password Field with Toggle -->
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-1.5" for="password">Password</label>
+<div class="relative rounded-lg shadow-sm">
+<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-[20px]">lock</span>
+</div>
+<input class="w-full pl-10 pr-10 py-2.5 bg-surface-container-lowest border border-outline-variant rounded-lg font-body-lg text-body-lg text-on-surface placeholder:text-outline focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all" id="password" name="password" oninput="handlePasswordInput(this.value)" placeholder="Create a strong password" required="" type="password">
+<button aria-label="Toggle password visibility" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-outline hover:text-on-surface focus:outline-none" onclick="togglePasswordVisibility('password', this)" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+</div>
+<!-- Password Live Strength Indicator -->
+<div class="mt-2.5">
+<div class="flex items-center justify-between mb-1">
+<span class="font-caption text-caption text-on-surface-variant">Security Strength:</span>
+<span class="font-label-sm text-label-sm text-outline" id="strengthText">Enter password</span>
+</div>
+<!-- Dynamic 3-segment bar -->
+<div class="grid grid-cols-3 gap-1.5 h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full rounded-full transition-all duration-300 bg-transparent" id="bar1"></div>
+<div class="h-full rounded-full transition-all duration-300 bg-transparent" id="bar2"></div>
+<div class="h-full rounded-full transition-all duration-300 bg-transparent" id="bar3"></div>
+</div>
+<!-- Requirement Checklist -->
+<div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-1.5 bg-surface-container-low p-2.5 rounded-lg border border-outline-variant/30">
+<div class="flex items-center gap-1.5 text-on-surface-variant font-caption text-caption" id="req-length">
+<span class="material-symbols-outlined text-[16px] text-outline">radio_button_unchecked</span>
+<span>At least 8 characters</span>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface-variant font-caption text-caption" id="req-upper">
+<span class="material-symbols-outlined text-[16px] text-outline">radio_button_unchecked</span>
+<span>One uppercase (A-Z)</span>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface-variant font-caption text-caption" id="req-lower">
+<span class="material-symbols-outlined text-[16px] text-outline">radio_button_unchecked</span>
+<span>One lowercase (a-z)</span>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface-variant font-caption text-caption" id="req-num">
+<span class="material-symbols-outlined text-[16px] text-outline">radio_button_unchecked</span>
+<span>At least one number (0-9)</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Confirm Password -->
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-1.5" for="confirmPassword">Confirm Password</label>
+<div class="relative rounded-lg shadow-sm">
+<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-[20px]">lock_reset</span>
+</div>
+<input class="w-full pl-10 pr-10 py-2.5 bg-surface-container-lowest border border-outline-variant rounded-lg font-body-lg text-body-lg text-on-surface placeholder:text-outline focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all" id="confirmPassword" name="confirmPassword" oninput="checkPasswordMatch()" placeholder="Re-enter your password" required="" type="password">
+<button aria-label="Toggle password visibility" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-outline hover:text-on-surface focus:outline-none" onclick="togglePasswordVisibility('confirmPassword', this)" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+</div>
+<p class="hidden mt-1 font-caption text-caption text-error flex items-center gap-1" id="matchError">
+<span class="material-symbols-outlined text-[14px]">error</span> Passwords do not match
+          </p>
+</div>
+<!-- Terms and Privacy Checkbox -->
+<div class="pt-1">
+<label class="flex items-start gap-2.5 cursor-pointer">
+<input class="mt-1 h-4 w-4 rounded border-outline-variant text-primary-container focus:ring-primary-container" id="terms" required="" type="checkbox">
+<span class="font-body-md text-body-md text-on-surface-variant select-none">
+              By creating an account, I agree to UniCart's 
+              <a class="text-primary hover:underline font-body-md-medium" href="#terms">Terms of Service</a> and 
+              <a class="text-primary hover:underline font-body-md-medium" href="#privacy">Privacy Policy</a>.
+            </span>
+</label>
+</div>
+<!-- Primary Action CTA -->
+<div class="pt-2">
+<button class="w-full min-h-[44px] flex items-center justify-center gap-2 bg-primary-container hover:bg-primary text-on-primary font-label-md text-label-md py-3 px-4 rounded-lg shadow-sm transition-all duration-200 active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-container" type="submit">
+<span>Create Account</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</form>
+<!-- Trust Assurance Footer Badge inside Card -->
+<div class="mt-6 pt-4 border-t border-outline-variant/30 flex items-center justify-center gap-2 text-on-surface-variant font-caption text-caption">
+<span class="material-symbols-outlined text-[16px] text-secondary" style="font-variation-settings: 'FILL' 1;">lock</span>
+<span>100% Secure &amp; Encrypted</span>
+<span class="text-outline-variant">•</span>
+<span>256-bit SSL Data Safety</span>
+</div>
+</div>
+</main>
+<!-- Global Footer -->
+<footer class="w-full bg-surface-container-low border-t border-outline-variant/40 py-8">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
+<div class="font-caption text-caption text-on-surface-variant">
+        © 2024 UniCart Retail Internet Private Limited. All rights reserved. Fast Shipping across India, 7-Day Returns &amp; Secure UPI Payments.
+      </div>
+<div class="flex flex-wrap justify-center gap-x-6 gap-y-2">
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#help">Customer Support</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#shipping">Shipping Rates</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#return">Return Policy</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#privacy">Privacy Policy</a>
+</div>
+</div>
+</footer>
+<!-- Interactive JavaScript logic for dynamic password checks & visibility -->
+<script>
+    function togglePasswordVisibility(fieldId, button) {
+      const input = document.getElementById(fieldId);
+      const icon = button.querySelector('.material-symbols-outlined');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.textContent = 'visibility_off';
+      } else {
+        input.type = 'password';
+        icon.textContent = 'visibility';
+      }
+    }
+
+    function updateRequirement(elementId, isValid) {
+      const container = document.getElementById(elementId);
+      const icon = container.querySelector('.material-symbols-outlined');
+      if (isValid) {
+        icon.textContent = 'check_circle';
+        icon.className = 'material-symbols-outlined text-[16px] text-secondary';
+        container.className = 'flex items-center gap-1.5 text-secondary font-caption text-caption font-medium';
+      } else {
+        icon.textContent = 'radio_button_unchecked';
+        icon.className = 'material-symbols-outlined text-[16px] text-outline';
+        container.className = 'flex items-center gap-1.5 text-on-surface-variant font-caption text-caption';
+      }
+    }
+
+    function handlePasswordInput(value) {
+      const hasLength = value.length >= 8;
+      const hasUpper = /[A-Z]/.test(value);
+      const hasLower = /[a-z]/.test(value);
+      const hasNum = /[0-9]/.test(value);
+
+      updateRequirement('req-length', hasLength);
+      updateRequirement('req-upper', hasUpper);
+      updateRequirement('req-lower', hasLower);
+      updateRequirement('req-num', hasNum);
+
+      const score = [hasLength, hasUpper, hasLower, hasNum].filter(Boolean).length;
+      const bar1 = document.getElementById('bar1');
+      const bar2 = document.getElementById('bar2');
+      const bar3 = document.getElementById('bar3');
+      const strengthText = document.getElementById('strengthText');
+
+      // Reset colors
+      bar1.className = 'h-full rounded-full transition-all duration-300 bg-transparent';
+      bar2.className = 'h-full rounded-full transition-all duration-300 bg-transparent';
+      bar3.className = 'h-full rounded-full transition-all duration-300 bg-transparent';
+
+      if (value.length === 0) {
+        strengthText.textContent = 'Enter password';
+        strengthText.className = 'font-label-sm text-label-sm text-outline';
+        return;
+      }
+
+      if (score <= 2) {
+        strengthText.textContent = 'Weak';
+        strengthText.className = 'font-label-sm text-label-sm text-error';
+        bar1.classList.remove('bg-transparent');
+        bar1.classList.add('bg-error');
+      } else if (score === 3) {
+        strengthText.textContent = 'Fair';
+        strengthText.className = 'font-label-sm text-label-sm text-tertiary-container';
+        bar1.classList.remove('bg-transparent');
+        bar2.classList.remove('bg-transparent');
+        bar1.classList.add('bg-tertiary-fixed-dim');
+        bar2.classList.add('bg-tertiary-fixed-dim');
+      } else if (score === 4) {
+        strengthText.textContent = 'Strong';
+        strengthText.className = 'font-label-sm text-label-sm text-secondary';
+        bar1.classList.remove('bg-transparent');
+        bar2.classList.remove('bg-transparent');
+        bar3.classList.remove('bg-transparent');
+        bar1.classList.add('bg-secondary');
+        bar2.classList.add('bg-secondary');
+        bar3.classList.add('bg-secondary');
+      }
+
+      checkPasswordMatch();
+    }
+
+    function checkPasswordMatch() {
+      const password = document.getElementById('password').value;
+      const confirm = document.getElementById('confirmPassword').value;
+      const errorMsg = document.getElementById('matchError');
+      const confirmInput = document.getElementById('confirmPassword');
+
+      if (confirm.length > 0 && password !== confirm) {
+        errorMsg.classList.remove('hidden');
+        confirmInput.classList.add('border-error');
+      } else {
+        errorMsg.classList.add('hidden');
+        confirmInput.classList.remove('border-error');
+      }
+    }
+
+    function validateForm() {
+      const password = document.getElementById('password').value;
+      const confirm = document.getElementById('confirmPassword').value;
+      if (password !== confirm) {
+        checkPasswordMatch();
+        return;
+      }
+      alert('Account setup successful! Welcome to UniCart.');
+    }
+  </script>
+</body></html>

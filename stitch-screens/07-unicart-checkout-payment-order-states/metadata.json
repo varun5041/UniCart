@@ -1,0 +1,188 @@
+{
+  "id": "6228a7adc2a34c93aeb424734f539b05",
+  "title": "UniCart - Checkout, Payment & Order States",
+  "deviceType": "DESKTOP",
+  "width": "2560",
+  "height": "3760",
+  "prompt": "Create the comprehensive desktop Checkout & Payment experience for UniCart (Indian e-commerce platform with INR ₹ currency, Inter font, primary indigo #4F46E5, accent emerald #10B981, red #EF4444).\n\nDesign Requirements & Layout:\n1. Top Step / Progress Stepper:\n   - Step 1: Cart (Completed checkmark)\n   - Step 2: Shipping & Delivery Address (Active step)\n   - Step 3: Payment & Verification\n   - Step 4: Order Confirmed\n   - With an interactive State/Screen Switcher bar at the top or subheader allowing instant review of:\n     [1. Address & Checkout], [2. Mock Payment Screen], [3. Order Success (Confirmed)], [4. Out-of-Stock Failure State]\n\n2. Screen 1: Address & Checkout View:\n   - Left Column (Main, 2/3 width):\n     - Saved Shipping Addresses section (supporting up to 5 saved addresses cards with radio selection):\n       - Address 1 (Default / Home): Rahul Sharma, Flat 402, Lotus Grandeur, Veera Desai Road, Andheri West, Mumbai, Maharashtra - 400053. Phone: +91 98765 43210. Tag: 'Home', 'Default'. Edit / Delete actions.\n       - Address 2 (Work / Office): Rahul Sharma, Tech Park Tower B, 5th Floor, BKC, Bandra East, Mumbai, Maharashtra - 400051. Phone: +91 98765 43210. Tag: 'Office'.\n       - Address 3: Sharma Residence, Sector 14, Navi Mumbai - 400703. Tag: 'Other'.\n       - '+ Add New Address' action card / button that opens or toggles an accessible Add Address form:\n         - Form fields with visible labels (no placeholder-only labels): Full Name, Mobile Number (+91 format), Address Line 1 (House No, Building, Street), Landmark (Optional), City, State dropdown (Maharashtra, Karnataka, Delhi, etc.), PIN Code (6 digits), Country (India fixed/selected), Address Type chips (Home / Work / Other), and 'Make this my default address' checkbox.\n     - Delivery Speed / Shipping Options:\n       - Express Delivery (Guaranteed Tomorrow by 11 AM - ₹49 or FREE with Prime/UniCart VIP)\n       - Standard Delivery (2-3 Business Days - FREE)\n     - Order Items Preview Collapsible summary (showing thumbnail previews of the 3 items: AcroSonic ANC Headphones, Smart Fitness Watch, ToughBraided Cable).\n     - 'Continue to Payment' / 'Place Order' primary button:\n       - Distinct normal state and interactive toggle showing the loading/disabled state (\"Processing securely... Please do not refresh\" with loading spinner and disabled styling to prevent double submit).\n\n   - Right Column (Sticky Order Summary, 1/3 width):\n     - Order Summary card:\n       - Items Total (MRP): ₹13,997.00\n       - Product Discount: -₹4,300.00\n       - Delivery Fee: FREE (Promotional)\n       - Packaging & Handling: FREE\n       - Coupon Savings: -₹200.00 (UNICARTNEW applied)\n       - Total Amount Payable: ₹9,497.00 (Inclusive of all taxes & GST)\n       - Savings badge: \"Yay! You are saving ₹4,500.00 on this order\"\n       - Trust badges: 100% Safe Payments (UPI, RuPay, NetBanking, Cards), 7-Day Easy Returns, Encrypted 256-bit SSL.\n\n3. Screen 2: Mock Payment Screen:\n   - Order total display: ₹9,497.00 with Order Reference #UC-849204\n   - Payment method options tabs/cards:\n     - UPI (Google Pay, PhonePe, Paytm, BHIM) - Enter UPI ID or Scan QR code\n     - Credit / Debit Cards (RuPay, Visa, Mastercard)\n     - Net Banking (HDFC, ICICI, SBI, Axis)\n     - Cash on Delivery (COD) with verification OTP note\n   - Primary action button: \"Pay now (simulated) - ₹9,497.00\" with security lock icon\n   - Simulated double-submit protection with loading spinner state.\n\n4. Screen 3: Order Success Screen:\n   - Green emerald checkmark icon with celebration animation/illustration\n   - Heading: \"Order Placed Successfully!\"\n   - Order ID: #UC-98234710 with copy button\n   - Confirmation email sent to rahul.sharma@example.com and SMS to +91 98765 43210\n   - Estimated Delivery: Tomorrow, by 8:00 PM to Mumbai 400053\n   - Order tracking timeline (Ordered -> Packed -> Shipped -> Out for Delivery -> Delivered)\n   - Buttons: \"Track Order\" (primary indigo) and \"Continue Shopping\" (secondary outline)\n\n5. Screen 4: Out-of-Stock Failure State:\n   - High-contrast alert card with red error iconography:\n     - \"Unable to Complete Order: Item Out of Stock\"\n     - \"While you were checking out, 'Smart Fitness Watch with 1.43\\\" AMOLED Display' ran out of stock at your nearest fulfillment center.\"\n     - Actions: \"Remove Out-of-Stock Item & Proceed with Remaining (₹3,099.00)\" or \"Save to Wishlist & Return to Cart\"\n\nMake all states seamlessly switchable or displayed in clear interactive tabs/sections for demonstration, adhering strictly to UniCart's design system tokens, typography, and crisp borders.",
+  "theme": {
+    "colorMode": "LIGHT",
+    "font": "INTER",
+    "roundness": "ROUND_EIGHT",
+    "customColor": "#4f46e5",
+    "headlineFont": "INTER",
+    "bodyFont": "INTER",
+    "labelFont": "INTER",
+    "namedColors": {
+      "secondary_container": "#6cf8bb",
+      "outline": "#777587",
+      "surface_container": "#eaedff",
+      "primary_fixed": "#e2dfff",
+      "inverse_on_surface": "#eef0ff",
+      "on_surface_variant": "#464555",
+      "on_surface": "#131b2e",
+      "inverse_primary": "#c3c0ff",
+      "secondary_fixed": "#6ffbbe",
+      "error_container": "#ffdad6",
+      "on_tertiary_container": "#ffd4a4",
+      "on_error_container": "#93000a",
+      "on_tertiary": "#ffffff",
+      "on_primary_fixed_variant": "#3323cc",
+      "on_primary_fixed": "#0f0069",
+      "secondary_fixed_dim": "#4edea3",
+      "surface_container_low": "#f2f3ff",
+      "on_primary_container": "#dad7ff",
+      "on_tertiary_fixed": "#2a1700",
+      "inverse_surface": "#283044",
+      "tertiary_container": "#885500",
+      "surface_variant": "#dae2fd",
+      "surface_container_highest": "#dae2fd",
+      "on_secondary_container": "#00714d",
+      "tertiary_fixed": "#ffddb8",
+      "surface_container_lowest": "#ffffff",
+      "on_secondary_fixed": "#002113",
+      "primary_container": "#4f46e5",
+      "on_secondary": "#ffffff",
+      "on_primary": "#ffffff",
+      "surface_tint": "#4d44e3",
+      "surface_container_high": "#e2e7ff",
+      "on_error": "#ffffff",
+      "surface_bright": "#faf8ff",
+      "surface": "#faf8ff",
+      "background": "#faf8ff",
+      "tertiary": "#684000",
+      "outline_variant": "#c7c4d8",
+      "secondary": "#006c49",
+      "on_tertiary_fixed_variant": "#653e00",
+      "on_background": "#131b2e",
+      "surface_dim": "#d2d9f4",
+      "on_secondary_fixed_variant": "#005236",
+      "primary": "#3525cd",
+      "error": "#ba1a1a",
+      "tertiary_fixed_dim": "#ffb95f",
+      "primary_fixed_dim": "#c3c0ff"
+    },
+    "colorVariant": "FIDELITY",
+    "overridePrimaryColor": "#4f46e5",
+    "overrideSecondaryColor": "#10b981",
+    "overrideTertiaryColor": "#f59e0b",
+    "overrideNeutralColor": "#0f172a",
+    "spacingScale": 2,
+    "typography": {
+      "body-lg-medium": {
+        "fontFamily": "Inter",
+        "fontSize": "16px",
+        "fontWeight": "500",
+        "lineHeight": "24px"
+      },
+      "headline-lg": {
+        "fontFamily": "Inter",
+        "fontSize": "30px",
+        "fontWeight": "600",
+        "lineHeight": "38px",
+        "letterSpacing": "-0.015em"
+      },
+      "body-md-medium": {
+        "fontFamily": "Inter",
+        "fontSize": "14px",
+        "fontWeight": "500",
+        "lineHeight": "20px"
+      },
+      "headline-sm": {
+        "fontFamily": "Inter",
+        "fontSize": "20px",
+        "fontWeight": "600",
+        "lineHeight": "28px"
+      },
+      "body-md": {
+        "fontFamily": "Inter",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "lineHeight": "20px"
+      },
+      "title-md": {
+        "fontFamily": "Inter",
+        "fontSize": "18px",
+        "fontWeight": "600",
+        "lineHeight": "26px"
+      },
+      "headline-lg-mobile": {
+        "fontFamily": "Inter",
+        "fontSize": "24px",
+        "fontWeight": "600",
+        "lineHeight": "32px",
+        "letterSpacing": "-0.015em"
+      },
+      "caption": {
+        "fontFamily": "Inter",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "16px"
+      },
+      "price-display": {
+        "fontFamily": "Inter",
+        "fontSize": "24px",
+        "fontWeight": "700",
+        "lineHeight": "32px",
+        "letterSpacing": "-0.01em"
+      },
+      "headline-md": {
+        "fontFamily": "Inter",
+        "fontSize": "24px",
+        "fontWeight": "600",
+        "lineHeight": "32px",
+        "letterSpacing": "-0.01em"
+      },
+      "headline-xl": {
+        "fontFamily": "Inter",
+        "fontSize": "36px",
+        "fontWeight": "700",
+        "lineHeight": "44px",
+        "letterSpacing": "-0.02em"
+      },
+      "label-md": {
+        "fontFamily": "Inter",
+        "fontSize": "14px",
+        "fontWeight": "600",
+        "lineHeight": "20px"
+      },
+      "label-sm": {
+        "fontFamily": "Inter",
+        "fontSize": "12px",
+        "fontWeight": "600",
+        "lineHeight": "16px",
+        "letterSpacing": "0.02em"
+      },
+      "body-lg": {
+        "fontFamily": "Inter",
+        "fontSize": "16px",
+        "fontWeight": "400",
+        "lineHeight": "24px"
+      },
+      "headline-xl-mobile": {
+        "fontFamily": "Inter",
+        "fontSize": "28px",
+        "fontWeight": "700",
+        "lineHeight": "36px",
+        "letterSpacing": "-0.02em"
+      }
+    },
+    "spacing": {
+      "space-sm": "0.5rem",
+      "margin-mobile": "1rem",
+      "space-xs": "0.25rem",
+      "space-lg": "1.5rem",
+      "gutter-mobile": "1rem",
+      "space-2xl": "3rem",
+      "gutter": "1.5rem",
+      "space-md": "1rem",
+      "space-xl": "2rem",
+      "margin": "2rem"
+    },
+    "headlineFontFamily": "Inter",
+    "bodyFontFamily": "Inter",
+    "labelFontFamily": "Inter"
+  },
+  "generatedBy": "figaro_agent",
+  "screenType": "DESIGN"
+}

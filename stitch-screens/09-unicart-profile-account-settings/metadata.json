@@ -1,0 +1,188 @@
+{
+  "id": "6c2e5dfead8443d88e3e89b112cf44e7",
+  "title": "UniCart - Profile & Account Settings",
+  "deviceType": "DESKTOP",
+  "width": "2560",
+  "height": "4686",
+  "prompt": "Design a comprehensive, responsive desktop Profile and Account Settings page for \"UniCart\", an Indian B2C e-commerce platform, using the Clear Commerce design system and adhering to established UniCart styling.\n\nHeader & Navigation:\n- UniCart desktop navbar (UniCart logo with purple/indigo brand color, search bar with category dropdown, \"Deliver to Mumbai 400001\", Wishlist, Cart with count badge '2', and user profile menu 'Namaste, Rahul Sharma').\n- Breadcrumbs: Home > My Account > Profile & Settings.\n- Account sub-navigation or tabbed sidebar / tabs: \"Personal Information & Security\" (active), \"My Orders\", \"Saved Addresses\", \"Payment Methods & UPI\", \"Notification Preferences\".\n\nMain Content Sections:\n1. Profile Header / Overview Banner:\n   - User avatar (monogram 'RS' with subtle indigo background or photo), user name \"Rahul Sharma\", member badge (\"UniCart Plus Member\" with gold/amber icon), joined date \"Member since Nov 2022\", quick stats (14 Orders, 3 Saved Addresses, ₹1,200 UniCart Wallet/Cashback balance).\n\n2. Personal Information Card:\n   - Editable Name field with clear \"Edit\" / \"Save\" toggle action, inline validation indicator, and helper text. Current value: \"Rahul Sharma\".\n   - Read-only Email Address field: \"rahul.sharma@example.in\", clearly styled as disabled/read-only with a lock icon and tooltip/note: \"Email address cannot be changed directly for account security. Contact support to update.\"\n   - Phone Number field: \"+91 98765 43210\" with a verified badge (emerald checkmark \"Verified via OTP\").\n   - Action row: \"Save Changes\" primary button (disabled until edited) and \"Cancel\".\n\n3. Saved Addresses Management Section:\n   - Section header: \"Saved Delivery Addresses\" with count badge \"3 of 5 saved\" and a prominent secondary \"+ Add New Address\" button.\n   - Cards list of saved addresses (max 5 capacity shown):\n     * Address 1 (Default): \"Rahul Sharma\", Tag: \"Home • Default\" (indigo badge), \"Flat 402, Lotus Grandeur, Veera Desai Road, Andheri West, Mumbai, Maharashtra - 400053\", Mobile: \"+91 98765 43210\", actions: \"Edit\", \"Delete\" (disabled or with confirm), \"Default Set\".\n     * Address 2: \"Rahul Sharma\", Tag: \"Office\" (slate badge), \"Tech Park Tower B, 5th Floor, BKC, Bandra East, Mumbai, Maharashtra - 400051\", Mobile: \"+91 98765 43210\", Delivery by 6:00 PM note, actions: \"Set as Default\", \"Edit\", \"Delete\".\n     * Address 3: \"Sharma Residence\", Tag: \"Other\" (slate badge), \"Plot 88, Sector 14, Palm Beach Road, Navi Mumbai, Maharashtra - 400703\", Mobile: \"+91 98200 11223\", actions: \"Set as Default\", \"Edit\", \"Delete\".\n   - Add/Edit Address Modal or slide-out inline preview form card (showing Full Name, 10-digit Mobile, Pincode with Auto City/State lookup, Flat/House/Building, Area/Street, Landmark, Address Type radio: Home/Office/Other, and \"Set as default\" checkbox).\n\n4. Security & Active Sessions Section:\n   - Card titled \"Security & Session Management\".\n   - Recent login sessions overview: \"Chrome on macOS • Mumbai, India (Current device - Active now)\", \"UniCart Mobile App • Android • Mumbai, India (Active 2 hours ago)\".\n   - Danger zone / Security action: A prominent red/destructive styled button or action tile for \"Log out of all devices\" with subtext \"This will sign you out of UniCart on all browsers and mobile apps except this one (or including all sessions). You will need to log in again with your password or OTP.\"\n   - Confirmation Dialog Modal (previewed or interactive modal card overlay):\n     * Title: \"Log out of all devices?\"\n     * Warning icon with amber/red badge.\n     * Explanation: \"Are you sure you want to sign out from all 3 active sessions across desktop and mobile devices? You will need to sign in again with your credentials.\"\n     * Action buttons: \"Log Out Everywhere\" (destructive red button) and \"Cancel\" (neutral outline button).\n\n5. Footer:\n   - Consistent UniCart multi-column footer with Indian payment assurances (UPI, RuPay, NetBanking, 256-bit SSL), copyright, and policy links.\n\nDesign System Continuity:\n- Theme colors: Indigo primary (#4f46e5), surface (#faf8ff), surface containers, emerald success (#10b981), amber warnings, and slate outlines.\n- Clean typography, high contrast, accessible labels, rounded-lg styling consistent with SCREEN_2, SCREEN_4, SCREEN_5, SCREEN_6, SCREEN_7, and SCREEN_8.",
+  "theme": {
+    "colorMode": "LIGHT",
+    "font": "INTER",
+    "roundness": "ROUND_EIGHT",
+    "customColor": "#4f46e5",
+    "headlineFont": "INTER",
+    "bodyFont": "INTER",
+    "labelFont": "INTER",
+    "namedColors": {
+      "background": "#faf8ff",
+      "secondary_container": "#6cf8bb",
+      "primary_fixed_dim": "#c3c0ff",
+      "on_primary_container": "#dad7ff",
+      "primary_fixed": "#e2dfff",
+      "on_tertiary_fixed": "#2a1700",
+      "on_background": "#131b2e",
+      "tertiary_container": "#885500",
+      "secondary_fixed": "#6ffbbe",
+      "on_error": "#ffffff",
+      "surface_tint": "#4d44e3",
+      "surface_variant": "#dae2fd",
+      "on_tertiary": "#ffffff",
+      "tertiary": "#684000",
+      "on_secondary_container": "#00714d",
+      "inverse_on_surface": "#eef0ff",
+      "on_tertiary_container": "#ffd4a4",
+      "surface_container_highest": "#dae2fd",
+      "on_surface_variant": "#464555",
+      "on_tertiary_fixed_variant": "#653e00",
+      "on_secondary": "#ffffff",
+      "on_surface": "#131b2e",
+      "error": "#ba1a1a",
+      "secondary_fixed_dim": "#4edea3",
+      "on_secondary_fixed": "#002113",
+      "inverse_primary": "#c3c0ff",
+      "on_error_container": "#93000a",
+      "surface_dim": "#d2d9f4",
+      "surface_container_low": "#f2f3ff",
+      "on_primary_fixed": "#0f0069",
+      "tertiary_fixed": "#ffddb8",
+      "secondary": "#006c49",
+      "inverse_surface": "#283044",
+      "surface": "#faf8ff",
+      "outline": "#777587",
+      "on_secondary_fixed_variant": "#005236",
+      "surface_container": "#eaedff",
+      "error_container": "#ffdad6",
+      "on_primary": "#ffffff",
+      "primary": "#3525cd",
+      "surface_container_lowest": "#ffffff",
+      "primary_container": "#4f46e5",
+      "surface_bright": "#faf8ff",
+      "on_primary_fixed_variant": "#3323cc",
+      "surface_container_high": "#e2e7ff",
+      "tertiary_fixed_dim": "#ffb95f",
+      "outline_variant": "#c7c4d8"
+    },
+    "colorVariant": "FIDELITY",
+    "overridePrimaryColor": "#4f46e5",
+    "overrideSecondaryColor": "#10b981",
+    "overrideTertiaryColor": "#f59e0b",
+    "overrideNeutralColor": "#0f172a",
+    "spacingScale": 2,
+    "typography": {
+      "headline-xl": {
+        "fontFamily": "Inter",
+        "fontSize": "36px",
+        "fontWeight": "700",
+        "lineHeight": "44px",
+        "letterSpacing": "-0.02em"
+      },
+      "price-display": {
+        "fontFamily": "Inter",
+        "fontSize": "24px",
+        "fontWeight": "700",
+        "lineHeight": "32px",
+        "letterSpacing": "-0.01em"
+      },
+      "headline-xl-mobile": {
+        "fontFamily": "Inter",
+        "fontSize": "28px",
+        "fontWeight": "700",
+        "lineHeight": "36px",
+        "letterSpacing": "-0.02em"
+      },
+      "body-md": {
+        "fontFamily": "Inter",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "lineHeight": "20px"
+      },
+      "body-lg-medium": {
+        "fontFamily": "Inter",
+        "fontSize": "16px",
+        "fontWeight": "500",
+        "lineHeight": "24px"
+      },
+      "label-sm": {
+        "fontFamily": "Inter",
+        "fontSize": "12px",
+        "fontWeight": "600",
+        "lineHeight": "16px",
+        "letterSpacing": "0.02em"
+      },
+      "caption": {
+        "fontFamily": "Inter",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "16px"
+      },
+      "headline-sm": {
+        "fontFamily": "Inter",
+        "fontSize": "20px",
+        "fontWeight": "600",
+        "lineHeight": "28px"
+      },
+      "body-md-medium": {
+        "fontFamily": "Inter",
+        "fontSize": "14px",
+        "fontWeight": "500",
+        "lineHeight": "20px"
+      },
+      "label-md": {
+        "fontFamily": "Inter",
+        "fontSize": "14px",
+        "fontWeight": "600",
+        "lineHeight": "20px"
+      },
+      "headline-lg": {
+        "fontFamily": "Inter",
+        "fontSize": "30px",
+        "fontWeight": "600",
+        "lineHeight": "38px",
+        "letterSpacing": "-0.015em"
+      },
+      "body-lg": {
+        "fontFamily": "Inter",
+        "fontSize": "16px",
+        "fontWeight": "400",
+        "lineHeight": "24px"
+      },
+      "headline-md": {
+        "fontFamily": "Inter",
+        "fontSize": "24px",
+        "fontWeight": "600",
+        "lineHeight": "32px",
+        "letterSpacing": "-0.01em"
+      },
+      "headline-lg-mobile": {
+        "fontFamily": "Inter",
+        "fontSize": "24px",
+        "fontWeight": "600",
+        "lineHeight": "32px",
+        "letterSpacing": "-0.015em"
+      },
+      "title-md": {
+        "fontFamily": "Inter",
+        "fontSize": "18px",
+        "fontWeight": "600",
+        "lineHeight": "26px"
+      }
+    },
+    "spacing": {
+      "space-xl": "2rem",
+      "margin": "2rem",
+      "space-xs": "0.25rem",
+      "gutter": "1.5rem",
+      "margin-mobile": "1rem",
+      "space-sm": "0.5rem",
+      "space-lg": "1.5rem",
+      "space-md": "1rem",
+      "space-2xl": "3rem",
+      "gutter-mobile": "1rem"
+    },
+    "headlineFontFamily": "Inter",
+    "bodyFontFamily": "Inter",
+    "labelFontFamily": "Inter"
+  },
+  "generatedBy": "figaro_agent",
+  "screenType": "DESIGN"
+}

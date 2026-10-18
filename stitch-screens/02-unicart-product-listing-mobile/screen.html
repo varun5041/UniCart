@@ -1,0 +1,720 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>UniCart - Modern Digital Commerce Marketplace</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "secondary": "#006c49",
+            "inverse-on-surface": "#eef0ff",
+            "on-background": "#131b2e",
+            "tertiary-fixed-dim": "#ffb95f",
+            "on-primary": "#ffffff",
+            "on-error": "#ffffff",
+            "error-container": "#ffdad6",
+            "surface-tint": "#4d44e3",
+            "tertiary": "#684000",
+            "surface-bright": "#faf8ff",
+            "tertiary-fixed": "#ffddb8",
+            "surface-dim": "#d2d9f4",
+            "on-secondary-fixed": "#002113",
+            "surface-container": "#eaedff",
+            "secondary-fixed": "#6ffbbe",
+            "on-tertiary-fixed": "#2a1700",
+            "surface-container-highest": "#dae2fd",
+            "error": "#ba1a1a",
+            "surface-container-lowest": "#ffffff",
+            "on-surface-variant": "#464555",
+            "surface-container-low": "#f2f3ff",
+            "on-secondary": "#ffffff",
+            "surface": "#faf8ff",
+            "surface-container-high": "#e2e7ff",
+            "primary-container": "#4f46e5",
+            "inverse-surface": "#283044",
+            "on-primary-container": "#dad7ff",
+            "on-surface": "#131b2e",
+            "background": "#faf8ff",
+            "on-tertiary-fixed-variant": "#653e00",
+            "inverse-primary": "#c3c0ff",
+            "primary-fixed-dim": "#c3c0ff",
+            "outline": "#777587",
+            "surface-variant": "#dae2fd",
+            "primary": "#3525cd",
+            "on-primary-fixed": "#0f0069",
+            "outline-variant": "#c7c4d8",
+            "on-tertiary-container": "#ffd4a4",
+            "on-tertiary": "#ffffff",
+            "on-secondary-fixed-variant": "#005236",
+            "on-secondary-container": "#00714d",
+            "primary-fixed": "#e2dfff",
+            "tertiary-container": "#885500",
+            "secondary-container": "#6cf8bb",
+            "secondary-fixed-dim": "#4edea3",
+            "on-primary-fixed-variant": "#3323cc",
+            "on-error-container": "#93000a"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-sm": "0.5rem",
+            "space-md": "1rem",
+            "margin": "2rem",
+            "space-2xl": "3rem",
+            "space-lg": "1.5rem",
+            "gutter": "1.5rem",
+            "margin-mobile": "1rem",
+            "space-xs": "0.25rem",
+            "space-xl": "2rem",
+            "gutter-mobile": "1rem"
+          },
+          "fontFamily": {
+            "body-lg": ["Inter"],
+            "caption": ["Inter"],
+            "headline-sm": ["Inter"],
+            "headline-lg": ["Inter"],
+            "headline-xl-mobile": ["Inter"],
+            "price-display": ["Inter"],
+            "body-md-medium": ["Inter"],
+            "headline-xl": ["Inter"],
+            "headline-md": ["Inter"],
+            "label-sm": ["Inter"],
+            "headline-lg-mobile": ["Inter"],
+            "label-md": ["Inter"],
+            "body-lg-medium": ["Inter"],
+            "title-md": ["Inter"],
+            "body-md": ["Inter"]
+          },
+          "fontSize": {
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "caption": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+            "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+            "headline-lg": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+            "headline-xl-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "price-display": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "body-md-medium": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+            "headline-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+            "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "600" }],
+            "body-lg-medium": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+            "title-md": ["18px", { "lineHeight": "26px", "fontWeight": "600" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .material-symbols-outlined.filled {
+      font-variation-settings: 'FILL' 1;
+    }
+    /* Hide scrollbars for slick category carousels */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    /* Mobile frame container */
+    body {
+      background-color: #eaedff;
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-0 sm:py-6 selection:bg-primary selection:text-on-primary">
+<!-- Mobile Viewport Simulator (390px default container) -->
+<div class="w-full max-w-[390px] min-h-screen sm:min-h-[844px] bg-surface-container-lowest text-on-surface flex flex-col relative sm:rounded-[36px] sm:shadow-2xl overflow-hidden border-outline-variant sm:border">
+<!-- Top Status / Notch bar (Cosmetic mobile shell anchor) -->
+<div class="w-full px-6 pt-3 pb-1 flex justify-between items-center text-on-surface text-[11px] font-medium tracking-tight bg-surface-container-lowest z-50">
+<span>9:41</span>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px]">signal_cellular_4_bar</span>
+<span class="material-symbols-outlined text-[14px]">wifi</span>
+<span class="material-symbols-outlined text-[16px]">battery_full</span>
+</div>
+</div>
+<!-- 1. Mobile Header (Brand Anchored & Responsive Sticky Header) -->
+<header class="sticky top-0 bg-surface-container-lowest z-40 px-4 pt-2 pb-2.5 transition-shadow">
+<!-- Row 1: Brand & Actions -->
+<div class="flex items-center justify-between mb-2.5">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-primary-container flex items-center justify-center text-on-primary shadow-sm">
+<span class="material-symbols-outlined text-[18px]">shopping_bag</span>
+</div>
+<span class="font-headline-md text-headline-md font-bold tracking-tight text-primary">UniCart</span>
+</div>
+<div class="flex items-center gap-2">
+<button aria-label="Search" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container-low transition-colors text-on-surface-variant" type="button">
+<span class="material-symbols-outlined text-[22px]">search</span>
+</button>
+<button aria-label="Wishlist" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container-low transition-colors text-on-surface-variant relative" type="button">
+<span class="material-symbols-outlined text-[22px]">favorite</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-error ring-2 ring-surface-container-lowest"></span>
+</button>
+<button aria-label="Shopping Cart" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container-low transition-colors text-on-surface relative" type="button">
+<span class="material-symbols-outlined text-[22px]">shopping_cart</span>
+<span class="absolute 0 top-0.5 right-0.5 bg-primary text-on-primary font-caption text-[10px] h-4 min-w-[16px] px-1 rounded-full flex items-center justify-center font-bold">3</span>
+</button>
+</div>
+</div>
+<!-- Row 2: Search Input Field with Voice & Lens Icons -->
+<div class="relative flex items-center mb-2">
+<div class="absolute left-3.5 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<input class="w-full h-11 pl-10 pr-20 bg-surface-container-low border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Search headphones, electronics, brands..." type="search">
+<div class="absolute right-2.5 flex items-center gap-1.5 text-on-surface-variant">
+<button aria-label="Voice Search" class="p-1 hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">mic</span>
+</button>
+<button aria-label="Image Lens" class="p-1 hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">photo_camera</span>
+</button>
+</div>
+</div>
+<!-- Row 3: Deliver Location Chip -->
+<div class="flex items-center justify-between text-caption font-caption text-on-surface-variant px-0.5">
+<div class="flex items-center gap-1.5 cursor-pointer active:opacity-75 transition-opacity">
+<span class="material-symbols-outlined text-[16px] text-primary">location_on</span>
+<span class="font-body-md-medium text-body-md-medium text-on-surface">Deliver to Mumbai 400001</span>
+<span class="material-symbols-outlined text-[14px]">expand_more</span>
+</div>
+<span class="text-secondary font-label-sm text-[11px] bg-secondary-fixed/25 px-1.5 py-0.5 rounded">Fast Delivery</span>
+</div>
+</header>
+<!-- 2. Inline Error Banner (Dismissible with retry CTA) -->
+<div class="mx-4 mt-2 mb-1 p-2.5 bg-error-container/40 border border-error/30 rounded-lg flex items-center justify-between gap-2 text-error" id="error-sync-banner">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-error flex-shrink-0">error</span>
+<p class="font-body-md text-caption text-error font-medium leading-tight">
+          Unable to sync wishlist items.
+        </p>
+</div>
+<div class="flex items-center gap-2 flex-shrink-0">
+<button class="font-label-sm text-caption font-bold underline hover:opacity-80 active:scale-95 transition-transform" onclick="alert('Retrying wishlist sync...')" type="button">
+          Retry
+        </button>
+<button aria-label="Dismiss banner" class="text-error/70 hover:text-error" onclick="document.getElementById('error-sync-banner').style.display='none'" type="button">
+<span class="material-symbols-outlined text-[16px]">close</span>
+</button>
+</div>
+</div>
+<!-- 3. Mobile Filter & Sorting Quick Controls (Sticky bar) -->
+<section class="bg-surface-container-lowest sticky top-[138px] z-30 pt-2 pb-2.5 px-4 shadow-[0_2px_4px_rgba(15,23,42,0.03)] border-b border-outline-variant/60">
+<!-- Horizontal Scrollable Category Chips -->
+<div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5 mb-2.5">
+<button class="px-3.5 py-1.5 rounded-full font-label-sm text-caption bg-primary text-on-primary font-semibold flex-shrink-0 shadow-sm" type="button">
+          All
+        </button>
+<button class="px-3.5 py-1.5 rounded-full font-label-sm text-caption bg-surface-container text-on-surface-variant font-medium flex-shrink-0 hover:bg-surface-container-high transition-colors" type="button">
+          Headphones
+        </button>
+<button class="px-3.5 py-1.5 rounded-full font-label-sm text-caption bg-surface-container text-on-surface-variant font-medium flex-shrink-0 hover:bg-surface-container-high transition-colors" type="button">
+          Smartwatches
+        </button>
+<button class="px-3.5 py-1.5 rounded-full font-label-sm text-caption bg-surface-container text-on-surface-variant font-medium flex-shrink-0 hover:bg-surface-container-high transition-colors" type="button">
+          Speakers
+        </button>
+<button class="px-3.5 py-1.5 rounded-full font-label-sm text-caption bg-surface-container text-on-surface-variant font-medium flex-shrink-0 hover:bg-surface-container-high transition-colors" type="button">
+          Earbuds
+        </button>
+</div>
+<!-- Result Count & Filter/Sort Controls -->
+<div class="flex items-center justify-between pt-1">
+<span class="font-body-md text-caption text-on-surface-variant">
+<strong class="font-semibold text-on-surface">84</strong> products found
+        </span>
+<div class="flex items-center gap-2">
+<!-- Filter Trigger Button -->
+<button class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-primary bg-primary-fixed/20 text-primary font-label-sm text-caption active:scale-95 transition-all" onclick="toggleFilterDrawer(true)" type="button">
+<span class="material-symbols-outlined text-[15px]">tune</span>
+<span>Filters</span>
+<span class="w-4 h-4 rounded-full bg-primary text-on-primary text-[10px] flex items-center justify-center font-bold">2</span>
+</button>
+<!-- Sort Dropdown Trigger -->
+<div class="relative">
+<button class="flex items-center gap-0.5 px-2.5 py-1.5 rounded-lg border border-outline-variant bg-surface-container-lowest text-on-surface font-label-sm text-caption hover:bg-surface-container-low transition-colors" type="button">
+<span>Sort: Low to High</span>
+<span class="material-symbols-outlined text-[15px]">expand_more</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- UI View State Switcher (Tabs to inspect Grid / Skeleton / Empty state) -->
+<div class="mx-4 mt-3 bg-surface-container-high/60 p-1 rounded-xl flex items-center justify-between text-caption font-label-sm">
+<button class="flex-1 py-1.5 rounded-lg bg-surface-container-lowest text-primary font-semibold shadow-xs transition-all text-center" id="tab-grid" onclick="switchState('grid')">
+        Live Catalog
+      </button>
+<button class="flex-1 py-1.5 rounded-lg text-on-surface-variant font-medium hover:text-on-surface transition-all text-center" id="tab-skeleton" onclick="switchState('skeleton')">
+        Loading Skeleton
+      </button>
+<button class="flex-1 py-1.5 rounded-lg text-on-surface-variant font-medium hover:text-on-surface transition-all text-center" id="tab-empty" onclick="switchState('empty')">
+        Empty State
+      </button>
+</div>
+<!-- MAIN SCROLLABLE CONTENT CANVAS -->
+<main class="flex-1 px-4 py-3 pb-24 overflow-y-auto">
+<!-- STATE A: 4. Product Grid (2 columns for Mobile) -->
+<div class="grid grid-cols-2 gap-3" id="view-grid">
+<!-- Product Card 1 -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-lg p-2.5 flex flex-col justify-between shadow-[0px_1px_2px_rgba(15,23,42,0.05)] hover:border-outline transition-all group">
+<div>
+<div class="relative aspect-square w-full rounded-lg bg-surface-container-low overflow-hidden mb-2">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="A modern matte black wireless over-ear noise-cancelling headphones resting on an immaculate, soft white surface. Studio product photography with sharp high-contrast lighting, indigo ambient accents, and clean reflections showing the premium metallic hinges and leatherette earcups." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2EonrVWIWcf2-7f4c7KP9K-OaPa-712VeRUb9o5LG31yd0ultl0ZguJ5dS3YEndbh7xLt5_sgaZKG6JRtvYwCjMIuyxbvXn68-l_XoVnSKHCIjMUjoEyy2nKRw4G_kttY_Qm_uRTtP9YeB0o9QtyFEqC2Gi5RpXWIwlla0j2X9579U9IRlyHUnq1wwdLjhXdiAPcexb-gwiTYkizNyD_jS3wslpXkujJ-TQbX_iPm19s3nT_9EM7e2w">
+<button aria-label="Add to wishlist" class="absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-surface-container-lowest/90 text-on-surface-variant flex items-center justify-center hover:text-error transition-colors shadow-xs" type="button">
+<span class="material-symbols-outlined text-[16px]">favorite</span>
+</button>
+<span class="absolute bottom-1.5 left-1.5 bg-primary text-on-primary font-label-sm text-[10px] px-1.5 py-0.5 rounded font-bold">50% OFF</span>
+</div>
+<!-- Stock status badge -->
+<div class="mb-1">
+<span class="inline-flex items-center gap-1 font-caption text-[11px] font-semibold text-secondary">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> In stock
+              </span>
+</div>
+<h3 class="font-body-md-medium text-body-md text-on-surface line-clamp-2 leading-snug mb-1">
+              Wireless ANC Headphones with 40h Playtime
+            </h3>
+</div>
+<div class="pt-1 mt-1 border-t border-surface-container-high/60">
+<div class="flex items-baseline gap-1.5 mb-2">
+<span class="font-price-display text-title-md font-bold text-on-surface">₹2,499.00</span>
+<span class="font-caption text-caption text-outline line-through">₹4,999.00</span>
+</div>
+<button class="w-full h-9 bg-primary hover:bg-surface-tint active:bg-primary-container text-on-primary rounded-lg font-label-sm text-caption flex items-center justify-center gap-1 font-semibold transition-all shadow-xs" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span>Add</span>
+</button>
+</div>
+</article>
+<!-- Product Card 2 -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-lg p-2.5 flex flex-col justify-between shadow-[0px_1px_2px_rgba(15,23,42,0.05)] hover:border-outline transition-all group">
+<div>
+<div class="relative aspect-square w-full rounded-lg bg-surface-container-low overflow-hidden mb-2">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="A sleek black circular AMOLED smartwatch with vivid color digital screen face showing wellness metrics. Resting on a minimal pristine background, high-key directional studio light, deep navy wristband with brushed metal buckle and crisp retail presentation." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRpNVTVyFUxmx_QiUXDanYl6jXp0zIiikFk9m6d2evNirr34WJhpMZzeQGtVBq4pBgozSzYz6KNIOHhh4ii3c0WiBt1VjxVy994Fn28eDxSwqezcXkj_S_w9vbqwHerRXncWUCupjkAHtIvI6aK0Bbt3werAxBIhoHg4nUGPc-TstYvWIsIgwG1qBKzB8EZe0hMJdg_fVrCGEF8WE9FDsk3LmkwSR1M1RFXcsbMleXINRpltERgHxf7Q">
+<button aria-label="Add to wishlist" class="absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-surface-container-lowest/90 text-on-surface-variant flex items-center justify-center hover:text-error transition-colors shadow-xs" type="button">
+<span class="material-symbols-outlined text-[16px]">favorite</span>
+</button>
+</div>
+<!-- Stock status badge -->
+<div class="mb-1">
+<span class="inline-flex items-center gap-1 font-caption text-[11px] font-semibold text-tertiary">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-fixed-dim"></span> Only 3 left
+              </span>
+</div>
+<h3 class="font-body-md-medium text-body-md text-on-surface line-clamp-2 leading-snug mb-1">
+              AMOLED Smartwatch with SpO2 &amp; Heart Rate
+            </h3>
+</div>
+<div class="pt-1 mt-1 border-t border-surface-container-high/60">
+<div class="flex items-baseline gap-1.5 mb-2">
+<span class="font-price-display text-title-md font-bold text-on-surface">₹3,199.00</span>
+</div>
+<button class="w-full h-9 bg-primary hover:bg-surface-tint active:bg-primary-container text-on-primary rounded-lg font-label-sm text-caption flex items-center justify-center gap-1 font-semibold transition-all shadow-xs" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span>Add</span>
+</button>
+</div>
+</article>
+<!-- Product Card 3 (Out of stock) -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-lg p-2.5 flex flex-col justify-between shadow-[0px_1px_2px_rgba(15,23,42,0.05)] hover:border-outline transition-all opacity-85 group">
+<div>
+<div class="relative aspect-square w-full rounded-lg bg-surface-container-low overflow-hidden mb-2">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Modern compact true wireless earbuds in open magnetic charging case placed cleanly on high contrast neutral backdrop. Professional product photography with glossy white plastic finish, subtle reflections, and ambient blue glow representing electronic reliability." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDa0uPiIQ5AJ-O7sr_yi88Y6zGTboXQOCyLDIZScvpA63d6B3WLLs44aC29CuPueMXYkvGJ5nRCkH3n-vI6L0sRohUQtFOKYnlXvSyop7klwTDWG5KttMeo3zXo7b6X9rhy9gY8FDXY8vxG1jBfWgNN5mRETdk8M0InLW15MX-AhJH9V00DlFX5H6jvWVs3xExiPSAEkSPz40IAdd-DCzA18fzVH4Rbv96FBdMowzIqF-DiPeEzQa-KjA">
+<button aria-label="Add to wishlist" class="absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-surface-container-lowest/90 text-on-surface-variant flex items-center justify-center hover:text-error transition-colors shadow-xs" type="button">
+<span class="material-symbols-outlined text-[16px]">favorite</span>
+</button>
+</div>
+<!-- Stock status badge -->
+<div class="mb-1">
+<span class="inline-flex items-center gap-1 font-caption text-[11px] font-semibold text-error">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span> Out of stock
+              </span>
+</div>
+<h3 class="font-body-md-medium text-body-md text-on-surface line-clamp-2 leading-snug mb-1">
+              TWS Earbuds with ENC Quad Microphones
+            </h3>
+</div>
+<div class="pt-1 mt-1 border-t border-surface-container-high/60">
+<div class="flex items-baseline gap-1.5 mb-2">
+<span class="font-price-display text-title-md font-bold text-on-surface">₹1,299.00</span>
+</div>
+<button class="w-full h-9 bg-surface-container text-outline rounded-lg font-label-sm text-caption flex items-center justify-center gap-1 font-semibold cursor-not-allowed" disabled="" type="button">
+<span>Sold out</span>
+</button>
+</div>
+</article>
+<!-- Product Card 4 -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-lg p-2.5 flex flex-col justify-between shadow-[0px_1px_2px_rgba(15,23,42,0.05)] hover:border-outline transition-all group">
+<div>
+<div class="relative aspect-square w-full rounded-lg bg-surface-container-low overflow-hidden mb-2">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Rugged portable cylindrical Bluetooth speaker with woven mesh fabric texture and silicone buttons. High key daylight studio lighting with sharp water droplets highlighting IPX7 water resistance against a pale slate background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6ED-QOt-7EDC_c5KYBpelI366vtscxPK5UotsAe2i56VvJxRXXC8R96GNXrM873M8dvtaNNkWIWdiuG0JSbR2dCfOs74atNS2IQf-yZyGyvc6i-FLh2PcdgqKheC_4mF6iVYvOMXA2S2lTs80VucAOinOocWfSMbfW92Ts2vH-CHHqNLdZKlwGgYA42A0H6hsELzg50Nk0Lpu-WCJcdGkTrfEhjNJuj_i-LQ0ZURoFemcyQzEhe4MIg">
+<button aria-label="Add to wishlist" class="absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-surface-container-lowest/90 text-on-surface-variant flex items-center justify-center hover:text-error transition-colors shadow-xs" type="button">
+<span class="material-symbols-outlined text-[16px]">favorite</span>
+</button>
+</div>
+<!-- Stock status badge -->
+<div class="mb-1">
+<span class="inline-flex items-center gap-1 font-caption text-[11px] font-semibold text-secondary">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> In stock
+              </span>
+</div>
+<h3 class="font-body-md-medium text-body-md text-on-surface line-clamp-2 leading-snug mb-1">
+              20W Bluetooth Speaker Deep Bass Waterproof
+            </h3>
+</div>
+<div class="pt-1 mt-1 border-t border-surface-container-high/60">
+<div class="flex items-baseline gap-1.5 mb-2">
+<span class="font-price-display text-title-md font-bold text-on-surface">₹1,899.00</span>
+</div>
+<button class="w-full h-9 bg-primary hover:bg-surface-tint active:bg-primary-container text-on-primary rounded-lg font-label-sm text-caption flex items-center justify-center gap-1 font-semibold transition-all shadow-xs" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span>Add</span>
+</button>
+</div>
+</article>
+<!-- Product Card 5 -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-lg p-2.5 flex flex-col justify-between shadow-[0px_1px_2px_rgba(15,23,42,0.05)] hover:border-outline transition-all group">
+<div>
+<div class="relative aspect-square w-full rounded-lg bg-surface-container-low overflow-hidden mb-2">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Professional studio monitor over-ear reference headphones featuring polished aluminum armature and coiled studio cable. Precision product rendering under soft diffusers on a pristine white stage with deep charcoal and silver tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbimxS7aSSWtuZyA7GHX2yUF7CHqHW5xMm1iJaQCyg107xoOyOmjHZ7nKAgW36apTmjOIXUq_0iAaxQB8Dsetd2bjDeFGq4cK5JPtjZpKyycJ7SIHtij1ADasZxpTbfGRTK9fGQuHeX39TAz09bZGxQLRbwtKGNtp-jMwLsseQ3ug8M_jh3TRrb7bjg77-ZwpBzt6q7yb84DlevUUXsG3iYLU0f4BrFzN2ZlAp-JYkAg3rqmtHggo_hQ">
+<button aria-label="Add to wishlist" class="absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-surface-container-lowest/90 text-on-surface-variant flex items-center justify-center hover:text-error transition-colors shadow-xs" type="button">
+<span class="material-symbols-outlined text-[16px]">favorite</span>
+</button>
+</div>
+<!-- Stock status badge -->
+<div class="mb-1">
+<span class="inline-flex items-center gap-1 font-caption text-[11px] font-semibold text-secondary">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> In stock
+              </span>
+</div>
+<h3 class="font-body-md-medium text-body-md text-on-surface line-clamp-2 leading-snug mb-1">
+              Studio Headphones Pro Hi-Res Audio Monitoring
+            </h3>
+</div>
+<div class="pt-1 mt-1 border-t border-surface-container-high/60">
+<div class="flex items-baseline gap-1.5 mb-2">
+<span class="font-price-display text-title-md font-bold text-on-surface">₹4,499.00</span>
+</div>
+<button class="w-full h-9 bg-primary hover:bg-surface-tint active:bg-primary-container text-on-primary rounded-lg font-label-sm text-caption flex items-center justify-center gap-1 font-semibold transition-all shadow-xs" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span>Add</span>
+</button>
+</div>
+</article>
+<!-- Product Card 6 -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-lg p-2.5 flex flex-col justify-between shadow-[0px_1px_2px_rgba(15,23,42,0.05)] hover:border-outline transition-all group">
+<div>
+<div class="relative aspect-square w-full rounded-lg bg-surface-container-low overflow-hidden mb-2">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Futuristic black gaming headset with subtle violet neon RGB LED trim and noise-rejecting boom mic. Angled dynamic commercial studio shot on light grey pedestal with crisp edge lighting emphasizing industrial gamer ergonomics." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCMjdWg7blOFq-2I8YfauB1foA68ccOwhS80wp2blXVS8LboAPR38QnuvnMy_BFquVKAdGDswMPLXJ7xNtOgabXiUzAVgSr3wu9vb2O6HawoFp8quQj9UV3L-KCaXXP0vqb_SgsNXiXw3hGwp_F1TV0w00j9kd7C9zwvnddO-uxwb8Ez4nSKuR-_uwa6XVrRqDXXhq0JeHaBE4oYcfxwFvclQzkksfnLkRyG38lokll9TQmLN0RyuZp_g">
+<button aria-label="Add to wishlist" class="absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-surface-container-lowest/90 text-on-surface-variant flex items-center justify-center hover:text-error transition-colors shadow-xs" type="button">
+<span class="material-symbols-outlined text-[16px]">favorite</span>
+</button>
+</div>
+<!-- Stock status badge -->
+<div class="mb-1">
+<span class="inline-flex items-center gap-1 font-caption text-[11px] font-semibold text-tertiary">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-fixed-dim"></span> Only 2 left
+              </span>
+</div>
+<h3 class="font-body-md-medium text-body-md text-on-surface line-clamp-2 leading-snug mb-1">
+              Gaming Headset 7.1 Surround with Detachable Mic
+            </h3>
+</div>
+<div class="pt-1 mt-1 border-t border-surface-container-high/60">
+<div class="flex items-baseline gap-1.5 mb-2">
+<span class="font-price-display text-title-md font-bold text-on-surface">₹2,199.00</span>
+</div>
+<button class="w-full h-9 bg-primary hover:bg-surface-tint active:bg-primary-container text-on-primary rounded-lg font-label-sm text-caption flex items-center justify-center gap-1 font-semibold transition-all shadow-xs" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span>Add</span>
+</button>
+</div>
+</article>
+</div>
+<!-- STATE B: 5. Loading Skeleton Preview (2-col pulsing cards) -->
+<div class="hidden grid grid-cols-2 gap-3" id="view-skeleton">
+<!-- Skeleton Card 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant/60 rounded-lg p-2.5 flex flex-col justify-between animate-pulse">
+<div>
+<div class="aspect-square w-full bg-surface-container-high rounded-lg mb-2"></div>
+<div class="w-16 h-3 bg-surface-container-high rounded-full mb-2"></div>
+<div class="w-full h-3.5 bg-surface-container-high rounded mb-1"></div>
+<div class="w-3/4 h-3.5 bg-surface-container-high rounded mb-2"></div>
+</div>
+<div class="pt-2 border-t border-surface-container-high/40">
+<div class="w-20 h-5 bg-surface-container-high rounded mb-2"></div>
+<div class="w-full h-9 bg-surface-container-high rounded-lg"></div>
+</div>
+</div>
+<!-- Skeleton Card 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant/60 rounded-lg p-2.5 flex flex-col justify-between animate-pulse">
+<div>
+<div class="aspect-square w-full bg-surface-container-high rounded-lg mb-2"></div>
+<div class="w-16 h-3 bg-surface-container-high rounded-full mb-2"></div>
+<div class="w-full h-3.5 bg-surface-container-high rounded mb-1"></div>
+<div class="w-2/3 h-3.5 bg-surface-container-high rounded mb-2"></div>
+</div>
+<div class="pt-2 border-t border-surface-container-high/40">
+<div class="w-20 h-5 bg-surface-container-high rounded mb-2"></div>
+<div class="w-full h-9 bg-surface-container-high rounded-lg"></div>
+</div>
+</div>
+<!-- Skeleton Card 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant/60 rounded-lg p-2.5 flex flex-col justify-between animate-pulse">
+<div>
+<div class="aspect-square w-full bg-surface-container-high rounded-lg mb-2"></div>
+<div class="w-16 h-3 bg-surface-container-high rounded-full mb-2"></div>
+<div class="w-full h-3.5 bg-surface-container-high rounded mb-1"></div>
+<div class="w-3/4 h-3.5 bg-surface-container-high rounded mb-2"></div>
+</div>
+<div class="pt-2 border-t border-surface-container-high/40">
+<div class="w-20 h-5 bg-surface-container-high rounded mb-2"></div>
+<div class="w-full h-9 bg-surface-container-high rounded-lg"></div>
+</div>
+</div>
+<!-- Skeleton Card 4 -->
+<div class="bg-surface-container-lowest border border-outline-variant/60 rounded-lg p-2.5 flex flex-col justify-between animate-pulse">
+<div>
+<div class="aspect-square w-full bg-surface-container-high rounded-lg mb-2"></div>
+<div class="w-16 h-3 bg-surface-container-high rounded-full mb-2"></div>
+<div class="w-full h-3.5 bg-surface-container-high rounded mb-1"></div>
+<div class="w-1/2 h-3.5 bg-surface-container-high rounded mb-2"></div>
+</div>
+<div class="pt-2 border-t border-surface-container-high/40">
+<div class="w-20 h-5 bg-surface-container-high rounded mb-2"></div>
+<div class="w-full h-9 bg-surface-container-high rounded-lg"></div>
+</div>
+</div>
+</div>
+<!-- STATE C: Empty State Preview -->
+<div class="hidden flex-col items-center justify-center text-center py-12 px-4" id="view-empty">
+<div class="w-16 h-16 rounded-full bg-surface-container flex items-center justify-center text-outline mb-3">
+<span class="material-symbols-outlined text-[32px]">manage_search</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1">No products found</h3>
+<p class="font-body-md text-caption text-on-surface-variant max-w-[260px] mb-4">
+          We couldn't find matching items for your selected filters or search terms. Try refining criteria.
+        </p>
+<button class="h-10 px-5 bg-primary text-on-primary font-label-md rounded-lg font-semibold shadow-xs hover:bg-surface-tint active:scale-95 transition-all" onclick="switchState('grid')" type="button">
+          Clear All Filters
+        </button>
+</div>
+<!-- 6. Mobile Bottom Pagination -->
+<div class="mt-6 pt-4 border-t border-outline-variant/60 flex items-center justify-between" id="pagination-controls">
+<button class="h-9 px-3 rounded-lg border border-outline-variant bg-surface-container-lowest text-on-surface font-label-sm text-caption flex items-center gap-1 active:bg-surface-container-low transition-colors disabled:opacity-50" disabled="" type="button">
+<span class="material-symbols-outlined text-[16px]">chevron_left</span>
+<span>Prev</span>
+</button>
+<span class="font-body-md-medium text-caption text-on-surface">
+          Page <strong class="text-primary font-bold">1</strong> of 11
+        </span>
+<button class="h-9 px-3 rounded-lg border border-outline-variant bg-surface-container-lowest text-on-surface font-label-sm text-caption flex items-center gap-1 active:bg-surface-container-low transition-colors" type="button">
+<span>Next</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+<!-- Trust & UPI assurance marker for Indian B2C ecosystem -->
+<div class="mt-4 p-3 bg-surface-container-low/70 rounded-xl border border-outline-variant/50 text-center">
+<div class="flex items-center justify-center gap-3 text-on-surface-variant text-[11px] font-medium mb-1">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-secondary">verified</span> 100% Genuine</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-secondary">local_shipping</span> 7-Day Returns</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-secondary">lock</span> Secure UPI</span>
+</div>
+</div>
+</main>
+<!-- 5. Interactive Filter Bottom Sheet / Modal Drawer Preview -->
+<div class="fixed inset-0 z-50 transition-opacity duration-300 pointer-events-none opacity-0" id="filter-drawer">
+<!-- Scrim backdrop -->
+<div class="absolute inset-0 bg-inverse-surface/45" onclick="toggleFilterDrawer(false)"></div>
+<!-- Slide-over Drawer panel (Docked bottom) -->
+<div class="absolute bottom-0 left-0 right-0 max-w-[390px] mx-auto bg-surface-container-lowest rounded-t-2xl max-h-[751px] flex flex-col shadow-2xl transition-transform duration-300 transform translate-y-full pointer-events-auto" id="filter-sheet">
+<!-- Drawer Header with Grab Handle -->
+<div class="pt-2 pb-3 px-4 border-b border-outline-variant/60">
+<div class="w-10 h-1 bg-outline-variant rounded-full mx-auto mb-2"></div>
+<div class="flex items-center justify-between">
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Faceted Navigation</h2>
+<p class="font-caption text-caption text-on-surface-variant">Filter &amp; Refine Selection</p>
+</div>
+<button class="p-1 rounded-full text-outline hover:text-on-surface" onclick="toggleFilterDrawer(false)" type="button">
+<span class="material-symbols-outlined text-[22px]">close</span>
+</button>
+</div>
+</div>
+<!-- Filter Options Body -->
+<div class="p-4 overflow-y-auto space-y-4">
+<!-- Category Section -->
+<div>
+<h4 class="font-label-md text-label-md text-on-surface mb-2 font-semibold">Categories</h4>
+<div class="space-y-2">
+<label class="flex items-center gap-2.5 text-body-md text-on-surface cursor-pointer">
+<input checked="" class="w-4 h-4 rounded text-primary focus:ring-primary border-outline" type="checkbox">
+<span class="flex-1">Headphones &amp; Headsets</span>
+<span class="text-caption text-outline">48</span>
+</label>
+<label class="flex items-center gap-2.5 text-body-md text-on-surface cursor-pointer">
+<input checked="" class="w-4 h-4 rounded text-primary focus:ring-primary border-outline" type="checkbox">
+<span class="flex-1">Smartwatches</span>
+<span class="text-caption text-outline">24</span>
+</label>
+<label class="flex items-center gap-2.5 text-body-md text-on-surface cursor-pointer">
+<input class="w-4 h-4 rounded text-primary focus:ring-primary border-outline" type="checkbox">
+<span class="flex-1">Bluetooth Speakers</span>
+<span class="text-caption text-outline">12</span>
+</label>
+<label class="flex items-center gap-2.5 text-body-md text-on-surface cursor-pointer">
+<input class="w-4 h-4 rounded text-primary focus:ring-primary border-outline" type="checkbox">
+<span class="flex-1">TWS Earbuds</span>
+<span class="text-caption text-outline">19</span>
+</label>
+</div>
+</div>
+<!-- Price Range Section -->
+<div class="pt-2 border-t border-outline-variant/60">
+<h4 class="font-label-md text-label-md text-on-surface mb-2 font-semibold">Price Range (₹)</h4>
+<div class="flex items-center gap-2">
+<div class="flex-1">
+<span class="text-[11px] text-outline font-medium">Min ₹</span>
+<input class="w-full h-10 px-3 border border-outline-variant rounded-lg text-body-md text-on-surface focus:ring-primary focus:border-primary" type="number" value="999">
+</div>
+<span class="text-outline mt-3">-</span>
+<div class="flex-1">
+<span class="text-[11px] text-outline font-medium">Max ₹</span>
+<input class="w-full h-10 px-3 border border-outline-variant rounded-lg text-body-md text-on-surface focus:ring-primary focus:border-primary" type="number" value="5000">
+</div>
+</div>
+</div>
+<!-- Stock Availability -->
+<div class="pt-2 border-t border-outline-variant/60">
+<h4 class="font-label-md text-label-md text-on-surface mb-2 font-semibold">Availability</h4>
+<label class="flex items-center gap-2.5 text-body-md text-on-surface cursor-pointer">
+<input checked="" class="w-4 h-4 rounded text-primary focus:ring-primary border-outline" type="checkbox">
+<span>Exclude out of stock items</span>
+</label>
+</div>
+</div>
+<!-- Drawer CTA Footer -->
+<div class="p-4 border-t border-outline-variant/60 flex items-center gap-3 bg-surface-container-lowest">
+<button class="flex-1 h-11 border border-outline-variant bg-surface-container-lowest text-on-surface font-label-md rounded-lg font-semibold hover:bg-surface-container-low transition-colors" onclick="toggleFilterDrawer(false)" type="button">
+            Clear All Filters
+          </button>
+<button class="flex-1 h-11 bg-primary text-on-primary font-label-md rounded-lg font-semibold hover:bg-surface-tint shadow-xs active:scale-95 transition-all" onclick="toggleFilterDrawer(false)" type="button">
+            Apply Filters
+          </button>
+</div>
+</div>
+</div>
+<!-- 7. Mobile Bottom Navigation Bar (Shared Component Blueprint) -->
+<!-- Rule execution: Fixed docked bottom shell, 5 items, exact JSON labels & icons -->
+<nav class="fixed bottom-0 left-0 right-0 max-w-[390px] mx-auto z-40 bg-surface-container-lowest dark:bg-inverse-surface border-t border-outline-variant dark:border-outline shadow-md dark:shadow-none flex justify-around items-center px-2 py-1 md:hidden">
+<!-- Item 1: Shop / Home (ACTIVE TAB) -->
+<a class="flex flex-col items-center justify-center text-primary dark:text-inverse-primary font-label-sm text-label-sm py-1 active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined text-[22px] filled">storefront</span>
+<span class="mt-0.5 text-[11px] font-semibold">Shop</span>
+</a>
+<!-- Item 2: Categories -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-inverse-on-surface font-caption text-caption py-1 hover:text-primary dark:hover:text-inverse-primary active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined text-[22px]">grid_view</span>
+<span class="mt-0.5 text-[11px]">Categories</span>
+</a>
+<!-- Item 3: Wishlist (with badge 2) -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-inverse-on-surface font-caption text-caption py-1 hover:text-primary dark:hover:text-inverse-primary active:scale-95 transition-transform duration-150 relative" href="#">
+<span class="material-symbols-outlined text-[22px]">favorite</span>
+<span class="mt-0.5 text-[11px]">Wishlist</span>
+<span class="absolute top-0 right-2 w-4 h-4 bg-error text-on-error font-caption text-[10px] rounded-full flex items-center justify-center font-bold">2</span>
+</a>
+<!-- Item 4: Orders -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-inverse-on-surface font-caption text-caption py-1 hover:text-primary dark:hover:text-inverse-primary active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined text-[22px]">receipt_long</span>
+<span class="mt-0.5 text-[11px]">Orders</span>
+</a>
+<!-- Item 5: Account -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-inverse-on-surface font-caption text-caption py-1 hover:text-primary dark:hover:text-inverse-primary active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined text-[22px]">person</span>
+<span class="mt-0.5 text-[11px]">Account</span>
+</a>
+</nav>
+</div>
+<!-- Inline Micro-interactions Script -->
+<script>
+    function toggleFilterDrawer(open) {
+      const drawer = document.getElementById('filter-drawer');
+      const sheet = document.getElementById('filter-sheet');
+      if (open) {
+        drawer.classList.remove('pointer-events-none', 'opacity-0');
+        drawer.classList.add('pointer-events-auto', 'opacity-100');
+        sheet.classList.remove('translate-y-full');
+        sheet.classList.add('translate-y-0');
+      } else {
+        drawer.classList.remove('pointer-events-auto', 'opacity-100');
+        drawer.classList.add('pointer-events-none', 'opacity-0');
+        sheet.classList.remove('translate-y-0');
+        sheet.classList.add('translate-y-full');
+      }
+    }
+
+    function switchState(state) {
+      const viewGrid = document.getElementById('view-grid');
+      const viewSkeleton = document.getElementById('view-skeleton');
+      const viewEmpty = document.getElementById('view-empty');
+      const pagination = document.getElementById('pagination-controls');
+
+      const tabGrid = document.getElementById('tab-grid');
+      const tabSkeleton = document.getElementById('tab-skeleton');
+      const tabEmpty = document.getElementById('tab-empty');
+
+      // Reset classes
+      [tabGrid, tabSkeleton, tabEmpty].forEach(tab => {
+        tab.className = "flex-1 py-1.5 rounded-lg text-on-surface-variant font-medium hover:text-on-surface transition-all text-center";
+      });
+
+      // Hide all states
+      viewGrid.classList.add('hidden');
+      viewSkeleton.classList.add('hidden');
+      viewEmpty.classList.add('hidden');
+      viewEmpty.classList.remove('flex');
+
+      if (state === 'grid') {
+        viewGrid.classList.remove('hidden');
+        pagination.classList.remove('hidden');
+        tabGrid.className = "flex-1 py-1.5 rounded-lg bg-surface-container-lowest text-primary font-semibold shadow-xs transition-all text-center";
+      } else if (state === 'skeleton') {
+        viewSkeleton.classList.remove('hidden');
+        pagination.classList.remove('hidden');
+        tabSkeleton.className = "flex-1 py-1.5 rounded-lg bg-surface-container-lowest text-primary font-semibold shadow-xs transition-all text-center";
+      } else if (state === 'empty') {
+        viewEmpty.classList.remove('hidden');
+        viewEmpty.classList.add('flex');
+        pagination.classList.add('hidden');
+        tabEmpty.className = "flex-1 py-1.5 rounded-lg bg-surface-container-lowest text-primary font-semibold shadow-xs transition-all text-center";
+      }
+    }
+  </script>
+</body></html>

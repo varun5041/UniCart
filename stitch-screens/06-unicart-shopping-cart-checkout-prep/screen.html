@@ -1,0 +1,846 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Shopping Cart | UniCart India</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Google Fonts Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary-fixed": "#0f0069",
+            "on-error-container": "#93000a",
+            "surface-container-lowest": "#ffffff",
+            "on-secondary-fixed": "#002113",
+            "inverse-on-surface": "#eef0ff",
+            "on-surface": "#131b2e",
+            "background": "#faf8ff",
+            "on-tertiary-container": "#ffd4a4",
+            "on-secondary-container": "#00714d",
+            "on-tertiary-fixed": "#2a1700",
+            "on-primary-container": "#dad7ff",
+            "tertiary-fixed": "#ffddb8",
+            "surface-container-high": "#e2e7ff",
+            "surface-container": "#eaedff",
+            "on-primary-fixed-variant": "#3323cc",
+            "primary": "#3525cd",
+            "outline": "#777587",
+            "surface-variant": "#dae2fd",
+            "on-background": "#131b2e",
+            "secondary": "#006c49",
+            "inverse-primary": "#c3c0ff",
+            "tertiary-container": "#885500",
+            "on-secondary-fixed-variant": "#005236",
+            "secondary-fixed-dim": "#4edea3",
+            "on-secondary": "#ffffff",
+            "surface-tint": "#4d44e3",
+            "outline-variant": "#c7c4d8",
+            "tertiary": "#684000",
+            "surface-bright": "#faf8ff",
+            "on-primary": "#ffffff",
+            "surface-container-highest": "#dae2fd",
+            "error-container": "#ffdad6",
+            "on-tertiary-fixed-variant": "#653e00",
+            "surface": "#faf8ff",
+            "secondary-container": "#6cf8bb",
+            "tertiary-fixed-dim": "#ffb95f",
+            "error": "#ba1a1a",
+            "primary-fixed": "#e2dfff",
+            "inverse-surface": "#283044",
+            "primary-fixed-dim": "#c3c0ff",
+            "primary-container": "#4f46e5",
+            "on-surface-variant": "#464555",
+            "surface-container-low": "#f2f3ff",
+            "secondary-fixed": "#6ffbbe",
+            "on-error": "#ffffff",
+            "surface-dim": "#d2d9f4",
+            "on-tertiary": "#ffffff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-md": "1rem",
+            "margin": "2rem",
+            "gutter": "1.5rem",
+            "space-sm": "0.5rem",
+            "space-lg": "1.5rem",
+            "space-xs": "0.25rem",
+            "space-xl": "2rem",
+            "space-2xl": "3rem",
+            "margin-mobile": "1rem",
+            "gutter-mobile": "1rem"
+          },
+          "fontFamily": {
+            "label-md": ["Inter"],
+            "body-md": ["Inter"],
+            "caption": ["Inter"],
+            "headline-md": ["Inter"],
+            "body-lg-medium": ["Inter"],
+            "price-display": ["Inter"],
+            "body-lg": ["Inter"],
+            "headline-lg-mobile": ["Inter"],
+            "headline-xl": ["Inter"],
+            "body-md-medium": ["Inter"],
+            "headline-sm": ["Inter"],
+            "headline-lg": ["Inter"],
+            "headline-xl-mobile": ["Inter"],
+            "title-md": ["Inter"],
+            "label-sm": ["Inter"]
+          },
+          "fontSize": {
+            "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "600" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "caption": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+            "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "body-lg-medium": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+            "price-display": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+            "headline-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "body-md-medium": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+            "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+            "headline-lg": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+            "headline-xl-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "title-md": ["18px", { "lineHeight": "26px", "fontWeight": "600" }],
+            "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .material-symbols-outlined.fill-icon {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .skeleton-shimmer {
+      background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased min-h-screen flex flex-col">
+<!-- TOP APP BAR (Shared Components JSON Anchor) -->
+<header class="bg-surface-container-lowest dark:bg-inverse-surface border-b border-outline-variant dark:border-outline shadow-sm dark:shadow-none docked full-width top-0 sticky z-50">
+<div class="w-full px-4 md:px-8 max-w-7xl mx-auto flex items-center justify-between h-16 gap-4">
+<!-- Brand Logo & Pincode Indicator -->
+<div class="flex items-center gap-6 shrink-0">
+<a class="text-headline-md font-headline-md text-primary dark:text-inverse-primary tracking-tight font-bold flex items-center gap-1.5 transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="shopping_bag">shopping_bag</span>
+<span>UniCart</span>
+</a>
+<!-- Delivery Location Indicator -->
+<button class="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-outline-variant hover:bg-surface-container-low transition-colors duration-150 text-left">
+<span class="material-symbols-outlined text-outline text-lg" data-icon="location_on">location_on</span>
+<div>
+<div class="font-caption text-caption text-on-surface-variant leading-none">Deliver to</div>
+<div class="font-label-sm text-label-sm text-on-surface font-semibold flex items-center gap-0.5">
+<span>Mumbai 400001</span>
+<span class="material-symbols-outlined text-sm" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+</button>
+</div>
+<!-- Search Bar -->
+<div class="flex-1 max-w-xl mx-2 hidden sm:block">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-outline text-xl pointer-events-none" data-icon="search">search</span>
+<input class="w-full pl-10 pr-24 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg font-body-md text-body-md focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all placeholder:text-outline" placeholder="Search for electronics, mobile accessories, audio gear..." type="text">
+<div class="absolute right-2 flex items-center">
+<span class="text-caption font-caption text-on-surface-variant bg-surface-container px-2 py-0.5 rounded border border-outline-variant">INR ₹</span>
+</div>
+</div>
+</div>
+<!-- Trailing Navigation & Actions -->
+<div class="flex items-center gap-3 md:gap-5 shrink-0">
+<!-- Wishlist -->
+<a class="hidden md:flex items-center gap-1 text-on-surface-variant dark:text-inverse-on-surface font-body-md text-body-md hover:text-primary dark:hover:text-inverse-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="favorite">favorite</span>
+<span class="font-label-md text-label-md">Wishlist</span>
+</a>
+<!-- Help -->
+<a class="hidden lg:flex items-center gap-1 text-on-surface-variant dark:text-inverse-on-surface font-body-md text-body-md hover:text-primary dark:hover:text-inverse-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="help">help</span>
+<span class="font-label-md text-label-md">Help</span>
+</a>
+<!-- Cart Badge Icon (Active) -->
+<a class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container text-primary font-body-md-medium text-body-md-medium relative transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-2xl text-primary" data-icon="shopping_cart">shopping_cart</span>
+<span class="font-label-md text-label-md hidden sm:inline">Cart</span>
+<span class="bg-primary text-white text-[11px] font-bold rounded-full h-5 w-5 flex items-center justify-center -ml-1">3</span>
+</a>
+<!-- User Profile Avatar Menu -->
+<div class="flex items-center gap-2 pl-2 border-l border-outline-variant">
+<div class="h-9 w-9 rounded-full bg-surface-container-high flex items-center justify-center text-primary font-bold text-sm border border-outline-variant">
+            RN
+          </div>
+<div class="hidden xl:block text-left">
+<div class="text-[11px] font-caption text-on-surface-variant leading-none">Namaste,</div>
+<div class="font-label-md text-label-md text-on-surface leading-snug">Rahul N.</div>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- BREADCRUMB / CHECKOUT PROGRESS STEPS -->
+<div class="bg-surface-container-lowest border-b border-outline-variant">
+<div class="max-w-7xl mx-auto px-4 md:px-8 py-3.5">
+<div class="flex items-center justify-between flex-wrap gap-3">
+<!-- Stepper Indicator -->
+<div class="flex items-center gap-3">
+<!-- Step 1: Cart (Active) -->
+<div class="flex items-center gap-2 text-primary font-semibold">
+<span class="w-6 h-6 rounded-full bg-primary text-white text-xs flex items-center justify-center font-bold">1</span>
+<span class="font-label-md text-label-md text-primary">Cart</span>
+</div>
+<div class="w-8 h-[2px] bg-outline-variant"></div>
+<!-- Step 2: Delivery Address -->
+<div class="flex items-center gap-2 text-outline">
+<span class="w-6 h-6 rounded-full border border-outline text-xs flex items-center justify-center font-medium">2</span>
+<span class="font-label-md text-label-md text-on-surface-variant">Delivery Address</span>
+</div>
+<div class="w-8 h-[2px] bg-outline-variant"></div>
+<!-- Step 3: Payment -->
+<div class="flex items-center gap-2 text-outline">
+<span class="w-6 h-6 rounded-full border border-outline text-xs flex items-center justify-center font-medium">3</span>
+<span class="font-label-md text-label-md text-on-surface-variant">Payment</span>
+</div>
+</div>
+<!-- Quick State Switcher for Developer / Preview Demo -->
+<div class="flex items-center gap-1.5 text-xs bg-surface-container-low px-2 py-1 rounded-lg border border-outline-variant">
+<span class="text-on-surface-variant font-medium">View Mode:</span>
+<button class="px-2.5 py-0.5 rounded bg-primary text-white font-medium shadow-xs transition-colors" id="btn-view-active" onclick="setView('active')">Active Cart</button>
+<button class="px-2.5 py-0.5 rounded text-on-surface-variant hover:bg-surface-container transition-colors font-medium" id="btn-view-empty" onclick="setView('empty')">Empty</button>
+<button class="px-2.5 py-0.5 rounded text-on-surface-variant hover:bg-surface-container transition-colors font-medium" id="btn-view-loading" onclick="setView('loading')">Skeleton</button>
+</div>
+</div>
+</div>
+</div>
+<!-- MAIN CANVAS -->
+<main class="flex-1 max-w-7xl mx-auto w-full px-4 md:px-8 py-6 md:py-8">
+<!-- ========================================== -->
+<!-- VIEW STATE 1: ACTIVE CART (Default)       -->
+<!-- ========================================== -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start" id="state-active-cart">
+<!-- LEFT COLUMN: Cart Items & Alerts (8 Cols) -->
+<div class="lg:col-span-8 space-y-4">
+<!-- Price Change Warning Alert (Amber Banner) -->
+<div class="bg-amber-50 border border-amber-300 rounded-lg p-3.5 flex items-start gap-3 shadow-sm">
+<span class="material-symbols-outlined text-amber-600 shrink-0 text-xl mt-0.5" data-icon="trending_down">trending_down</span>
+<div class="flex-1">
+<p class="font-label-md text-label-md text-amber-900">
+<span class="font-bold">Price Updated:</span> Wireless ANC Headphones price decreased from <span class="line-through text-amber-700">₹2,699</span> to <span class="font-bold text-amber-950">₹2,499</span>. You save an extra ₹200!
+            </p>
+</div>
+<button aria-label="Dismiss" class="text-amber-800 hover:text-amber-950 shrink-0">
+<span class="material-symbols-outlined text-lg" data-icon="close">close</span>
+</button>
+</div>
+<!-- Cart Header Card & Free Express Delivery Progress -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 md:p-5 shadow-sm space-y-4">
+<div class="flex items-center justify-between pb-3 border-b border-outline-variant">
+<div>
+<h1 class="font-headline-md text-headline-md text-on-surface">Shopping Cart</h1>
+<span class="font-body-md text-body-md text-on-surface-variant">3 items ready for shipment</span>
+</div>
+<button class="font-label-md text-label-md text-primary hover:underline hover:text-on-primary-fixed-variant transition-colors">
+              Deselect all items
+            </button>
+</div>
+<!-- Free Shipping Live Progress Indicator -->
+<div class="bg-surface-container-low p-3.5 rounded-lg border border-outline-variant/60">
+<div class="flex items-center justify-between mb-1.5">
+<div class="flex items-center gap-1.5 text-secondary font-label-md text-label-md">
+<span class="material-symbols-outlined text-secondary text-lg" data-icon="local_shipping">local_shipping</span>
+<span>Add ₹201 more to unlock <strong>FREE Express Delivery</strong></span>
+</div>
+<span class="font-caption text-caption text-on-surface-variant font-medium">₹799 / ₹1,000 threshold</span>
+</div>
+<div class="w-full bg-outline-variant/40 rounded-full h-2 overflow-hidden">
+<div class="bg-secondary h-2 rounded-full transition-all duration-500" style="width: 79.9%;"></div>
+</div>
+</div>
+</div>
+<!-- LINE ITEM 1: Wireless Over-Ear ANC Headphones -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 md:p-5 shadow-sm transition-all hover:border-slate-400">
+<div class="flex flex-col sm:flex-row gap-4 md:gap-5">
+<!-- Product Thumbnail -->
+<div class="w-full sm:w-28 sm:h-28 h-48 bg-slate-100 rounded-lg shrink-0 overflow-hidden flex items-center justify-center p-2 relative">
+<img class="w-full h-full object-contain" data-alt="A premium pair of matte black over-ear wireless noise cancelling headphones resting on a pristine white minimalist retail podium with clean studio shadows. The high-contrast commercial lighting emphasizes metallic hinges and leatherette ear cushions in a sleek modern aesthetic with subtle indigo ambient reflections." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8l5oTsGyiW2fBXj6LsWyFL_PyhzqWQKqJz6d6IpjuLc7Elu4qcZMHyg61VwEOQ0_oTM_404PxY6c6NFHWfVSAFrDtb-1ju9VezXWm9bkPSL5EeFk7HtqD9-up3I9ejp_TKQzvtKW48DDoFdKaH9aNLsfu0BHh16PyNveAD_N9zO0lEI5XWDDLSCTgjjsU4DRrkEOp7T3TKoGASTH-HOiKA2yfR_D6cR0JSjNXsKPdQCswVhI7OoXyKQ">
+<span class="absolute top-1.5 left-1.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold px-1.5 py-0.5 rounded border border-emerald-300">50% OFF</span>
+</div>
+<!-- Details -->
+<div class="flex-1 flex flex-col justify-between">
+<div>
+<div class="flex items-start justify-between gap-2">
+<div>
+<span class="font-caption text-caption text-on-surface-variant font-medium uppercase tracking-wider">AcroSonic</span>
+<h2 class="font-title-md text-title-md text-on-surface line-clamp-1 hover:text-primary cursor-pointer transition-colors">
+                      Wireless Over-Ear ANC Headphones with 40H Playtime
+                    </h2>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm mt-0.5">Color: Midnight Black | Dual Mic Environmental Cancellation</p>
+</div>
+<!-- Line Item Unit & Line Total -->
+<div class="text-right shrink-0">
+<div class="font-price-display text-price-display text-on-surface font-bold">₹2,499.00</div>
+<div class="font-caption text-caption text-outline line-through">M.R.P. ₹4,999.00</div>
+</div>
+</div>
+<!-- Stock State -->
+<div class="flex items-center gap-1 text-emerald-700 font-label-sm text-label-sm mt-2">
+<span class="material-symbols-outlined text-base" data-icon="check_circle">check_circle</span>
+<span>In Stock • Eligible for FREE Shipping</span>
+</div>
+</div>
+<!-- Quantity Controls & Actions -->
+<div class="flex items-center justify-between pt-3 mt-3 border-t border-outline-variant/50 flex-wrap gap-2">
+<div class="flex items-center border border-outline-variant rounded-lg bg-surface-container-lowest">
+<button aria-label="Decrease quantity" class="px-2.5 py-1 text-on-surface-variant hover:bg-surface-container transition-colors disabled:opacity-40" disabled="">
+<span class="material-symbols-outlined text-base" data-icon="remove">remove</span>
+</button>
+<span class="px-3 py-1 font-label-md text-label-md font-semibold text-on-surface">1</span>
+<button aria-label="Increase quantity" class="px-2.5 py-1 text-on-surface-variant hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-base" data-icon="add">add</span>
+</button>
+</div>
+<div class="flex items-center gap-4 text-sm font-label-md text-label-md">
+<button class="text-on-surface-variant hover:text-primary transition-colors">Save for later</button>
+<span class="text-outline-variant">|</span>
+<button class="text-error hover:text-on-error-container flex items-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-base" data-icon="delete">delete</span>
+<span>Remove</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</article>
+<!-- LINE ITEM 2: Smart Fitness Watch (With Red Stock Warning) -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 md:p-5 shadow-sm transition-all hover:border-slate-400 relative">
+<!-- Stock Alert Banner within Card -->
+<div class="mb-3 bg-red-50 border border-red-200 text-red-700 px-3 py-1.5 rounded text-xs font-medium flex items-center gap-1.5">
+<span class="material-symbols-outlined text-base text-red-600" data-icon="warning">warning</span>
+<span><strong>Stock Alert:</strong> Only 2 available in seller warehouse. Quantity automatically adjusted from 3 to 2.</span>
+</div>
+<div class="flex flex-col sm:flex-row gap-4 md:gap-5">
+<!-- Product Thumbnail -->
+<div class="w-full sm:w-28 sm:h-28 h-48 bg-slate-100 rounded-lg shrink-0 overflow-hidden flex items-center justify-center p-2 relative">
+<img class="w-full h-full object-contain" data-alt="A contemporary unisex smart fitness watch featuring a bright vibrant high resolution AMOLED circular touch display resting on a polished slate countertop. The clean studio lighting accentuates the textured black silicone strap and brushed metallic bezel with sharp modern e-commerce visual fidelity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDL6L6qlTV3eCIevzrP_Uk7B1vGEqRZX8pDpC2lVNMyBUmC6jgwBZAgy701o4nSjXcSwI4P3WvXvf1QDAyxYScvzUZnwf1ir_Gp3Ul1B26_39HN6bf5FGmv-TOB4LMc6Zvp1dc4Jw_xiCpG4gERXe3ht67H7yqAI-LBPzdsPLJBhj9sOjZvesQspRQGoSrQrLzCj5viY8AED5_sBGbCeFbxPE5cbk6mT6GJLVQNnCYf-mQWwv3RBbcO6w">
+<span class="absolute top-1.5 left-1.5 bg-amber-100 text-amber-800 text-[10px] font-bold px-1.5 py-0.5 rounded border border-amber-300">Limited</span>
+</div>
+<!-- Details -->
+<div class="flex-1 flex flex-col justify-between">
+<div>
+<div class="flex items-start justify-between gap-2">
+<div>
+<span class="font-caption text-caption text-on-surface-variant font-medium uppercase tracking-wider">PulseSync</span>
+<h2 class="font-title-md text-title-md text-on-surface line-clamp-1 hover:text-primary cursor-pointer transition-colors">
+                      Smart Fitness Watch with 1.43" AMOLED Display
+                    </h2>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm mt-0.5">Dial: Active Black | Bluetooth Calling &amp; SpO2 Monitor</p>
+</div>
+<!-- Line Item Unit & Line Total -->
+<div class="text-right shrink-0">
+<div class="font-price-display text-price-display text-on-surface font-bold">₹6,398.00</div>
+<div class="font-caption text-caption text-outline">₹3,199.00 each</div>
+</div>
+</div>
+<!-- Stock State Warning -->
+<div class="flex items-center gap-1 text-amber-700 font-label-sm text-label-sm mt-2">
+<span class="material-symbols-outlined text-base" data-icon="inventory_2">inventory_2</span>
+<span>Only 2 units remaining in stock</span>
+</div>
+</div>
+<!-- Quantity Controls & Actions -->
+<div class="flex items-center justify-between pt-3 mt-3 border-t border-outline-variant/50 flex-wrap gap-2">
+<div class="flex items-center border border-outline-variant rounded-lg bg-surface-container-lowest">
+<button aria-label="Decrease quantity" class="px-2.5 py-1 text-on-surface-variant hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-base" data-icon="remove">remove</span>
+</button>
+<span class="px-3 py-1 font-label-md text-label-md font-semibold text-on-surface">2</span>
+<button aria-label="Increase quantity capped" class="px-2.5 py-1 text-on-surface-variant opacity-40 cursor-not-allowed" title="Maximum available stock reached">
+<span class="material-symbols-outlined text-base" data-icon="add">add</span>
+</button>
+</div>
+<div class="flex items-center gap-4 text-sm font-label-md text-label-md">
+<button class="text-on-surface-variant hover:text-primary transition-colors">Save for later</button>
+<span class="text-outline-variant">|</span>
+<button class="text-error hover:text-on-error-container flex items-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-base" data-icon="delete">delete</span>
+<span>Remove</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</article>
+<!-- LINE ITEM 3: Portable Waterproof Bluetooth Speaker 20W -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 md:p-5 shadow-sm transition-all hover:border-slate-400">
+<div class="flex flex-col sm:flex-row gap-4 md:gap-5">
+<!-- Product Thumbnail -->
+<div class="w-full sm:w-28 sm:h-28 h-48 bg-slate-100 rounded-lg shrink-0 overflow-hidden flex items-center justify-center p-2 relative">
+<img class="w-full h-full object-contain" data-alt="A compact cylindrical waterproof bluetooth speaker with rugged woven fabric finish in charcoal gray standing upright on a pale reflective surface. Fine water droplets sparkle cleanly against the grille illuminated by crisp directional studio daylight showcasing high product craftsmanship." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDWLltmFJ4YOqfwSneriU7rCFxz176WLA-DSegGgNnAedkjPdhMryHEtmVWK481aFn2GSbBhYpqGT6_O7PcQ009quUdtBkrY7aFZpOj9X-tcjTQH3mtvOuOJBnxA7BdxJf9k9qIzl-69xKpKgRks8V6ySypyecqpm-nm9vbMYLY-5tpAiqZK1k2IDrqXfZw4LWS2-PRIiMwO1WChQzDiDF4aZLJ5PQMa4hGIKKoBG0tqDxH6s-Vz3tMdg">
+<span class="absolute top-1.5 left-1.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold px-1.5 py-0.5 rounded border border-emerald-300">35% OFF</span>
+</div>
+<!-- Details -->
+<div class="flex-1 flex flex-col justify-between">
+<div>
+<div class="flex items-start justify-between gap-2">
+<div>
+<span class="font-caption text-caption text-on-surface-variant font-medium uppercase tracking-wider">BoomWave</span>
+<h2 class="font-title-md text-title-md text-on-surface line-clamp-1 hover:text-primary cursor-pointer transition-colors">
+                      Portable Waterproof Bluetooth Speaker 20W
+                    </h2>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm mt-0.5">IPX7 Rugged Fabric | 12 Hours Battery with BassBoost</p>
+</div>
+<!-- Line Item Unit & Line Total -->
+<div class="text-right shrink-0">
+<div class="font-price-display text-price-display text-on-surface font-bold">₹1,899.00</div>
+<div class="font-caption text-caption text-outline line-through">M.R.P. ₹2,999.00</div>
+</div>
+</div>
+<!-- Stock State -->
+<div class="flex items-center gap-1 text-emerald-700 font-label-sm text-label-sm mt-2">
+<span class="material-symbols-outlined text-base" data-icon="check_circle">check_circle</span>
+<span>In Stock • Ready to dispatch in 24 hours</span>
+</div>
+</div>
+<!-- Quantity Controls & Actions -->
+<div class="flex items-center justify-between pt-3 mt-3 border-t border-outline-variant/50 flex-wrap gap-2">
+<div class="flex items-center border border-outline-variant rounded-lg bg-surface-container-lowest">
+<button aria-label="Decrease quantity" class="px-2.5 py-1 text-on-surface-variant hover:bg-surface-container transition-colors disabled:opacity-40" disabled="">
+<span class="material-symbols-outlined text-base" data-icon="remove">remove</span>
+</button>
+<span class="px-3 py-1 font-label-md text-label-md font-semibold text-on-surface">1</span>
+<button aria-label="Increase quantity" class="px-2.5 py-1 text-on-surface-variant hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-base" data-icon="add">add</span>
+</button>
+</div>
+<div class="flex items-center gap-4 text-sm font-label-md text-label-md">
+<button class="text-on-surface-variant hover:text-primary transition-colors">Save for later</button>
+<span class="text-outline-variant">|</span>
+<button class="text-error hover:text-on-error-container flex items-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-base" data-icon="delete">delete</span>
+<span>Remove</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</article>
+<!-- Saved for Later Section / Complementary Items -->
+<div class="pt-6">
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-title-md text-title-md text-on-surface">Saved for Later (1 item)</h3>
+<span class="font-body-md text-body-md text-on-surface-variant">Move items back to active cart anytime</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 flex items-center justify-between flex-wrap gap-4">
+<div class="flex items-center gap-4">
+<div class="w-16 h-16 bg-slate-100 rounded-lg shrink-0 flex items-center justify-center p-1.5 overflow-hidden">
+<img class="w-full h-full object-contain" data-alt="A braided nylon 65W fast charging USB-C cable wound neatly into an oval loop on an ultra clean light studio surface. The reinforced gunmetal connector head is prominently focused showing meticulous durable design against white backdrop." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmedm2p4gigFDCt5Pdk4BnIgoEw7z9D383wYq9TwoPcFi54heR59rqN18Iqi-DitXaYLwWzisMJawpq2tKUU6X0qvarHO2EnwFKmSVHsJljURLXTEOgezup0qrmSx7agJNJvkjZ5uvSn-aVbCAPMDkn4bMXVrXNMxlHYWz4_khMeBRfkxfq9c0o0zlZebkvElDuw-ahcNGMfRfxQi2ixvxEekbJJYKVy8yG0nVBnsrbfBXiHNJ39wB-Q">
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface font-semibold">ToughBraided 65W USB-C to Type-C Fast Cable (2M)</h4>
+<div class="flex items-center gap-2 mt-1">
+<span class="font-label-md text-label-md text-on-surface font-bold">₹449.00</span>
+<span class="font-caption text-caption text-outline line-through">₹999.00</span>
+<span class="text-emerald-700 text-xs font-semibold">In stock</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-3.5 py-1.5 text-primary border border-primary rounded-lg font-label-md text-label-md hover:bg-surface-container-low transition-colors">
+                Move to Cart
+              </button>
+<button class="text-error hover:text-on-error-container p-1" title="Delete">
+<span class="material-symbols-outlined text-xl" data-icon="delete">delete</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- RIGHT COLUMN: Order Summary Card (4 Cols - Sticky) -->
+<aside class="lg:col-span-4 sticky top-24 space-y-4">
+<!-- Summary Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-5 md:p-6 shadow-sm">
+<h2 class="font-title-md text-title-md text-on-surface pb-3 border-b border-outline-variant flex items-center justify-between">
+<span>Order Summary</span>
+<span class="font-body-md text-body-md text-on-surface-variant font-normal">4 Items</span>
+</h2>
+<!-- Price Breakup -->
+<div class="py-4 space-y-3 font-body-md text-body-md border-b border-outline-variant">
+<div class="flex justify-between text-on-surface">
+<span>Items Total (MRP)</span>
+<span>₹16,396.00</span>
+</div>
+<div class="flex justify-between text-emerald-700 font-medium">
+<span class="flex items-center gap-1">
+<span>Product Discounts</span>
+<span class="material-symbols-outlined text-sm" data-icon="info">info</span>
+</span>
+<span>-₹5,800.00</span>
+</div>
+<div class="flex justify-between text-on-surface">
+<span>Cart Subtotal</span>
+<span>₹10,596.00</span>
+</div>
+<div class="flex justify-between text-on-surface items-center">
+<span class="flex items-center gap-1">
+<span>Delivery Fee</span>
+<span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-1.5 py-0.2 rounded uppercase">Promo</span>
+</span>
+<div class="text-right">
+<span class="line-through text-outline text-xs mr-1">₹99.00</span>
+<span class="text-emerald-700 font-semibold">FREE</span>
+</div>
+</div>
+<!-- Coupon Applied row -->
+<div class="flex justify-between text-emerald-700 text-sm font-medium pt-1">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-base" data-icon="sell">sell</span>
+<span>Coupon (UNICARTNEW)</span>
+</span>
+<span>-₹200.00</span>
+</div>
+</div>
+<!-- Coupon Input Form -->
+<div class="py-4 border-b border-outline-variant">
+<label class="block font-label-md text-label-md text-on-surface-variant mb-1.5 font-medium">Have a Gift Card or Promo Code?</label>
+<div class="flex gap-2">
+<input class="flex-1 bg-surface-container-lowest border border-outline-variant rounded-lg px-3 py-2 text-sm uppercase tracking-wider font-semibold focus:border-primary focus:ring-1 focus:ring-primary outline-none" type="text" value="UNICARTNEW">
+<button class="px-4 py-2 bg-surface-container-high text-primary hover:bg-surface-container-highest border border-outline-variant rounded-lg font-label-md text-label-md transition-colors">
+                Apply
+              </button>
+</div>
+<div class="text-xs text-emerald-700 mt-1.5 flex items-center gap-1 font-medium">
+<span class="material-symbols-outlined text-sm" data-icon="check">check</span>
+<span>Extra ₹200 introductory discount applied</span>
+</div>
+</div>
+<!-- Total Bill Amount -->
+<div class="py-4">
+<div class="flex justify-between items-baseline mb-1">
+<span class="font-title-md text-title-md font-bold text-on-surface">Total Amount</span>
+<span class="font-price-display text-price-display text-primary font-bold">₹10,396.00</span>
+</div>
+<p class="font-caption text-caption text-on-surface-variant">Inclusive of all Indian GST (18%) and local duties</p>
+<!-- Overall Savings Pill -->
+<div class="mt-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs px-3 py-2 rounded-lg flex items-center gap-2 font-medium">
+<span class="material-symbols-outlined text-base text-emerald-600" data-icon="savings">savings</span>
+<span>Yay! You are saving <strong>₹6,000.00</strong> on this order.</span>
+</div>
+</div>
+<!-- Primary Checkout CTA -->
+<button class="w-full bg-primary hover:bg-on-primary-fixed-variant text-white font-label-md text-label-md py-3.5 px-4 rounded-lg flex items-center justify-center gap-2 shadow-sm transition-all duration-200 active:scale-[0.98]">
+<span class="material-symbols-outlined text-xl" data-icon="lock">lock</span>
+<span class="font-bold">Proceed to Checkout (₹10,396.00)</span>
+<span class="material-symbols-outlined text-lg" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<!-- Safe Payments & UniCart Promises -->
+<div class="mt-5 pt-4 border-t border-outline-variant space-y-2.5">
+<div class="flex items-center gap-2 text-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-emerald-600 text-lg" data-icon="verified_user">verified_user</span>
+<span><strong>100% Safe Payments</strong> with UPI, RuPay, Cards &amp; NetBanking</span>
+</div>
+<div class="flex items-center gap-2 text-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-primary text-lg" data-icon="assignment_return">assignment_return</span>
+<span><strong>7-Day Easy Returns</strong> &amp; Instant Refund Assurance</span>
+</div>
+<div class="flex items-center gap-2 text-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-amber-600 text-lg" data-icon="shield">shield</span>
+<span>UniCart Buyer Protection program included</span>
+</div>
+</div>
+</div>
+<!-- Express Delivery Slot Tip -->
+<div class="bg-surface-container-low border border-outline-variant rounded-lg p-3.5 text-xs text-on-surface-variant flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary text-xl shrink-0" data-icon="bolt">bolt</span>
+<span>Order within <strong>2 hours 15 mins</strong> to receive delivery in Mumbai by <strong>Tomorrow, 8 PM</strong>.</span>
+</div>
+</aside>
+</div>
+<!-- ========================================== -->
+<!-- VIEW STATE 2: EMPTY CART STATE            -->
+<!-- ========================================== -->
+<div class="hidden" id="state-empty-cart">
+<!-- Centered Empty Canvas Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-8 md:p-14 text-center max-w-2xl mx-auto my-8 shadow-sm">
+<div class="w-20 h-20 rounded-full bg-surface-container-high mx-auto flex items-center justify-center text-primary mb-5">
+<span class="material-symbols-outlined text-4xl text-primary" data-icon="production_quantity_limits">production_quantity_limits</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-on-surface mb-2 font-bold">Your UniCart cart is empty</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md mx-auto mb-6">
+          Looks like you haven't added anything to your cart yet. Explore our curated gadgets, high-performance electronics, and trending Indian retail deals today!
+        </p>
+<div class="flex items-center justify-center gap-3 flex-wrap">
+<button class="bg-primary hover:bg-on-primary-fixed-variant text-white font-label-md text-label-md py-3 px-6 rounded-lg font-semibold flex items-center gap-2 transition-all" onclick="setView('active')">
+<span class="material-symbols-outlined text-lg" data-icon="storefront">storefront</span>
+<span>Continue Shopping</span>
+</button>
+<a class="border border-outline-variant bg-surface-container-lowest hover:bg-surface-container text-on-surface font-label-md text-label-md py-3 px-5 rounded-lg font-medium transition-colors" href="#">
+            View Wishlist (4)
+          </a>
+</div>
+</div>
+<!-- Trending Picks Row for Empty State Discovery -->
+<div class="mt-12 max-w-5xl mx-auto">
+<div class="flex items-center justify-between mb-4">
+<div>
+<h3 class="font-title-md text-title-md text-on-surface font-bold">Trending Gadgets You Might Like</h3>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">Specially handpicked for quick delivery in Mumbai</p>
+</div>
+<a class="text-primary font-label-md text-label-md hover:underline flex items-center gap-1" href="#">
+<span>Explore All</span>
+<span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span>
+</a>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+<!-- Recommendation 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-3 shadow-xs hover:border-primary transition-all">
+<div class="h-36 bg-slate-50 rounded-lg mb-2 overflow-hidden flex items-center justify-center p-2">
+<img class="h-full object-contain" data-alt="A pair of true wireless earbuds in a sleek glossy white pocket charging case sitting open to show modern ergonomic stems against a soft grey clean commercial studio backdrop with crisp rim lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAReYzC0AADVVOc35VGw0kZykCALpJDuG1JKYd49D_uR9bbzAzFK4nZXAjkVK2ULn3IR7HnMlTvCWwTuYig9PkOvFs0zHJCUpw_yxB6St3twlJCjvOwUjofbbrkcSO0h8OtbWHiAyhcn-JW348ZL1_sN0Qpxx64aJwEwAc9udVGnYCJGPxw8zvwppItI7cjh68K0SV8qJzg2dO66tsX0s-7R8CdoJ9UcZ8seB0sksOSCnIpEF7dcNtSMA">
+</div>
+<h4 class="font-label-md text-label-md text-on-surface font-medium line-clamp-1">TWS Earbuds Pro 30dB ANC</h4>
+<div class="flex items-center gap-1.5 my-1">
+<span class="font-bold text-on-surface">₹1,499</span>
+<span class="text-xs text-outline line-through">₹2,999</span>
+</div>
+<button class="w-full mt-2 py-1.5 border border-primary text-primary hover:bg-primary hover:text-white rounded text-xs font-semibold transition-colors">
+              Add to Cart
+            </button>
+</div>
+<!-- Recommendation 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-3 shadow-xs hover:border-primary transition-all">
+<div class="h-36 bg-slate-50 rounded-lg mb-2 overflow-hidden flex items-center justify-center p-2">
+<img class="h-full object-contain" data-alt="A multi-port 65W GaN wall fast charger in minimalist matte black with dual USB-C and single USB-A ports photographed sharply at a three-quarter angle on a smooth off-white surface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZRzgNOUWrndw72I2tFK2tNFqtnD-bofKdlmDvZmC5fVYB9DlTAVz-gDvnLHWEohnY_1jESWKPy8vDEF-M0k6THYLQb4iTfSCd2F1KeKrEC3kWusx1AmgVQ07L_gCqCPLU89LhcBfMmbr8Agaffpyt75sN5EyoYCIczOYs9tNGeIZrYw4WW47kqaIZN5v-L-pWlvB9JrDRQvy_kp3DWmzK9dvL3BD7Hb4PrMBr6-AoyNpxKady4S0wdw">
+</div>
+<h4 class="font-label-md text-label-md text-on-surface font-medium line-clamp-1">65W GaN Fast Charger Triple Port</h4>
+<div class="flex items-center gap-1.5 my-1">
+<span class="font-bold text-on-surface">₹1,799</span>
+<span class="text-xs text-outline line-through">₹3,499</span>
+</div>
+<button class="w-full mt-2 py-1.5 border border-primary text-primary hover:bg-primary hover:text-white rounded text-xs font-semibold transition-colors">
+              Add to Cart
+            </button>
+</div>
+<!-- Recommendation 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-3 shadow-xs hover:border-primary transition-all">
+<div class="h-36 bg-slate-50 rounded-lg mb-2 overflow-hidden flex items-center justify-center p-2">
+<img class="h-full object-contain" data-alt="An ergonomic wireless vertical mouse designed with smooth dark gunmetal contouring and textured thumb rest positioned on a modern minimalist desk setup with gentle studio shadows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5RYnCBhU9puqK-Aw1zJL-2-42EsLGVMS9BPwvVKxnVznXA6OnizlF7W-oWeXN3EQIKgCcggFkm-Uf1KuLZpPC_WU41ML7V6c6NovxSjR7psY8Yj0Z3Edv4fJTHSfjE2XRGifY5n8IAbX7vC4L14KQZWaQI0-Py4ZDI1wNhkEd5sNzjqmfEYw7TAA4P9IxZI-deJ5zClaZE_4PXtEp292OCx4lOPqyoBSwcI1kkJSBmXTBqYLneYWmMw">
+</div>
+<h4 class="font-label-md text-label-md text-on-surface font-medium line-clamp-1">Ergonomic Wireless Silent Mouse</h4>
+<div class="flex items-center gap-1.5 my-1">
+<span class="font-bold text-on-surface">₹899</span>
+<span class="text-xs text-outline line-through">₹1,999</span>
+</div>
+<button class="w-full mt-2 py-1.5 border border-primary text-primary hover:bg-primary hover:text-white rounded text-xs font-semibold transition-colors">
+              Add to Cart
+            </button>
+</div>
+<!-- Recommendation 4 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-3 shadow-xs hover:border-primary transition-all">
+<div class="h-36 bg-slate-50 rounded-lg mb-2 overflow-hidden flex items-center justify-center p-2">
+<img class="h-full object-contain" data-alt="A 10000mAh ultra slim power bank with dual fast-charge ports and LED battery level indicators styled in metallic navy blue finish against clean minimalist product setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBB-dcjdw-TGGjxMLpPYrarZFOxejnDNh0m6TPNkZgkXI_BVb_Is8aYpGXYSsaIKyqtrrmIzcMoSp4jO3isWRUWgYZZU6o3O8tqV4Z5ctUxpaD2q12H7EhWIW9EYmuUIaa3WdVYOiGodyzuLdup1lPlBwBTe9grtmAABA18tqPHNm5P2gsNR6wNuxhcrrZSYITheKhr2ytOsZ_KhBfz5QhiyrzKYTbSn3Mx7_VO_vxfKCIc7V7eWesKWQ">
+</div>
+<h4 class="font-label-md text-label-md text-on-surface font-medium line-clamp-1">UltraSlim 10,000mAh Power Bank</h4>
+<div class="flex items-center gap-1.5 my-1">
+<span class="font-bold text-on-surface">₹1,199</span>
+<span class="text-xs text-outline line-through">₹2,299</span>
+</div>
+<button class="w-full mt-2 py-1.5 border border-primary text-primary hover:bg-primary hover:text-white rounded text-xs font-semibold transition-colors">
+              Add to Cart
+            </button>
+</div>
+</div>
+</div>
+</div>
+<!-- ========================================== -->
+<!-- VIEW STATE 3: LOADING SHIMMER SKELETON     -->
+<!-- ========================================== -->
+<div class="hidden grid grid-cols-1 lg:grid-cols-12 gap-8 items-start" id="state-loading-cart">
+<!-- Left Column Skeletons -->
+<div class="lg:col-span-8 space-y-4">
+<!-- Progress banner skeleton -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-5 space-y-3">
+<div class="h-6 w-48 rounded skeleton-shimmer"></div>
+<div class="h-4 w-full rounded skeleton-shimmer"></div>
+</div>
+<!-- Item 1 Skeleton -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-5 flex gap-4">
+<div class="w-28 h-28 rounded-lg skeleton-shimmer shrink-0"></div>
+<div class="flex-1 space-y-3">
+<div class="h-4 w-24 rounded skeleton-shimmer"></div>
+<div class="h-5 w-3/4 rounded skeleton-shimmer"></div>
+<div class="h-4 w-1/3 rounded skeleton-shimmer"></div>
+<div class="flex justify-between items-center pt-3 border-t border-outline-variant/40">
+<div class="h-8 w-24 rounded skeleton-shimmer"></div>
+<div class="h-4 w-32 rounded skeleton-shimmer"></div>
+</div>
+</div>
+</div>
+<!-- Item 2 Skeleton -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-5 flex gap-4">
+<div class="w-28 h-28 rounded-lg skeleton-shimmer shrink-0"></div>
+<div class="flex-1 space-y-3">
+<div class="h-4 w-24 rounded skeleton-shimmer"></div>
+<div class="h-5 w-2/3 rounded skeleton-shimmer"></div>
+<div class="h-4 w-1/2 rounded skeleton-shimmer"></div>
+<div class="flex justify-between items-center pt-3 border-t border-outline-variant/40">
+<div class="h-8 w-24 rounded skeleton-shimmer"></div>
+<div class="h-4 w-32 rounded skeleton-shimmer"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column Skeleton -->
+<div class="lg:col-span-4 bg-surface-container-lowest border border-outline-variant rounded-lg p-6 space-y-4">
+<div class="h-6 w-36 rounded skeleton-shimmer"></div>
+<div class="space-y-2 py-4 border-y border-outline-variant">
+<div class="h-4 w-full rounded skeleton-shimmer"></div>
+<div class="h-4 w-full rounded skeleton-shimmer"></div>
+<div class="h-4 w-full rounded skeleton-shimmer"></div>
+</div>
+<div class="h-10 w-full rounded skeleton-shimmer"></div>
+<div class="h-12 w-full rounded skeleton-shimmer"></div>
+</div>
+</div>
+</main>
+<!-- BOTTOM NAVBAR (Mobile Responsive Pivot as mandated by Shared Components JSON) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-1 md:hidden bg-surface-container-lowest dark:bg-inverse-surface border-t border-outline-variant dark:border-outline shadow-md">
+<!-- Shop -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-inverse-on-surface font-caption text-caption py-1 active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined text-2xl" data-icon="storefront">storefront</span>
+<span>Shop</span>
+</a>
+<!-- Categories -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-inverse-on-surface font-caption text-caption py-1 active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined text-2xl" data-icon="grid_view">grid_view</span>
+<span>Categories</span>
+</a>
+<!-- Wishlist -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-inverse-on-surface font-caption text-caption py-1 active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined text-2xl" data-icon="favorite">favorite</span>
+<span>Wishlist</span>
+</a>
+<!-- Orders -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-inverse-on-surface font-caption text-caption py-1 active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined text-2xl" data-icon="receipt_long">receipt_long</span>
+<span>Orders</span>
+</a>
+<!-- Account -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-inverse-on-surface font-caption text-caption py-1 active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined text-2xl" data-icon="person">person</span>
+<span>Account</span>
+</a>
+</nav>
+<!-- FOOTER (Shared Components JSON Anchor) -->
+<footer class="bg-surface-container-low dark:bg-inverse-surface border-t border-outline-variant dark:border-outline mt-auto">
+<div class="w-full px-4 md:px-8 max-w-7xl mx-auto py-12 md:py-16">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
+<!-- Col 1 -->
+<div>
+<h4 class="font-title-md text-title-md text-primary dark:text-inverse-primary font-bold mb-3">About UniCart</h4>
+<ul class="space-y-2 font-body-md text-body-md">
+<li><a class="text-on-surface-variant dark:text-inverse-on-surface hover:text-primary dark:hover:text-inverse-primary transition-colors" href="#">About UniCart</a></li>
+<li><a class="text-on-surface-variant dark:text-inverse-on-surface hover:text-primary dark:hover:text-inverse-primary transition-colors" href="#">Careers</a></li>
+<li><a class="text-on-surface-variant dark:text-inverse-on-surface hover:text-primary dark:hover:text-inverse-primary transition-colors" href="#">Press Releases</a></li>
+</ul>
+</div>
+<!-- Col 2 -->
+<div>
+<h4 class="font-title-md text-title-md text-primary dark:text-inverse-primary font-bold mb-3">Help &amp; Support</h4>
+<ul class="space-y-2 font-body-md text-body-md">
+<li><a class="text-on-surface-variant dark:text-inverse-on-surface hover:text-primary dark:hover:text-inverse-primary transition-colors" href="#">Customer Support</a></li>
+<li><a class="text-on-surface-variant dark:text-inverse-on-surface hover:text-primary dark:hover:text-inverse-primary transition-colors" href="#">Shipping Rates</a></li>
+<li><a class="text-on-surface-variant dark:text-inverse-on-surface hover:text-primary dark:hover:text-inverse-primary transition-colors" href="#">Return Policy</a></li>
+</ul>
+</div>
+<!-- Col 3 -->
+<div>
+<h4 class="font-title-md text-title-md text-primary dark:text-inverse-primary font-bold mb-3">Legal &amp; Security</h4>
+<ul class="space-y-2 font-body-md text-body-md">
+<li><a class="text-on-surface-variant dark:text-inverse-on-surface hover:text-primary dark:hover:text-inverse-primary transition-colors" href="#">Terms of Service</a></li>
+<li><a class="text-on-surface-variant dark:text-inverse-on-surface hover:text-primary dark:hover:text-inverse-primary transition-colors" href="#">Privacy Policy</a></li>
+<li><a class="text-on-surface-variant dark:text-inverse-on-surface hover:text-primary dark:hover:text-inverse-primary transition-colors" href="#">PCI-DSS Security</a></li>
+</ul>
+</div>
+<!-- Col 4: Indian Payment Support Ecosystem -->
+<div>
+<h4 class="font-title-md text-title-md text-primary dark:text-inverse-primary font-bold mb-3">Payments Accepted</h4>
+<div class="flex flex-wrap gap-2 text-xs font-semibold text-on-surface-variant">
+<span class="px-2.5 py-1 bg-surface-container rounded border border-outline-variant">UPI</span>
+<span class="px-2.5 py-1 bg-surface-container rounded border border-outline-variant">RuPay</span>
+<span class="px-2.5 py-1 bg-surface-container rounded border border-outline-variant">NetBanking</span>
+<span class="px-2.5 py-1 bg-surface-container rounded border border-outline-variant">Visa / Master</span>
+<span class="px-2.5 py-1 bg-surface-container rounded border border-outline-variant">EMI</span>
+</div>
+<p class="text-caption font-caption text-on-surface-variant mt-3">Verified by DigiLocker and RBI Secure Payment Guidelines.</p>
+</div>
+</div>
+<!-- Copyright row from JSON anchor -->
+<div class="pt-8 border-t border-outline-variant flex flex-col md:flex-row items-center justify-between gap-4 text-caption font-caption text-on-surface-variant">
+<p>© 2024 UniCart Retail Internet Private Limited. All rights reserved. Fast Shipping across India, 7-Day Returns &amp; Secure UPI Payments.</p>
+<div class="flex items-center gap-4 text-lg">
+<span class="material-symbols-outlined text-outline" data-icon="lock">lock</span>
+<span>100% Encrypted Checkout</span>
+</div>
+</div>
+</div>
+</footer>
+<!-- Interactive State Switcher Script -->
+<script>
+    function setView(viewName) {
+      const activeState = document.getElementById('state-active-cart');
+      const emptyState = document.getElementById('state-empty-cart');
+      const loadingState = document.getElementById('state-loading-cart');
+
+      const btnActive = document.getElementById('btn-view-active');
+      const btnEmpty = document.getElementById('btn-view-empty');
+      const btnLoading = document.getElementById('btn-view-loading');
+
+      // Hide all states
+      activeState.classList.add('hidden');
+      emptyState.classList.add('hidden');
+      loadingState.classList.add('hidden');
+
+      // Reset button styles
+      [btnActive, btnEmpty, btnLoading].forEach(btn => {
+        btn.className = "px-2.5 py-0.5 rounded text-on-surface-variant hover:bg-surface-container transition-colors font-medium";
+      });
+
+      if (viewName === 'active') {
+        activeState.classList.remove('hidden');
+        btnActive.className = "px-2.5 py-0.5 rounded bg-primary text-white font-medium shadow-xs transition-colors";
+      } else if (viewName === 'empty') {
+        emptyState.classList.remove('hidden');
+        btnEmpty.className = "px-2.5 py-0.5 rounded bg-primary text-white font-medium shadow-xs transition-colors";
+      } else if (viewName === 'loading') {
+        loadingState.classList.remove('hidden');
+        btnLoading.className = "px-2.5 py-0.5 rounded bg-primary text-white font-medium shadow-xs transition-colors";
+      }
+    }
+  </script>
+</body></html>

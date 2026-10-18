@@ -1,0 +1,188 @@
+{
+  "id": "4e9f0e7bcd9e49f3a34b9252f569b9b5",
+  "title": "UniCart - My Orders & Order Details",
+  "deviceType": "DESKTOP",
+  "width": "2560",
+  "height": "3706",
+  "prompt": "Create the customer \"My Orders\" and \"Order Detail\" experience for UniCart, an Indian B2C e-commerce platform. Desktop 1440px layout using design system tokens.\n\nScreen Title: UniCart - My Orders & Order Details\n\nKey requirements and architecture:\n1. Global Header: UniCart brand logo, search bar, Pincode indicator ('Deliver to Mumbai 400001'), Wishlist, Cart (with badge), and active account menu ('Namaste, Rahul N.'). Active navigation highlighting 'My Orders'.\n\n2. Top interactive view switcher tab bar:\n   - \"Order History (All Orders)\"\n   - \"Order Details: Pending Payment (#UC-89214)\"\n   - \"Order Details: Delivered (#UC-74190)\"\n   - \"Cancel Order Confirmation Dialog (Modal)\"\n   - \"Empty Orders State\"\n\n3. Section A: \"My Orders\" List / Paginated Table:\n   - Header with page title \"My Orders\", search bar to filter by Order ID or Product Name, and status filter pills: \"All Orders (14)\", \"Pending Payment (1)\", \"In Transit / Shipped (2)\", \"Delivered (10)\", \"Cancelled (1)\".\n   - Time range filter dropdown (\"Past 3 months\", \"2024\", \"2023\").\n   - Order list / card cards containing:\n     * Header bar: Order Placed Date (e.g., \"14 Oct 2024\"), Total Amount in INR (e.g., \"₹9,497.00\"), Ship To (\"Rahul Sharma\"), and Order ID (\"#UC-89214\") with copy link and \"View Order Details\" CTA.\n     * Status Badges adhering strictly to the specifications:\n       - \"Pending payment\" = amber badge (#F59E0B / amber-500 bg-amber-50 text-amber-700 border-amber-200)\n       - \"Paid\" = indigo badge (#4F46E5 / indigo-600 bg-indigo-50 text-indigo-700 border-indigo-200)\n       - \"Shipped\" = blue badge (bg-blue-50 text-blue-700 border-blue-200)\n       - \"Delivered\" = emerald badge (#10B981 / bg-emerald-50 text-emerald-700 border-emerald-200)\n       - \"Cancelled\" = grey badge (bg-slate-100 text-slate-600 border-slate-300)\n     * Body: Thumbnail preview of products, product titles, quantity, live snapshot price in INR.\n     * Contextual CTA buttons:\n       - For Pending payment: Primary \"Pay Now (₹9,497.00)\", Secondary \"Cancel Order\", \"View Details\".\n       - For Delivered: \"Track Package\", \"Buy It Again\", \"Download Invoice (PDF)\", \"Write Product Review\".\n       - For Shipped: \"Track Live Shipment\", \"Need Help?\".\n     * Numbered pagination at the bottom: \"Showing 1-4 of 14 orders\", page numbers [1], [2], [3], Next, Prev.\n\n4. Section B: \"Order Detail\" View (demonstrating both pending payment and delivered states):\n   - Breadcrumbs: Home > My Account > My Orders > Order #UC-89214\n   - Header: \"Order Details — #UC-89214\" with order date, invoice download button, and status badge.\n   - Status Timeline / Stepper:\n     * Ordered / Placed -> Payment Confirmation -> Processing / Packed -> Shipped (with courier tracking AWB BlueDart) -> Delivered.\n     * When status is Pending payment: highlight \"Awaiting Payment\" state with warning: \"Payment expires in 28:40 mins to avoid stock release\".\n   - Items list with snapshot prices:\n     * High fidelity thumbnails, product title, seller name, snapshot unit price, quantity, total price.\n   - Shipping Address card & Delivery Method (e.g. Flat 402, Lotus Grandeur, Andheri West, Mumbai 400053, Phone: +91 98765 43210).\n   - Payment Information & Summary breakdown:\n     * Items Subtotal (₹13,997.00), Discounts (-₹4,300.00), Delivery Fee (FREE), Coupon UNICARTNEW (-₹200.00), Total (₹9,497.00).\n     * Payment method indicated (UPI Pending / Credit Card / NetBanking).\n   - Action Bar:\n     * When status is \"Pending payment\": show high-contrast \"Pay Now (₹9,497.00)\" button and secondary \"Cancel Order\" button.\n     * When status is NOT pending payment (e.g. Delivered or Shipped): these two buttons are hidden, replaced by \"Download Tax Invoice\", \"Return / Replace Item\", \"Track Delivery\".\n\n5. Cancel Order Modal Dialog Preview:\n   - Accessible modal overlay for cancelling an order:\n     * Title: \"Cancel Order #UC-89214?\"\n     * Confirmation body: \"Are you sure you want to cancel this order? Any applied discount coupons will be restored to your account.\"\n     * Reason dropdown (e.g. \"Ordered by mistake\", \"Found cheaper elsewhere\", \"Delayed shipping\", \"Change delivery address\").\n     * Actions: \"Nevermind, Keep Order\" (secondary) and \"Confirm Cancellation\" (destructive red button).\n\n6. UniCart Trust Footer:\n   - 100% Genuine Electronics, 7-Day Hassle-Free Returns, Bank-grade 256-bit SSL encryption, Indian payment rails (UPI, RuPay, NetBanking). Full multi-column directory footer.",
+  "theme": {
+    "colorMode": "LIGHT",
+    "font": "INTER",
+    "roundness": "ROUND_EIGHT",
+    "customColor": "#4f46e5",
+    "headlineFont": "INTER",
+    "bodyFont": "INTER",
+    "labelFont": "INTER",
+    "namedColors": {
+      "primary_fixed": "#e2dfff",
+      "on_primary_container": "#dad7ff",
+      "on_primary_fixed": "#0f0069",
+      "on_background": "#131b2e",
+      "on_surface": "#131b2e",
+      "surface_container_high": "#e2e7ff",
+      "surface_container_low": "#f2f3ff",
+      "on_primary_fixed_variant": "#3323cc",
+      "on_tertiary_fixed": "#2a1700",
+      "background": "#faf8ff",
+      "on_secondary_container": "#00714d",
+      "secondary_fixed": "#6ffbbe",
+      "primary_fixed_dim": "#c3c0ff",
+      "on_secondary_fixed": "#002113",
+      "outline_variant": "#c7c4d8",
+      "outline": "#777587",
+      "surface_tint": "#4d44e3",
+      "surface_bright": "#faf8ff",
+      "secondary": "#006c49",
+      "on_secondary_fixed_variant": "#005236",
+      "primary_container": "#4f46e5",
+      "tertiary_container": "#885500",
+      "on_tertiary": "#ffffff",
+      "surface": "#faf8ff",
+      "surface_container": "#eaedff",
+      "on_tertiary_fixed_variant": "#653e00",
+      "error_container": "#ffdad6",
+      "tertiary_fixed_dim": "#ffb95f",
+      "on_primary": "#ffffff",
+      "inverse_on_surface": "#eef0ff",
+      "inverse_primary": "#c3c0ff",
+      "on_error_container": "#93000a",
+      "tertiary_fixed": "#ffddb8",
+      "surface_container_highest": "#dae2fd",
+      "error": "#ba1a1a",
+      "secondary_container": "#6cf8bb",
+      "on_error": "#ffffff",
+      "primary": "#3525cd",
+      "on_tertiary_container": "#ffd4a4",
+      "on_surface_variant": "#464555",
+      "secondary_fixed_dim": "#4edea3",
+      "tertiary": "#684000",
+      "surface_container_lowest": "#ffffff",
+      "surface_variant": "#dae2fd",
+      "surface_dim": "#d2d9f4",
+      "on_secondary": "#ffffff",
+      "inverse_surface": "#283044"
+    },
+    "colorVariant": "FIDELITY",
+    "overridePrimaryColor": "#4f46e5",
+    "overrideSecondaryColor": "#10b981",
+    "overrideTertiaryColor": "#f59e0b",
+    "overrideNeutralColor": "#0f172a",
+    "spacingScale": 2,
+    "typography": {
+      "headline-xl": {
+        "fontFamily": "Inter",
+        "fontSize": "36px",
+        "fontWeight": "700",
+        "lineHeight": "44px",
+        "letterSpacing": "-0.02em"
+      },
+      "body-md-medium": {
+        "fontFamily": "Inter",
+        "fontSize": "14px",
+        "fontWeight": "500",
+        "lineHeight": "20px"
+      },
+      "headline-xl-mobile": {
+        "fontFamily": "Inter",
+        "fontSize": "28px",
+        "fontWeight": "700",
+        "lineHeight": "36px",
+        "letterSpacing": "-0.02em"
+      },
+      "headline-sm": {
+        "fontFamily": "Inter",
+        "fontSize": "20px",
+        "fontWeight": "600",
+        "lineHeight": "28px"
+      },
+      "label-sm": {
+        "fontFamily": "Inter",
+        "fontSize": "12px",
+        "fontWeight": "600",
+        "lineHeight": "16px",
+        "letterSpacing": "0.02em"
+      },
+      "title-md": {
+        "fontFamily": "Inter",
+        "fontSize": "18px",
+        "fontWeight": "600",
+        "lineHeight": "26px"
+      },
+      "headline-md": {
+        "fontFamily": "Inter",
+        "fontSize": "24px",
+        "fontWeight": "600",
+        "lineHeight": "32px",
+        "letterSpacing": "-0.01em"
+      },
+      "price-display": {
+        "fontFamily": "Inter",
+        "fontSize": "24px",
+        "fontWeight": "700",
+        "lineHeight": "32px",
+        "letterSpacing": "-0.01em"
+      },
+      "body-lg": {
+        "fontFamily": "Inter",
+        "fontSize": "16px",
+        "fontWeight": "400",
+        "lineHeight": "24px"
+      },
+      "headline-lg-mobile": {
+        "fontFamily": "Inter",
+        "fontSize": "24px",
+        "fontWeight": "600",
+        "lineHeight": "32px",
+        "letterSpacing": "-0.015em"
+      },
+      "caption": {
+        "fontFamily": "Inter",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "16px"
+      },
+      "headline-lg": {
+        "fontFamily": "Inter",
+        "fontSize": "30px",
+        "fontWeight": "600",
+        "lineHeight": "38px",
+        "letterSpacing": "-0.015em"
+      },
+      "body-lg-medium": {
+        "fontFamily": "Inter",
+        "fontSize": "16px",
+        "fontWeight": "500",
+        "lineHeight": "24px"
+      },
+      "label-md": {
+        "fontFamily": "Inter",
+        "fontSize": "14px",
+        "fontWeight": "600",
+        "lineHeight": "20px"
+      },
+      "body-md": {
+        "fontFamily": "Inter",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "lineHeight": "20px"
+      }
+    },
+    "spacing": {
+      "space-xl": "2rem",
+      "gutter-mobile": "1rem",
+      "margin": "2rem",
+      "space-2xl": "3rem",
+      "space-md": "1rem",
+      "margin-mobile": "1rem",
+      "space-lg": "1.5rem",
+      "gutter": "1.5rem",
+      "space-xs": "0.25rem",
+      "space-sm": "0.5rem"
+    },
+    "headlineFontFamily": "Inter",
+    "bodyFontFamily": "Inter",
+    "labelFontFamily": "Inter"
+  },
+  "generatedBy": "figaro_agent",
+  "screenType": "DESIGN"
+}

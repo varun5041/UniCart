@@ -1,0 +1,188 @@
+{
+  "id": "9a2a3a6c9afb4f19bf79d9b796cc5d1b",
+  "title": "UniCart - Product Detail Page",
+  "deviceType": "DESKTOP",
+  "width": "2560",
+  "height": "5420",
+  "prompt": "Design a comprehensive, clean, modern, and accessible Product Detail Page (PDP) for 'UniCart' on desktop (1440px), maintaining exact continuity with the established Clear Commerce design system (primary indigo #4F46E5, accent emerald #10B981 for in-stock, red #EF4444, amber #F59E0B, slate neutrals, Inter font, rounded-lg cards, subtle borders, high contrast WCAG AA).\n\nHeader & Navigation:\n- Include the standard UniCart global top navbar with brand logo, department dropdown search bar in center, Delivery to Mumbai 400001, Wishlist (2), Cart badge with item count, and Account / Profile dropdown.\n- Breadcrumb navigation: Home > Electronics > Audio & Wearables > Headphones > 'Wireless Over-Ear ANC Headphones with 40H Playtime'.\n\nProduct Overview (2-column layout):\n- Left Column (Image Gallery):\n  - Large, high-resolution main product showcase image with subtle zoom/expand trigger.\n  - Interactive thumbnail strip (4-5 thumbnails: front view, angled view, folded case view, lifestyle/earcups close-up, color variant) with an active indigo outline ring on the selected thumbnail.\n  - Badge overlays: '50% OFF' and 'Best Seller'.\n  - Trust indicators below image gallery: '100% Genuine Product', '7-Day Replacement', '1-Year UniCart Warranty', 'Free Delivery by Tomorrow 11 AM'.\n\n- Right Column (Product Info & Purchase Actions):\n  - Brand name 'AcroSonic Audio' & Full product name: 'Wireless Over-Ear ANC Headphones with 40H Playtime, Hi-Res Audio, Multipoint Connection (Midnight Black)'.\n  - Rating badge: 4.5 stars (1,420 ratings & 348 reviews) with verified purchase tag.\n  - Pricing section in INR (₹):\n    - Current deal price: '₹2,499.00' (prominent, bold headline-md).\n    - M.R.P.: '₹4,999.00' with strike-through.\n    - Discount badge: '50% OFF' and 'Save ₹2,500.00' inclusive of all taxes.\n    - EMI options hint: 'EMI starting from ₹121/month with No Cost EMI'.\n  - Stock & Availability Status:\n    - Multi-modal stock status: Emerald dot icon + badge 'In stock (Only 5 left - order soon)'.\n  - Color / Variant selector:\n    - Visible label 'Color: Midnight Black'. Options: Midnight Black (selected), Arctic White, Navy Blue.\n  - Quantity Selector Stepper:\n    - Visible label 'Quantity:'.\n    - Stepper with minus (-) button, number input showing '1' (restricted 1 to 10, capped at remaining stock 5), and plus (+) button. Accessible buttons with disabled state when hitting boundaries.\n  - Call to Action (CTAs):\n    - Primary CTA: 'Add to Cart' button (large, bold indigo #4F46E5 with shopping cart icon, hover effect, active state).\n    - Secondary CTA: 'Buy Now' button (amber or solid accent high-contrast).\n    - Wishlist icon button (heart icon) and Share button.\n  - Delivery & Pincode Checker:\n    - 'Deliver to 400001 - Mumbai': Check delivery date, Cash on Delivery available, Fast express shipping.\n\nActive Toast Notification:\n- Prominently display the requested toast notification at top-right or bottom-right:\n  - 'Added to cart' with green checkmark icon, thumbnail, 'Wireless Over-Ear ANC Headphones (Qty: 1)', subtotal '₹2,499.00', and a 'View Cart & Checkout' button, plus a dismiss '✕' icon.\n\nProduct Details & Specifications Section (below the fold):\n- Tabbed or structured section:\n  - 'Key Highlights' / Bullet points (Active Noise Cancellation up to 35dB, 40-hour battery life with Fast Charge 10 mins = 5 hrs, 40mm dynamic drivers, Bluetooth 5.3, dual mic ENC for crystal clear calls).\n  - 'Technical Specifications' clean data table (Brand, Model, Form Factor, Connectivity, Battery Life, Frequency Response, Weight, Warranty).\n  - System edge state toggle or preview tabs for loading skeleton & out-of-stock state.\n\nFooter:\n- Matching UniCart e-commerce directory footer with copyright, trust badges (Pan-India delivery, 7-day returns, secure UPI/RuPay), customer care links, and company policies.",
+  "theme": {
+    "colorMode": "LIGHT",
+    "font": "INTER",
+    "roundness": "ROUND_EIGHT",
+    "customColor": "#4f46e5",
+    "headlineFont": "INTER",
+    "bodyFont": "INTER",
+    "labelFont": "INTER",
+    "namedColors": {
+      "secondary_fixed": "#6ffbbe",
+      "error": "#ba1a1a",
+      "error_container": "#ffdad6",
+      "on_error_container": "#93000a",
+      "surface_container_high": "#e2e7ff",
+      "surface_container": "#eaedff",
+      "surface_container_lowest": "#ffffff",
+      "surface_tint": "#4d44e3",
+      "secondary_container": "#6cf8bb",
+      "tertiary_container": "#885500",
+      "tertiary_fixed_dim": "#ffb95f",
+      "on_primary_container": "#dad7ff",
+      "on_tertiary_fixed": "#2a1700",
+      "on_tertiary": "#ffffff",
+      "on_secondary_container": "#00714d",
+      "primary_container": "#4f46e5",
+      "secondary": "#006c49",
+      "primary_fixed_dim": "#c3c0ff",
+      "on_tertiary_container": "#ffd4a4",
+      "on_primary_fixed": "#0f0069",
+      "inverse_primary": "#c3c0ff",
+      "on_primary_fixed_variant": "#3323cc",
+      "primary": "#3525cd",
+      "outline_variant": "#c7c4d8",
+      "on_secondary_fixed": "#002113",
+      "on_secondary_fixed_variant": "#005236",
+      "inverse_surface": "#283044",
+      "background": "#faf8ff",
+      "tertiary": "#684000",
+      "surface_container_highest": "#dae2fd",
+      "on_surface_variant": "#464555",
+      "on_surface": "#131b2e",
+      "on_error": "#ffffff",
+      "inverse_on_surface": "#eef0ff",
+      "surface": "#faf8ff",
+      "on_secondary": "#ffffff",
+      "outline": "#777587",
+      "surface_container_low": "#f2f3ff",
+      "on_tertiary_fixed_variant": "#653e00",
+      "surface_bright": "#faf8ff",
+      "primary_fixed": "#e2dfff",
+      "secondary_fixed_dim": "#4edea3",
+      "on_background": "#131b2e",
+      "surface_variant": "#dae2fd",
+      "surface_dim": "#d2d9f4",
+      "on_primary": "#ffffff",
+      "tertiary_fixed": "#ffddb8"
+    },
+    "colorVariant": "FIDELITY",
+    "overridePrimaryColor": "#4f46e5",
+    "overrideSecondaryColor": "#10b981",
+    "overrideTertiaryColor": "#f59e0b",
+    "overrideNeutralColor": "#0f172a",
+    "spacingScale": 2,
+    "typography": {
+      "headline-xl-mobile": {
+        "fontFamily": "Inter",
+        "fontSize": "28px",
+        "fontWeight": "700",
+        "lineHeight": "36px",
+        "letterSpacing": "-0.02em"
+      },
+      "headline-md": {
+        "fontFamily": "Inter",
+        "fontSize": "24px",
+        "fontWeight": "600",
+        "lineHeight": "32px",
+        "letterSpacing": "-0.01em"
+      },
+      "body-md-medium": {
+        "fontFamily": "Inter",
+        "fontSize": "14px",
+        "fontWeight": "500",
+        "lineHeight": "20px"
+      },
+      "body-md": {
+        "fontFamily": "Inter",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "lineHeight": "20px"
+      },
+      "label-md": {
+        "fontFamily": "Inter",
+        "fontSize": "14px",
+        "fontWeight": "600",
+        "lineHeight": "20px"
+      },
+      "headline-lg": {
+        "fontFamily": "Inter",
+        "fontSize": "30px",
+        "fontWeight": "600",
+        "lineHeight": "38px",
+        "letterSpacing": "-0.015em"
+      },
+      "headline-sm": {
+        "fontFamily": "Inter",
+        "fontSize": "20px",
+        "fontWeight": "600",
+        "lineHeight": "28px"
+      },
+      "label-sm": {
+        "fontFamily": "Inter",
+        "fontSize": "12px",
+        "fontWeight": "600",
+        "lineHeight": "16px",
+        "letterSpacing": "0.02em"
+      },
+      "price-display": {
+        "fontFamily": "Inter",
+        "fontSize": "24px",
+        "fontWeight": "700",
+        "lineHeight": "32px",
+        "letterSpacing": "-0.01em"
+      },
+      "body-lg-medium": {
+        "fontFamily": "Inter",
+        "fontSize": "16px",
+        "fontWeight": "500",
+        "lineHeight": "24px"
+      },
+      "caption": {
+        "fontFamily": "Inter",
+        "fontSize": "12px",
+        "fontWeight": "400",
+        "lineHeight": "16px"
+      },
+      "headline-lg-mobile": {
+        "fontFamily": "Inter",
+        "fontSize": "24px",
+        "fontWeight": "600",
+        "lineHeight": "32px",
+        "letterSpacing": "-0.015em"
+      },
+      "headline-xl": {
+        "fontFamily": "Inter",
+        "fontSize": "36px",
+        "fontWeight": "700",
+        "lineHeight": "44px",
+        "letterSpacing": "-0.02em"
+      },
+      "body-lg": {
+        "fontFamily": "Inter",
+        "fontSize": "16px",
+        "fontWeight": "400",
+        "lineHeight": "24px"
+      },
+      "title-md": {
+        "fontFamily": "Inter",
+        "fontSize": "18px",
+        "fontWeight": "600",
+        "lineHeight": "26px"
+      }
+    },
+    "spacing": {
+      "gutter": "1.5rem",
+      "space-xl": "2rem",
+      "margin": "2rem",
+      "space-md": "1rem",
+      "space-xs": "0.25rem",
+      "margin-mobile": "1rem",
+      "space-sm": "0.5rem",
+      "space-lg": "1.5rem",
+      "space-2xl": "3rem",
+      "gutter-mobile": "1rem"
+    },
+    "headlineFontFamily": "Inter",
+    "bodyFontFamily": "Inter",
+    "labelFontFamily": "Inter"
+  },
+  "generatedBy": "figaro_agent",
+  "screenType": "DESIGN"
+}
