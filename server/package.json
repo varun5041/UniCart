@@ -8,9 +8,12 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "lint": "oxlint",
-    "test": "vitest run"
+    "test": "vitest run",
+    "seed": "tsx src/scripts/seed.ts"
   },
   "dependencies": {
+    "@faker-js/faker": "^10.6.0",
+    "argon2": "^0.45.1",
     "compression": "^1.8.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
