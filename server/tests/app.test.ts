@@ -7,7 +7,7 @@ describe('UniCart Express Server Foundation', () => {
     const res = await request(app).get('/');
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
-    expect(res.body.message).toContain('UniCart API server running');
+    expect(res.body.message).toContain('UniCart API operational');
   });
 
   it('GET /api/v1/health should return ok status', async () => {

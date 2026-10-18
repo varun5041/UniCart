@@ -1,28 +1,101 @@
-import dotenv from 'dotenv';
-dotenv.config();
-
+import { env, validateEnv } from './config/env.js';
+import { logger } from './config/logger.js';
 import { app } from './app.js';
+import { connectDB, disconnectDB } from './config/db.js';
+import { connectRedis, disconnectRedis } from './config/redis.js';
 
-const PORT = parseInt(process.env.PORT || '5000', 10);
-
-const server = app.listen(PORT, () => {
-  console.log(`[UniCart] Server listening on http://localhost:${PORT}`);
-  console.log(`[UniCart] Environment: ${process.env.NODE_ENV || 'development'}`);
-});
-
-// Graceful shutdown handling
-const handleShutdown = (signal: string) => {
-  console.log(`[UniCart] Received ${signal}. Initiating graceful shutdown...`);
-  server.close(() => {
-    console.log('[UniCart] HTTP server closed.');
-    process.exit(0);
-  });
-
-  setTimeout(() => {
-    console.error('[UniCart] Forced shutdown after timeout.');
+// 1. Strict Env Validation at Boot
+if (process.env.NODE_ENV !== 'test') {
+  try {
+    validateEnv();
+  } catch {
+    logger.fatal('[Boot] Terminating process due to invalid environment variables');
     process.exit(1);
-  }, 10000).unref();
-};
+  }
+}
 
-process.on('SIGTERM', () => handleShutdown('SIGTERM'));
-process.on('SIGINT', () => handleShutdown('SIGINT'));
+export function createShutdownHandler(server: { close: (cb: (err?: Error) => void) => void }) {
+  let isShuttingDown = false;
+
+  return async (signal: string, shouldExit = true): Promise<boolean> => {
+    if (isShuttingDown) return false;
+    isShuttingDown = true;
+
+    logger.info({ msg: `[Shutdown] Received ${signal}. Starting graceful termination...` });
+
+    const forceExitTimer = setTimeout(() => {
+      logger.error('[Shutdown] Forced termination after timeout limit (10s)');
+      if (shouldExit) process.exit(1);
+    }, 10000);
+    forceExitTimer.unref();
+
+    try {
+      // Close HTTP connections
+      await new Promise<void>((resolve, reject) => {
+        server.close((err) => (err ? reject(err) : resolve()));
+      });
+      logger.info('[Shutdown] HTTP connections closed.');
+
+      // Disconnect DB and Redis
+      await disconnectDB();
+      await disconnectRedis();
+
+      clearTimeout(forceExitTimer);
+      logger.info('[Shutdown] Cleanup complete. Exiting process.');
+
+      if (shouldExit) {
+        process.exit(0);
+      }
+      return true;
+    } catch (err) {
+      logger.error({ msg: '[Shutdown] Error during graceful shutdown cleanup', err });
+      if (shouldExit) {
+        process.exit(1);
+      }
+      return false;
+    }
+  };
+}
+
+// 2. Connect external dependencies and listen
+async function startServer() {
+  try {
+    await connectDB().catch((err) => {
+      logger.warn({ msg: '[Boot] MongoDB not yet reachable (readiness will report degraded)', err: err.message });
+    });
+
+    await connectRedis().catch((err) => {
+      logger.warn({ msg: '[Boot] Redis not yet reachable (readiness will report degraded)', err: err.message });
+    });
+
+    const server = app.listen(env.PORT, () => {
+      logger.info({
+        msg: `[UniCart] Server listening on port ${env.PORT}`,
+        port: env.PORT,
+        env: env.NODE_ENV,
+        url: `http://localhost:${env.PORT}`
+      });
+    });
+
+    const shutdown = createShutdownHandler(server);
+
+    process.on('SIGTERM', () => {
+      void shutdown('SIGTERM', true);
+    });
+    process.on('SIGINT', () => {
+      void shutdown('SIGINT', true);
+    });
+
+    return { server, shutdown };
+  } catch (err) {
+    logger.fatal({ msg: '[Boot] Fatal error starting UniCart server', err });
+    process.exit(1);
+  }
+}
+
+// Start if executed directly
+if (process.env.NODE_ENV !== 'test') {
+  void startServer();
+}
+
+export { startServer };
