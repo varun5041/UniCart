@@ -1,0 +1,9 @@
+{
+    "version":  "1.0.0",
+    "name":  "gravitas",
+    "repository":  "https://github.com/udaysharmadev/Gravitas",
+    "description":  "Model-agnostic engineering reliability runtime: read before writing, plan in proportion to risk, verify against executed evidence.",
+    "author":  "udaysharmadev",
+    "displayName":  "GRAVITAS",
+    "license":  "MIT"
+}
