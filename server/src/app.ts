@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import compression from 'compression';
@@ -7,6 +7,7 @@ import mongoSanitize from 'express-mongo-sanitize';
 import hpp from 'hpp';
 import { pinoHttp } from 'pino-http';
 
+import os from 'node:os';
 import { env } from './config/env.js';
 import { logger } from './config/logger.js';
 import { requestId } from './middleware/requestId.js';
@@ -17,8 +18,12 @@ import { ApiError } from './utils/ApiError.js';
 
 export const app = express();
 
-// 1. Request ID injection
+// 1. Request ID injection & Instance Hostname Tracking
 app.use(requestId);
+app.use((_req: Request, res: Response, next: NextFunction) => {
+  res.setHeader('X-Served-By', os.hostname());
+  next();
+});
 
 // 2. Structured request logging via pino-http
 app.use(
@@ -85,6 +90,7 @@ app.use(hpp());
 app.get('/health/live', (_req: Request, res: Response) => {
   res.status(200).json({
     status: 'ok',
+    hostname: os.hostname(),
     timestamp: new Date().toISOString()
   });
 });
@@ -93,6 +99,7 @@ app.get(['/health', '/api/v1/health'], (_req: Request, res: Response) => {
   res.status(200).json({
     status: 'ok',
     service: 'unicart-api',
+    hostname: os.hostname(),
     timestamp: new Date().toISOString()
   });
 });
@@ -105,6 +112,7 @@ app.get('/health/ready', (_req: Request, res: Response) => {
   if (dbReady && redisReady) {
     res.status(200).json({
       status: 'ready',
+      hostname: os.hostname(),
       timestamp: new Date().toISOString(),
       dependencies: {
         mongodb: 'connected',
@@ -114,6 +122,7 @@ app.get('/health/ready', (_req: Request, res: Response) => {
   } else {
     res.status(503).json({
       status: 'degraded',
+      hostname: os.hostname(),
       timestamp: new Date().toISOString(),
       dependencies: {
         mongodb: dbReady ? 'connected' : 'disconnected',
@@ -129,6 +138,7 @@ app.get('/', (_req: Request, res: Response) => {
     success: true,
     message: 'UniCart API operational',
     version: '1.0.0',
+    hostname: os.hostname(),
     environment: env.NODE_ENV,
     endpoints: {
       liveness: '/health/live',

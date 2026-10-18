@@ -1,0 +1,31 @@
+# Stage 1: Builder
+FROM node:20-alpine AS builder
+WORKDIR /app
+
+# Install build dependencies
+COPY package*.json tsconfig*.json ./
+RUN npm ci
+
+# Copy source and build TypeScript
+COPY src/ ./src/
+RUN npm run build
+
+# Stage 2: Production Worker Runner (Non-root user)
+FROM node:20-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+# Install production dependencies only
+COPY package*.json ./
+RUN npm ci --omit=dev && npm cache clean --force
+
+# Copy compiled JavaScript output from builder stage
+COPY --from=builder /app/dist ./dist
+
+# Set permissions and switch to unprivileged built-in node user
+RUN chown -R node:node /app
+USER node
+
+# Start background queue worker
+CMD ["node", "dist/worker.js"]
