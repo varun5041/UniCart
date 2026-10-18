@@ -1,11 +1,11 @@
-import mongoose, { Schema, Document, Model } from 'mongoose';
+import mongoose, { Document, Model, Schema } from 'mongoose';
 
 export interface IAuditLog extends Document {
-  actorId: mongoose.Types.ObjectId | string | null;
+  actorId?: mongoose.Types.ObjectId | string | null;
   action: string;
-  target: string | null;
-  ip: string | null;
-  meta: Record<string, unknown>;
+  target?: string | null;
+  ip?: string | null;
+  meta?: Record<string, unknown>;
   createdAt: Date;
 }
 
@@ -43,8 +43,8 @@ const auditLogSchema = new Schema<IAuditLog>(
   }
 );
 
-// 90 days TTL index
-auditLogSchema.index({ createdAt: 1 }, { expireAfterSeconds: 90 * 24 * 60 * 60 });
+// TTL index per docs/DATABASE.md: 90 days retention (90 * 24 * 60 * 60 = 7,776,000 seconds)
+auditLogSchema.index({ createdAt: 1 }, { expireAfterSeconds: 7776000 });
 
 export const AuditLog: Model<IAuditLog> =
   mongoose.models.AuditLog || mongoose.model<IAuditLog>('AuditLog', auditLogSchema);

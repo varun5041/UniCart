@@ -1,4 +1,5 @@
-import mongoose, { Schema, Document, Model } from 'mongoose';
+import mongoose, { Document, Model, Schema } from 'mongoose';
+import argon2 from 'argon2';
 
 export interface IAddress {
   line1: string;
@@ -20,6 +21,8 @@ export interface IUser extends Document {
   addresses: IAddress[];
   createdAt: Date;
   updatedAt: Date;
+  verifyPassword(candidatePassword: string): Promise<boolean>;
+  isLocked(): boolean;
 }
 
 const addressSchema = new Schema<IAddress>(
@@ -78,8 +81,8 @@ const userSchema = new Schema<IUser>(
       type: [addressSchema],
       default: [],
       validate: [
-        (val: unknown[]) => val.length <= 5,
-        'Cannot store more than 5 addresses'
+        (val: IAddress[]) => val.length <= 5,
+        'Cannot exceed maximum of 5 addresses'
       ]
     }
   },
@@ -105,6 +108,50 @@ const userSchema = new Schema<IUser>(
     }
   }
 );
+
+// Hash password before saving if modified
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password') || !this.password) {
+    return next();
+  }
+
+  // If already hashed (e.g. starts with $argon2 or $2), do not re-hash
+  if (this.password.startsWith('$argon2') || this.password.startsWith('$2')) {
+    return next();
+  }
+
+  try {
+    this.password = await argon2.hash(this.password, {
+      type: argon2.argon2id,
+      memoryCost: 65536,
+      timeCost: 3,
+      parallelism: 1
+    });
+    next();
+  } catch (err) {
+    next(err as Error);
+  }
+});
+
+// Compare plain candidate password with stored hash
+userSchema.methods.verifyPassword = async function (
+  candidatePassword: string
+): Promise<boolean> {
+  if (!this.password) return false;
+  try {
+    if (this.password.startsWith('$argon2')) {
+      return await argon2.verify(this.password, candidatePassword);
+    }
+    return false;
+  } catch {
+    return false;
+  }
+};
+
+// Check if account is currently locked due to failed logins
+userSchema.methods.isLocked = function (): boolean {
+  return Boolean(this.lockUntil && this.lockUntil.getTime() > Date.now());
+};
 
 export const User: Model<IUser> =
   mongoose.models.User || mongoose.model<IUser>('User', userSchema);

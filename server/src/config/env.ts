@@ -1,8 +1,19 @@
+import path from 'node:path';
+import fs from 'node:fs';
 import dotenv from 'dotenv';
 import { z } from 'zod';
 
-// Load .env file
-dotenv.config();
+// Load .env file from current working dir or monorepo root
+const envPaths = [
+  path.resolve(process.cwd(), '.env'),
+  path.resolve(process.cwd(), '../.env')
+];
+for (const p of envPaths) {
+  if (fs.existsSync(p)) {
+    dotenv.config({ path: p });
+    break;
+  }
+}
 
 export const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),

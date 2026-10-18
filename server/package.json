@@ -8,10 +8,12 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "lint": "oxlint",
-    "test": "vitest run"
+    "test": "vitest run",
+    "seed": "tsx src/scripts/seed.ts"
   },
   "dependencies": {
-    "argon2": "^0.41.1",
+    "@faker-js/faker": "^10.6.0",
+    "argon2": "^0.45.1",
     "bcryptjs": "^3.0.2",
     "bullmq": "^5.41.6",
     "compression": "^1.8.1",

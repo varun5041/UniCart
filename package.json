@@ -13,7 +13,8 @@
     "dev:client": "npm run dev --workspace=client",
     "build": "npm run build --workspace=server && npm run build --workspace=client",
     "lint": "npm run lint --workspace=server && npm run lint --workspace=client",
-    "test": "npm run test --workspace=server"
+    "test": "npm run test --workspace=server",
+    "seed": "npm run seed --workspace=server"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

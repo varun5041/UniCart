@@ -1,13 +1,13 @@
-import mongoose, { Schema, Document, Model } from 'mongoose';
+import mongoose, { Document, Model, Schema, Types } from 'mongoose';
 
 export interface IRefreshToken extends Document {
-  _id: mongoose.Types.ObjectId;
+  _id: Types.ObjectId;
   tokenHash: string;
-  userId: mongoose.Types.ObjectId;
+  userId: Types.ObjectId;
   familyId: string;
   expiresAt: Date;
-  revokedAt: Date | null;
-  replacedBy: string | null;
+  revokedAt?: Date | null;
+  replacedBy?: string | null;
   ip?: string;
   userAgent?: string;
   createdAt: Date;
@@ -57,7 +57,7 @@ const refreshTokenSchema = new Schema<IRefreshToken>(
   }
 );
 
-// TTL index to automatically purge expired tokens from MongoDB
+// TTL Index per docs/DATABASE.md: automatically deletes document when expiresAt passes
 refreshTokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 export const RefreshToken: Model<IRefreshToken> =
