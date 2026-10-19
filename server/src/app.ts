@@ -15,6 +15,10 @@ import { errorHandler } from './middleware/error.js';
 import { isDBConnected } from './config/db.js';
 import { isRedisConnected } from './config/redis.js';
 import { ApiError } from './utils/ApiError.js';
+import { globalRateLimiter } from './middleware/rateLimit.js';
+import { authRouter } from './modules/auth/auth.routes.js';
+import { authenticate } from './middleware/auth.js';
+import { authorize } from './middleware/rbac.js';
 
 export const app = express();
 
@@ -84,6 +88,9 @@ app.use(cookieParser());
 // 8. Sanitization & parameter pollution mitigation
 app.use(mongoSanitize({ replaceWith: '_' }));
 app.use(hpp());
+
+// 9. Global rate limiting per IP
+app.use(globalRateLimiter);
 
 // Health & Liveness / Readiness Probes
 // Liveness probe: returns 200 if server process is alive
@@ -156,6 +163,32 @@ if (env.NODE_ENV !== 'production') {
     res.status(200).json({ success: true, body: req.body });
   });
 }
+
+// 10. API v1 Routes
+app.use('/api/v1/auth', authRouter);
+
+app.get('/api/v1/users/me', authenticate, (req: Request, res: Response) => {
+  res.status(200).json({
+    success: true,
+    data: {
+      user: {
+        id: req.user!._id,
+        name: req.user!.name,
+        email: req.user!.email,
+        role: req.user!.role,
+        addresses: req.user!.addresses
+      }
+    }
+  });
+});
+
+app.get('/api/v1/admin/test', authenticate, authorize('admin'), (req: Request, res: Response) => {
+  res.status(200).json({
+    success: true,
+    message: 'Admin access granted',
+    adminId: req.user!._id
+  });
+});
 
 // 404 Route Catch-all
 app.use((_req: Request, res: Response) => {
