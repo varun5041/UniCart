@@ -10,8 +10,8 @@ export const LoginPage: React.FC = () => {
   const { login, isLoading } = useAuthStore();
   const { addToast } = useToastStore();
 
-  const [email, setEmail] = useState('admin@unicart.dev');
-  const [password, setPassword] = useState('ChangeMe123!');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -40,16 +40,6 @@ export const LoginPage: React.FC = () => {
     }
   };
 
-  const handleQuickFill = (role: 'admin' | 'customer') => {
-    if (role === 'admin') {
-      setEmail('admin@unicart.dev');
-      setPassword('ChangeMe123!');
-    } else {
-      setEmail('customer@unicart.dev');
-      setPassword('Customer123!');
-    }
-  };
-
   return (
     <div className="bg-[#FAF8FF] min-h-[85vh] flex items-center justify-center py-12 px-4">
       <div className="bg-white rounded-3xl border border-slate-200/80 p-8 sm:p-10 max-w-md w-full shadow-lg space-y-6">
@@ -64,32 +54,6 @@ export const LoginPage: React.FC = () => {
           <h1 className="text-xl font-black text-slate-900">Sign in to your account</h1>
           <p className="text-xs text-slate-500">
             Protected by Argon2id password hashing &amp; rotating refresh tokens
-          </p>
-        </div>
-
-        {/* Quick Fill Credentials Banner */}
-        <div className="p-3 bg-indigo-50 border border-indigo-200 rounded-2xl space-y-2">
-          <div className="flex items-center justify-between text-xs font-bold text-indigo-950">
-            <span>Development Quick-Fill:</span>
-            <div className="flex gap-1.5">
-              <button
-                type="button"
-                onClick={() => handleQuickFill('admin')}
-                className="px-2 py-0.5 rounded bg-indigo-600 text-white font-mono text-[10px] hover:bg-indigo-700 cursor-pointer"
-              >
-                Admin
-              </button>
-              <button
-                type="button"
-                onClick={() => handleQuickFill('customer')}
-                className="px-2 py-0.5 rounded bg-white text-indigo-700 border border-indigo-300 font-mono text-[10px] hover:bg-indigo-100 cursor-pointer"
-              >
-                Customer
-              </button>
-            </div>
-          </div>
-          <p className="text-[11px] text-indigo-800">
-            Click to fill seed credentials. Accounts automatically lock for 15m after 5 failed attempts.
           </p>
         </div>
 
