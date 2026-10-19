@@ -236,6 +236,19 @@ export const Navbar: React.FC = () => {
                   </div>
 
                   <div className="py-1">
+                    {user.role === 'admin' && (
+                      <Link
+                        to="/admin"
+                        onClick={() => setIsAccountOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-indigo-700 bg-indigo-50/80 hover:bg-indigo-100 transition-colors"
+                      >
+                        <span className="material-symbols-outlined text-lg text-indigo-600">
+                          admin_panel_settings
+                        </span>
+                        <span>Admin Dashboard</span>
+                      </Link>
+                    )}
+
                     <Link
                       to="/orders"
                       onClick={() => setIsAccountOpen(false)}
@@ -343,6 +356,16 @@ export const Navbar: React.FC = () => {
           </div>
 
           <div className="border-t border-slate-100 pt-2 space-y-1">
+            {user?.role === 'admin' && (
+              <Link
+                to="/admin"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center gap-3 px-3 py-2 text-sm font-semibold text-indigo-700 bg-indigo-50 rounded-lg"
+              >
+                <span className="material-symbols-outlined text-indigo-600">admin_panel_settings</span>
+                <span>Admin Dashboard</span>
+              </Link>
+            )}
             <Link
               to="/orders"
               onClick={() => setIsMobileMenuOpen(false)}

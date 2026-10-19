@@ -21,6 +21,9 @@ const LoginPage = lazy(() => import('./pages/LoginPage').then((m) => ({ default:
 const RegisterPage = lazy(() =>
   import('./pages/RegisterPage').then((m) => ({ default: m.RegisterPage }))
 );
+const AdminDashboard = lazy(() =>
+  import('./pages/admin/AdminDashboard').then((m) => ({ default: m.AdminDashboard }))
+);
 
 const PageLoader: React.FC = () => (
   <div className="min-h-[60vh] flex flex-col items-center justify-center space-y-4">
@@ -67,6 +70,7 @@ export const App: React.FC = () => {
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
+              <Route path="/admin" element={<AdminDashboard />} />
               <Route path="*" element={<HomePage />} />
             </Routes>
           </Suspense>
