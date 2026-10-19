@@ -22,6 +22,14 @@ interface AuthStore {
   deleteAddress: (addressLine: string) => Promise<boolean>;
 }
 
+function extractUser(data: any): User | null {
+  if (!data) return null;
+  if (data.user && typeof data.user === 'object') {
+    return data.user as User;
+  }
+  return data as User;
+}
+
 export const useAuthStore = create<AuthStore>((set, get) => ({
   user: null,
   isAuthenticated: false,
@@ -38,15 +46,17 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         // Fetch fresh profile
         const userRes = await usersApi.getMe();
         if (userRes.success && userRes.data) {
-          const user = userRes.data;
-          const defaultAddr = user.addresses?.find((a) => a.isDefault) || user.addresses?.[0] || null;
-          set({
-            user,
-            isAuthenticated: true,
-            selectedAddress: defaultAddr,
-            isInitialized: true
-          });
-          return;
+          const user = extractUser(userRes.data);
+          if (user) {
+            const defaultAddr = user.addresses?.find((a) => a.isDefault) || user.addresses?.[0] || null;
+            set({
+              user,
+              isAuthenticated: true,
+              selectedAddress: defaultAddr,
+              isInitialized: true
+            });
+            return;
+          }
         }
       }
     } catch {
@@ -61,9 +71,15 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       set({ isLoading: true });
       const res = await authApi.login({ email, password: pass });
       if (res.success) {
-        const userRes = await usersApi.getMe();
-        const user = userRes.data;
-        const defaultAddr = user.addresses?.find((a) => a.isDefault) || user.addresses?.[0] || null;
+        let user: User | null = null;
+        try {
+          const userRes = await usersApi.getMe();
+          user = extractUser(userRes.data);
+        } catch {
+          // Fall back to login response payload
+        }
+        user = user || extractUser(res.data) || null;
+        const defaultAddr = user?.addresses?.find((a) => a.isDefault) || user?.addresses?.[0] || null;
         set({
           user,
           isAuthenticated: true,
@@ -86,9 +102,15 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       set({ isLoading: true });
       const res = await authApi.googleLogin(idToken);
       if (res.success) {
-        const userRes = await usersApi.getMe();
-        const user = userRes.data;
-        const defaultAddr = user.addresses?.find((a) => a.isDefault) || user.addresses?.[0] || null;
+        let user: User | null = null;
+        try {
+          const userRes = await usersApi.getMe();
+          user = extractUser(userRes.data);
+        } catch {
+          // Fall back to login response payload
+        }
+        user = user || extractUser(res.data) || null;
+        const defaultAddr = user?.addresses?.find((a) => a.isDefault) || user?.addresses?.[0] || null;
         set({
           user,
           isAuthenticated: true,
@@ -110,10 +132,25 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     try {
       set({ isLoading: true });
       const res = await authApi.register({ name, email, password: pass });
-      set({ isLoading: false });
       if (res.success) {
+        let user: User | null = null;
+        try {
+          const userRes = await usersApi.getMe();
+          user = extractUser(userRes.data);
+        } catch {
+          // Fall back to register response payload
+        }
+        user = user || extractUser(res.data) || null;
+        const defaultAddr = user?.addresses?.find((a) => a.isDefault) || user?.addresses?.[0] || null;
+        set({
+          user,
+          isAuthenticated: true,
+          selectedAddress: defaultAddr,
+          isLoading: false
+        });
         return { success: true };
       }
+      set({ isLoading: false });
       return { success: false, error: res.error?.message || 'Registration failed' };
     } catch (err: any) {
       set({ isLoading: false });
@@ -167,7 +204,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       const res = await usersApi.updateMe({ addresses: newAddresses });
       if (res.success) {
         set({
-          user: res.data,
+          user: extractUser(res.data) || get().user,
           selectedAddress: get().selectedAddress || newAddresses[0]
         });
         return true;
@@ -185,7 +222,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     try {
       const res = await usersApi.updateMe({ addresses: filtered });
       if (res.success) {
-        set({ user: res.data });
+        set({ user: extractUser(res.data) || get().user });
         return true;
       }
       return false;

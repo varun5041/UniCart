@@ -195,12 +195,12 @@ export const Navbar: React.FC = () => {
                   className="flex items-center gap-2 p-1.5 sm:px-3 sm:py-2 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all text-left"
                 >
                   <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-600 to-indigo-800 text-white flex items-center justify-center font-bold text-xs shadow-sm">
-                    {user.name.charAt(0)}
+                    {(user.name || user.email || 'U').charAt(0).toUpperCase()}
                   </div>
                   <div className="hidden sm:block text-xs leading-tight">
                     <span className="text-slate-600 block">Welcome,</span>
                     <span className="font-semibold text-slate-900 flex items-center gap-1">
-                      {user.name.split(' ')[0]}
+                      {(user.name || user.email || 'User').split(' ')[0]}
                       <span className="material-symbols-outlined text-sm text-slate-400">
                         expand_more
                       </span>
@@ -228,10 +228,10 @@ export const Navbar: React.FC = () => {
               {isAccountOpen && isAuthenticated && user && (
                 <div className="absolute right-0 mt-2 w-72 bg-white rounded-2xl shadow-2xl border border-slate-100 py-2 z-50 animate-scale-in">
                   <div className="px-4 py-3 border-b border-slate-100 bg-slate-50/50">
-                    <p className="font-semibold text-slate-900 text-sm">{user.name}</p>
+                    <p className="font-semibold text-slate-900 text-sm">{user.name || 'Valued Customer'}</p>
                     <p className="text-xs text-slate-600 truncate">{user.email}</p>
                     <span className="inline-block mt-1.5 px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase rounded-full bg-indigo-100 text-indigo-700">
-                      Role: {user.role}
+                      Role: {user.role || 'customer'}
                     </span>
                   </div>
 

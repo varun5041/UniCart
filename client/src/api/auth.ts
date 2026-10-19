@@ -7,8 +7,11 @@ export interface LoginResponse {
 }
 
 export const authApi = {
-  async register(data: { name: string; email: string; password: string }): Promise<ApiResponse<User>> {
-    const res = await api.post<ApiResponse<User>>('/auth/register', data);
+  async register(data: { name: string; email: string; password: string }): Promise<ApiResponse<LoginResponse>> {
+    const res = await api.post<ApiResponse<LoginResponse>>('/auth/register', data);
+    if (res.data.success && res.data.data?.accessToken) {
+      setAccessToken(res.data.data.accessToken);
+    }
     return res.data;
   },
 

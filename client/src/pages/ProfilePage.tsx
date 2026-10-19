@@ -159,7 +159,7 @@ export const ProfilePage: React.FC = () => {
           <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-xs max-w-2xl space-y-6">
             <div className="flex items-center gap-4 pb-4 border-b border-slate-100">
               <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-600 to-indigo-800 text-white font-black text-2xl flex items-center justify-center shadow-md">
-                {name.charAt(0)}
+                {(name || email || 'U').charAt(0).toUpperCase()}
               </div>
               <div>
                 <h3 className="font-extrabold text-slate-900 text-base">{name}</h3>
