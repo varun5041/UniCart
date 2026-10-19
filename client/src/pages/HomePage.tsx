@@ -1,9 +1,9 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { ProductCard } from '../components/ProductCard';
 import { FilterSidebar } from '../components/FilterSidebar';
 import { useFilterStore, type SortOption } from '../store/useFilterStore';
-import { MOCK_PRODUCTS, MOCK_CATEGORIES } from '../api/mockData';
+import { MOCK_CATEGORIES } from '../api/mockData';
 import { productsApi } from '../api/products';
 import type { Product } from '../types';
 
@@ -13,9 +13,6 @@ export const HomePage: React.FC = () => {
     selectedCategory,
     minPrice,
     maxPrice,
-    selectedBrands,
-    inStockOnly,
-    minRating,
     sortBy,
     setSortBy,
     currentPage,
@@ -37,72 +34,29 @@ export const HomePage: React.FC = () => {
           q: searchQuery || undefined,
           sort: sortBy === 'price_asc' || sortBy === 'price_desc' || sortBy === 'newest' ? sortBy : undefined,
           minPrice: minPrice > 0 ? minPrice * 100 : undefined,
-          maxPrice: maxPrice < 100000 ? maxPrice * 100 : undefined
+          maxPrice: maxPrice < 150000 ? maxPrice * 100 : undefined
         });
-        if (res.success && res.data && res.data.length > 0) {
+        if (res.success && Array.isArray(res.data)) {
           return {
             items: res.data,
             total: res.meta?.total ?? res.data.length,
             pages: res.meta?.pages ?? 1
           };
         }
-      } catch {
-        // Fallback to local showcase data
+      } catch (err) {
+        console.error('Failed to load products from API:', err);
       }
-      return null;
+      return {
+        items: [],
+        total: 0,
+        pages: 1
+      };
     }
   });
 
-  // Client-side fallback filter logic
-  const filteredProducts = useMemo(() => {
-    return MOCK_PRODUCTS.filter((product) => {
-      if (selectedCategory !== 'all' && product.category !== selectedCategory) {
-        return false;
-      }
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        const matchesName = product.name.toLowerCase().includes(query);
-        const matchesBrand = (product.brand || '').toLowerCase().includes(query);
-        const matchesDesc = product.description.toLowerCase().includes(query);
-        if (!matchesName && !matchesBrand && !matchesDesc) {
-          return false;
-        }
-      }
-      if (product.price < minPrice || product.price > maxPrice) {
-        return false;
-      }
-      if (selectedBrands.length > 0 && (!product.brand || !selectedBrands.includes(product.brand))) {
-        return false;
-      }
-      if (inStockOnly && product.stock <= 0) {
-        return false;
-      }
-      if (minRating > 0 && (product.rating || 0) < minRating) {
-        return false;
-      }
-      return true;
-    });
-  }, [selectedCategory, searchQuery, minPrice, maxPrice, selectedBrands, inStockOnly, minRating]);
-
-  const sortedProducts = useMemo(() => {
-    const list = [...filteredProducts];
-    if (sortBy === 'price_asc') return list.sort((a, b) => a.price - b.price);
-    if (sortBy === 'price_desc') return list.sort((a, b) => b.price - a.price);
-    if (sortBy === 'rating') return list.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-    if (sortBy === 'newest') return list.reverse();
-    return list;
-  }, [filteredProducts, sortBy]);
-
-  const totalProducts = serverData ? serverData.total : sortedProducts.length;
-  const totalPages = serverData ? serverData.pages : Math.ceil(totalProducts / itemsPerPage) || 1;
-
-  const displayProducts: Product[] = useMemo(() => {
-    if (serverData && serverData.items.length > 0) {
-      return serverData.items;
-    }
-    const start = (currentPage - 1) * itemsPerPage;
-    return sortedProducts.slice(start, start + itemsPerPage);
-  }, [serverData, sortedProducts, currentPage, itemsPerPage]);
+  const totalProducts = serverData?.total ?? 0;
+  const totalPages = serverData?.pages ?? 1;
+  const displayProducts: Product[] = serverData?.items ?? [];
 
   const activeCategoryObj = MOCK_CATEGORIES.find((c) => c.id === selectedCategory);
 
@@ -260,21 +214,37 @@ export const HomePage: React.FC = () => {
             {!isServerLoading && displayProducts.length === 0 && (
               <div className="bg-white rounded-2xl border border-slate-200/80 p-12 text-center space-y-4 shadow-xs">
                 <div className="w-16 h-16 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto">
-                  <span className="material-symbols-outlined text-3xl">search_off</span>
+                  <span className="material-symbols-outlined text-3xl">inventory_2</span>
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-slate-900">No products found matching your filters</h3>
+                  <h3 className="text-lg font-bold text-slate-900">
+                    {searchQuery || selectedCategory !== 'all' || minPrice > 0 || maxPrice < 150000
+                      ? 'No products found matching your filters'
+                      : 'No products available in the store'}
+                  </h3>
                   <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1 leading-relaxed">
-                    Try clearing some filters, expanding your price range, or searching for a different keyword.
+                    {searchQuery || selectedCategory !== 'all' || minPrice > 0 || maxPrice < 150000
+                      ? 'Try clearing some filters, expanding your price range, or searching for a different keyword.'
+                      : 'The product catalogue is currently empty. Visit the Admin Dashboard to add and publish new products.'}
                   </p>
                 </div>
-                <button
-                  onClick={resetFilters}
-                  className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-colors shadow-sm inline-flex items-center gap-2"
-                >
-                  <span className="material-symbols-outlined text-base">refresh</span>
-                  <span>Reset All Filters</span>
-                </button>
+                {searchQuery || selectedCategory !== 'all' || minPrice > 0 || maxPrice < 150000 ? (
+                  <button
+                    onClick={resetFilters}
+                    className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-colors shadow-sm inline-flex items-center gap-2 cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-base">refresh</span>
+                    <span>Reset All Filters</span>
+                  </button>
+                ) : (
+                  <a
+                    href="/admin"
+                    className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-colors shadow-sm inline-flex items-center gap-2"
+                  >
+                    <span className="material-symbols-outlined text-base">add_circle</span>
+                    <span>Go to Admin Dashboard</span>
+                  </a>
+                )}
               </div>
             )}
 
@@ -288,11 +258,12 @@ export const HomePage: React.FC = () => {
                 </div>
 
                 {/* Numbered Pagination */}
-                <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
-                  <span className="text-xs text-slate-500">
-                    Showing {(currentPage - 1) * itemsPerPage + 1}–
-                    {Math.min(currentPage * itemsPerPage, totalProducts)} of {totalProducts} products
-                  </span>
+                {totalPages > 1 && (
+                  <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <span className="text-xs text-slate-500">
+                      Showing {(currentPage - 1) * itemsPerPage + 1}–
+                      {Math.min(currentPage * itemsPerPage, totalProducts)} of {totalProducts} products
+                    </span>
 
                   <div className="flex items-center gap-1.5">
                     <button
@@ -326,8 +297,9 @@ export const HomePage: React.FC = () => {
                     </button>
                   </div>
                 </div>
-              </>
-            )}
+              )}
+            </>
+          )}
           </div>
         </div>
       </main>

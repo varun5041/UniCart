@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { MOCK_PRODUCTS } from '../api/mockData';
 import { productsApi } from '../api/products';
 import { useCartStore } from '../store/useCartStore';
 import { useToastStore } from '../store/useToastStore';
 import { ProductCard } from '../components/ProductCard';
+import type { Product } from '../types';
 
 export const ProductDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -13,7 +13,11 @@ export const ProductDetailPage: React.FC = () => {
   const { addToCart } = useCartStore();
   const { addToast } = useToastStore();
 
-  const { data: serverProduct } = useQuery({
+  const [selectedImage, setSelectedImage] = useState(0);
+  const [quantity, setQuantity] = useState(1);
+  const [isAdded, setIsAdded] = useState(false);
+
+  const { data: serverProduct, isLoading: isServerLoading } = useQuery({
     queryKey: ['product', id],
     queryFn: async () => {
       if (!id) return null;
@@ -23,17 +27,49 @@ export const ProductDetailPage: React.FC = () => {
           return res.data;
         }
       } catch {
-        // Fallback
+        // Fallback or not found
       }
       return null;
     }
   });
 
-  const product =
-    serverProduct ||
-    MOCK_PRODUCTS.find((p) => p.slug === id || p.id === id) ||
-    MOCK_PRODUCTS[0];
+  if (isServerLoading) {
+    return (
+      <div className="bg-[#FAF8FF] min-h-[60vh] flex items-center justify-center">
+        <div className="text-center space-y-3">
+          <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-xs text-slate-500 font-medium">Loading product details...</p>
+        </div>
+      </div>
+    );
+  }
 
+  if (!serverProduct) {
+    return (
+      <div className="bg-[#FAF8FF] min-h-[60vh] flex items-center justify-center p-4">
+        <div className="bg-white rounded-3xl border border-slate-200 p-8 max-w-md w-full text-center space-y-4 shadow-sm">
+          <div className="w-16 h-16 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto">
+            <span className="material-symbols-outlined text-3xl">sentiment_dissatisfied</span>
+          </div>
+          <h2 className="text-xl font-black text-slate-900">Product Not Found</h2>
+          <p className="text-xs text-slate-500 leading-relaxed">
+            This item is no longer available in the catalogue or has been removed by the store administrator.
+          </p>
+          <div className="pt-2">
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-xs transition-colors"
+            >
+              <span className="material-symbols-outlined text-sm">storefront</span>
+              <span>Back to Store</span>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const product = serverProduct;
   const displayPrice = product._id ? Math.round(product.price / 100) : product.price;
   const brandName =
     product.brand || (typeof product.category === 'object' ? product.category.name : 'UniCart');
@@ -47,10 +83,6 @@ export const ProductDetailPage: React.FC = () => {
     product.images && product.images.length > 0
       ? product.images
       : ['https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80'];
-
-  const [selectedImage, setSelectedImage] = useState(0);
-  const [quantity, setQuantity] = useState(1);
-  const [isAdded, setIsAdded] = useState(false);
 
   const handleAddToCart = () => {
     if (product.stock <= 0) return;
@@ -70,9 +102,7 @@ export const ProductDetailPage: React.FC = () => {
     navigate('/checkout');
   };
 
-  const relatedProducts = MOCK_PRODUCTS.filter(
-    (p) => (p._id || p.id) !== (product._id || product.id)
-  ).slice(0, 4);
+  const relatedProducts: Product[] = [];
 
   return (
     <div className="bg-[#FAF8FF] min-h-screen py-8">

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useFilterStore } from '../store/useFilterStore';
-import { MOCK_CATEGORIES, MOCK_PRODUCTS } from '../api/mockData';
+import { MOCK_CATEGORIES } from '../api/mockData';
 
 const BRANDS = ['Boat', 'Sony', 'Apple', 'Noise', 'Samsung', 'JBL', 'Logitech', 'Keychron'];
 
@@ -35,11 +35,6 @@ export const FilterSidebar: React.FC = () => {
     setLocalMin(min.toString());
     setLocalMax(max.toString());
     setPriceRange(min, max);
-  };
-
-  const getCategoryCount = (catId: string) => {
-    if (catId === 'all') return MOCK_PRODUCTS.length;
-    return MOCK_PRODUCTS.filter((p) => p.category === catId).length;
   };
 
   const filterCount = activeFilterCount();
@@ -78,7 +73,6 @@ export const FilterSidebar: React.FC = () => {
         </h3>
         <div className="space-y-1">
           {MOCK_CATEGORIES.map((cat) => {
-            const count = getCategoryCount(cat.id);
             const isSelected = selectedCategory === cat.id;
 
             return (
@@ -97,13 +91,6 @@ export const FilterSidebar: React.FC = () => {
                   </span>
                   <span className="truncate">{cat.name}</span>
                 </div>
-                <span
-                  className={`text-[11px] px-1.5 py-0.5 rounded-full ${
-                    isSelected ? 'bg-indigo-200/60 text-indigo-800' : 'bg-slate-100 text-slate-500'
-                  }`}
-                >
-                  {count}
-                </span>
               </button>
             );
           })}
@@ -183,25 +170,19 @@ export const FilterSidebar: React.FC = () => {
         <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
           {BRANDS.map((brand) => {
             const isChecked = selectedBrands.includes(brand);
-            const brandCount = MOCK_PRODUCTS.filter((p) => p.brand === brand).length;
 
             return (
               <label
                 key={brand}
-                className="flex items-center justify-between text-xs text-slate-700 hover:text-slate-900 cursor-pointer select-none group"
+                className="flex items-center gap-2 text-xs text-slate-700 hover:text-slate-900 cursor-pointer select-none group"
               >
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={isChecked}
-                    onChange={() => toggleBrand(brand)}
-                    className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
-                  />
-                  <span>{brand}</span>
-                </div>
-                <span className="text-[11px] text-slate-400 group-hover:text-slate-600">
-                  ({brandCount})
-                </span>
+                <input
+                  type="checkbox"
+                  checked={isChecked}
+                  onChange={() => toggleBrand(brand)}
+                  className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                />
+                <span>{brand}</span>
               </label>
             );
           })}
