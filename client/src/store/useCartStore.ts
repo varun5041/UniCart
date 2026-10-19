@@ -1,173 +1,230 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import type { Product, CartItem } from '../types';
-
-export interface AppliedCoupon {
-  code: string;
-  discountType: 'percentage' | 'fixed';
-  discountValue: number;
-}
+import { cartApi } from '../api/cart';
+import { useAuthStore } from './useAuthStore';
+import type { CartItem, Product } from '../types';
 
 interface CartStore {
   items: CartItem[];
-  coupon: AppliedCoupon | null;
-  addToCart: (product: Product, quantity?: number) => void;
-  removeFromCart: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
-  clearCart: () => void;
+  subtotal: number; // in paise
+  isLoading: boolean;
+  couponCode: string | null;
+  discountPaise: number;
+
+  syncCart: () => Promise<void>;
+  addToCart: (product: Product, qty?: number) => Promise<boolean>;
+  updateQuantity: (productId: string, qty: number) => Promise<boolean>;
+  removeFromCart: (productId: string) => Promise<boolean>;
+  clearCart: () => Promise<boolean>;
   applyCoupon: (code: string) => { success: boolean; message: string };
   removeCoupon: () => void;
 
-  // Computed helper getters
   getItemCount: () => number;
-  getSubtotal: () => number;
-  getDiscount: () => number;
-  getShippingFee: () => number;
-  getGrandTotal: () => number;
+  getShippingFee: () => number; // in paise
+  getGrandTotal: () => number; // in paise
 }
 
-export const VALID_COUPONS: Record<string, { type: 'percentage' | 'fixed'; value: number; minSpend?: number }> = {
-  'UNICART10': { type: 'percentage', value: 10, minSpend: 999 },
-  'SAVE500': { type: 'fixed', value: 500, minSpend: 2999 },
-  'WELCOME50': { type: 'fixed', value: 50, minSpend: 499 }
-};
+export const useCartStore = create<CartStore>((set, get) => ({
+  items: [],
+  subtotal: 0,
+  isLoading: false,
+  couponCode: null,
+  discountPaise: 0,
 
-export const useCartStore = create<CartStore>()(
-  persist(
-    (set, get) => ({
-      items: [
-        // Default initialized with 1 item for immediate rich showcase (Boat Rockerz 450)
-        {
-          product: {
-            id: 'prod-001',
-            name: 'Boat Rockerz 450 Bluetooth On-Ear Headphone with Mic',
-            slug: 'boat-rockerz-450-bluetooth-on-ear-headphone',
-            description: 'Up to 15 Hours of Playback, 40mm Dynamic Drivers, Padded Ear Cushions.',
-            price: 1499,
-            originalPrice: 3990,
-            discountPercentage: 62,
-            stock: 18,
-            category: 'audio-wearables',
-            brand: 'Boat',
-            rating: 4.4,
-            reviewCount: 3840,
-            images: [
-              'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80'
-            ]
-          },
-          quantity: 1
-        }
-      ],
-      coupon: null,
+  syncCart: async () => {
+    const { isAuthenticated } = useAuthStore.getState();
+    if (!isAuthenticated) return;
 
-      addToCart: (product: Product, quantity = 1) => {
-        set((state) => {
-          const existingIndex = state.items.findIndex((item) => item.product.id === product.id);
-          if (existingIndex > -1) {
-            const updatedItems = [...state.items];
-            const currentQty = updatedItems[existingIndex].quantity;
-            const newQty = Math.min(currentQty + quantity, product.stock);
-            updatedItems[existingIndex] = {
-              ...updatedItems[existingIndex],
-              quantity: newQty
-            };
-            return { items: updatedItems };
-          } else {
-            return {
-              items: [...state.items, { product, quantity: Math.min(quantity, product.stock) }]
-            };
-          }
-        });
-      },
-
-      removeFromCart: (productId: string) => {
-        set((state) => ({
-          items: state.items.filter((item) => item.product.id !== productId)
-        }));
-      },
-
-      updateQuantity: (productId: string, quantity: number) => {
-        if (quantity <= 0) {
-          get().removeFromCart(productId);
-          return;
-        }
-        set((state) => {
-          const updatedItems = state.items.map((item) => {
-            if (item.product.id === productId) {
-              return { ...item, quantity: Math.min(quantity, item.product.stock) };
-            }
-            return item;
-          });
-          return { items: updatedItems };
-        });
-      },
-
-      clearCart: () => {
-        set({ items: [], coupon: null });
-      },
-
-      applyCoupon: (code: string) => {
-        const cleanCode = code.trim().toUpperCase();
-        const found = VALID_COUPONS[cleanCode];
-        if (!found) {
-          return { success: false, message: 'Invalid coupon code. Try UNICART10 or SAVE500' };
-        }
-        const subtotal = get().getSubtotal();
-        if (found.minSpend && subtotal < found.minSpend) {
-          return {
-            success: false,
-            message: `Coupon requires a minimum order of ₹${found.minSpend}`
-          };
-        }
+    try {
+      set({ isLoading: true });
+      const res = await cartApi.getCart();
+      if (res.success && res.data) {
         set({
-          coupon: {
-            code: cleanCode,
-            discountType: found.type,
-            discountValue: found.value
-          }
+          items: res.data.items || [],
+          subtotal: res.data.subtotal || 0,
+          isLoading: false
         });
-        return { success: true, message: `Coupon ${cleanCode} applied successfully!` };
-      },
-
-      removeCoupon: () => {
-        set({ coupon: null });
-      },
-
-      getItemCount: () => {
-        return get().items.reduce((acc, item) => acc + item.quantity, 0);
-      },
-
-      getSubtotal: () => {
-        return get().items.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
-      },
-
-      getDiscount: () => {
-        const { coupon } = get();
-        if (!coupon) return 0;
-        const subtotal = get().getSubtotal();
-        if (coupon.discountType === 'percentage') {
-          return Math.round((subtotal * coupon.discountValue) / 100);
-        }
-        return Math.min(coupon.discountValue, subtotal);
-      },
-
-      getShippingFee: () => {
-        const subtotal = get().getSubtotal();
-        if (subtotal === 0 || subtotal >= 999) {
-          return 0; // Free delivery for orders >= ₹999
-        }
-        return 99; // Standard delivery fee
-      },
-
-      getGrandTotal: () => {
-        const subtotal = get().getSubtotal();
-        const discount = get().getDiscount();
-        const shipping = get().getShippingFee();
-        return Math.max(0, subtotal - discount + shipping);
       }
-    }),
-    {
-      name: 'unicart-cart-storage'
+    } catch {
+      set({ isLoading: false });
     }
-  )
-);
+  },
+
+  addToCart: async (product: Product, qty = 1) => {
+    const { isAuthenticated } = useAuthStore.getState();
+    const prodId = product._id || product.id || '';
+
+    if (isAuthenticated) {
+      try {
+        set({ isLoading: true });
+        const res = await cartApi.addItem(prodId, qty);
+        if (res.success && res.data) {
+          set({
+            items: res.data.items || [],
+            subtotal: res.data.subtotal || 0,
+            isLoading: false
+          });
+          return true;
+        }
+      } catch {
+        set({ isLoading: false });
+        return false;
+      }
+    } else {
+      // Local guest cart
+      const currentItems = [...get().items];
+      const existingIdx = currentItems.findIndex(
+        (i) => i.productId === prodId || (i.product && (i.product._id === prodId || i.product.id === prodId))
+      );
+
+      if (existingIdx > -1) {
+        const item = currentItems[existingIdx];
+        const newQty = Math.min((item.qty || item.quantity || 1) + qty, product.stock || 10);
+        currentItems[existingIdx] = {
+          ...item,
+          qty: newQty,
+          quantity: newQty
+        };
+      } else {
+        currentItems.push({
+          productId: prodId,
+          product,
+          name: product.name,
+          price: product.price,
+          qty,
+          quantity: qty,
+          images: product.images
+        });
+      }
+
+      const newSubtotal = currentItems.reduce(
+        (acc, item) => acc + (item.price || item.product?.price || 0) * (item.qty || item.quantity || 1),
+        0
+      );
+
+      set({ items: currentItems, subtotal: newSubtotal });
+      return true;
+    }
+    return false;
+  },
+
+  updateQuantity: async (productId: string, qty: number) => {
+    if (qty <= 0) {
+      return get().removeFromCart(productId);
+    }
+
+    const { isAuthenticated } = useAuthStore.getState();
+    if (isAuthenticated) {
+      try {
+        set({ isLoading: true });
+        const res = await cartApi.updateItem(productId, qty);
+        if (res.success && res.data) {
+          set({
+            items: res.data.items || [],
+            subtotal: res.data.subtotal || 0,
+            isLoading: false
+          });
+          return true;
+        }
+      } catch {
+        set({ isLoading: false });
+        return false;
+      }
+    } else {
+      const currentItems = get().items.map((item) => {
+        if (item.productId === productId || item.product?._id === productId || item.product?.id === productId) {
+          return { ...item, qty, quantity: qty };
+        }
+        return item;
+      });
+
+      const newSubtotal = currentItems.reduce(
+        (acc, item) => acc + (item.price || item.product?.price || 0) * (item.qty || item.quantity || 1),
+        0
+      );
+
+      set({ items: currentItems, subtotal: newSubtotal });
+      return true;
+    }
+    return false;
+  },
+
+  removeFromCart: async (productId: string) => {
+    const { isAuthenticated } = useAuthStore.getState();
+    if (isAuthenticated) {
+      try {
+        set({ isLoading: true });
+        const res = await cartApi.removeItem(productId);
+        if (res.success && res.data) {
+          set({
+            items: res.data.items || [],
+            subtotal: res.data.subtotal || 0,
+            isLoading: false
+          });
+          return true;
+        }
+      } catch {
+        set({ isLoading: false });
+        return false;
+      }
+    } else {
+      const filtered = get().items.filter(
+        (item) => item.productId !== productId && item.product?._id !== productId && item.product?.id !== productId
+      );
+      const newSubtotal = filtered.reduce(
+        (acc, item) => acc + (item.price || item.product?.price || 0) * (item.qty || item.quantity || 1),
+        0
+      );
+      set({ items: filtered, subtotal: newSubtotal });
+      return true;
+    }
+    return false;
+  },
+
+  clearCart: async () => {
+    const { isAuthenticated } = useAuthStore.getState();
+    if (isAuthenticated) {
+      try {
+        await cartApi.clearCart();
+      } catch {
+        // ignore
+      }
+    }
+    set({ items: [], subtotal: 0, couponCode: null, discountPaise: 0 });
+    return true;
+  },
+
+  applyCoupon: (code: string) => {
+    const upper = code.trim().toUpperCase();
+    if (upper === 'UNICART10') {
+      const sub = get().subtotal;
+      const discount = Math.round(sub * 0.1);
+      set({ couponCode: upper, discountPaise: discount });
+      return { success: true, message: '10% discount applied!' };
+    }
+    if (upper === 'SAVE500') {
+      const discount = 50000; // ₹500 in paise
+      set({ couponCode: upper, discountPaise: discount });
+      return { success: true, message: '₹500 flat discount applied!' };
+    }
+    return { success: false, message: 'Invalid coupon code. Try UNICART10 or SAVE500' };
+  },
+
+  removeCoupon: () => set({ couponCode: null, discountPaise: 0 }),
+
+  getItemCount: () => {
+    return get().items.reduce((acc, item) => acc + (item.qty || item.quantity || 0), 0);
+  },
+
+  getShippingFee: () => {
+    const sub = get().subtotal;
+    if (sub === 0 || sub >= 99900) return 0; // Free delivery over ₹999
+    return 9900; // ₹99 in paise
+  },
+
+  getGrandTotal: () => {
+    const sub = get().subtotal;
+    const discount = get().discountPaise;
+    const shipping = get().getShippingFee();
+    return Math.max(0, sub - discount + shipping);
+  }
+}));

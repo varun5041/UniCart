@@ -9,7 +9,7 @@ export const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { getItemCount } = useCartStore();
-  const { user, isAuthenticated, logout, loginDemo, triggerLockoutDemo } = useAuthStore();
+  const { user, isAuthenticated, logout } = useAuthStore();
   const { searchQuery, setSearchQuery, selectedCategory, setCategory } = useFilterStore();
 
   const [isAccountOpen, setIsAccountOpen] = useState(false);
@@ -259,61 +259,20 @@ export const Navbar: React.FC = () => {
                     </Link>
                   </div>
 
-                  {/* Switch Demo Role & Security Testing */}
-                  <div className="border-t border-slate-100 py-2 px-3 bg-indigo-50/40">
-                    <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider px-1 mb-1.5">
-                      Demo Role Switcher
+                  <div className="border-t border-slate-100 py-2 px-4 bg-slate-50/50">
+                    <p className="text-[11px] text-slate-500">
+                      Logged in as <strong className="text-slate-800">{user.email}</strong>
                     </p>
-                    <div className="grid grid-cols-2 gap-1.5">
-                      <button
-                        onClick={() => {
-                          loginDemo('customer');
-                          setIsAccountOpen(false);
-                        }}
-                        className={`text-xs px-2.5 py-1.5 rounded-lg border font-medium text-center transition-colors ${
-                          user.role === 'customer'
-                            ? 'bg-indigo-600 text-white border-indigo-600'
-                            : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
-                        }`}
-                      >
-                        Buyer (Rahul)
-                      </button>
-                      <button
-                        onClick={() => {
-                          loginDemo('admin');
-                          setIsAccountOpen(false);
-                        }}
-                        className={`text-xs px-2.5 py-1.5 rounded-lg border font-medium text-center transition-colors ${
-                          user.role === 'admin'
-                            ? 'bg-indigo-600 text-white border-indigo-600'
-                            : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
-                        }`}
-                      >
-                        Admin (Priya)
-                      </button>
-                    </div>
-
-                    <button
-                      onClick={() => {
-                        triggerLockoutDemo();
-                        navigate('/login');
-                        setIsAccountOpen(false);
-                      }}
-                      className="w-full mt-2 text-left text-[11px] text-amber-700 hover:text-amber-800 font-medium flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-amber-100/60 transition-colors"
-                    >
-                      <span className="material-symbols-outlined text-sm">lock_clock</span>
-                      Test Stitch Screen 5: Lockout State
-                    </button>
                   </div>
 
                   <div className="border-t border-slate-100 pt-1">
                     <button
                       onClick={() => {
-                        logout();
+                        void logout();
                         setIsAccountOpen(false);
                         navigate('/login');
                       }}
-                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50 transition-colors"
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
                     >
                       <span className="material-symbols-outlined text-lg">logout</span>
                       <span>Sign Out</span>

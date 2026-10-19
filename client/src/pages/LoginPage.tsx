@@ -1,48 +1,52 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import { useToastStore } from '../store/useToastStore';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const { login, loginDemo, isLockedOut, resetLockout, triggerLockoutDemo } = useAuthStore();
+  const location = useLocation();
+  const { login, isLoading } = useAuthStore();
   const { addToast } = useToastStore();
 
-  const [email, setEmail] = useState('rahul.sharma@example.com');
-  const [password, setPassword] = useState('Customer@12345');
+  const [email, setEmail] = useState('admin@unicart.dev');
+  const [password, setPassword] = useState('ChangeMe123!');
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const searchParams = new URLSearchParams(location.search);
+  const redirectPath = searchParams.get('redirect') || '/';
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
 
-    const res = login(email, password);
+    const res = await login(email, password);
     if (res.success) {
       addToast({
         type: 'success',
         title: 'Welcome Back!',
-        message: 'Successfully logged in to UniCart.'
+        message: 'Successfully authenticated with UniCart.'
       });
-      navigate('/');
+      navigate(redirectPath);
     } else {
-      setErrorMessage(res.error || 'Login failed.');
+      setErrorMessage(res.error || 'Authentication failed. Please verify credentials.');
       addToast({
         type: 'error',
         title: 'Authentication Error',
-        message: res.error
+        message: res.error || 'Invalid credentials'
       });
     }
   };
 
-  const handleDemoLogin = (role: 'customer' | 'admin') => {
-    loginDemo(role);
-    addToast({
-      type: 'success',
-      title: 'Demo Session Active',
-      message: `Signed in as ${role === 'admin' ? 'Store Admin' : 'Buyer Rahul'}.`
-    });
-    navigate('/');
+  const handleQuickFill = (role: 'admin' | 'customer') => {
+    if (role === 'admin') {
+      setEmail('admin@unicart.dev');
+      setPassword('ChangeMe123!');
+    } else {
+      setEmail('customer@unicart.dev');
+      setPassword('Customer123!');
+    }
   };
 
   return (
@@ -58,84 +62,81 @@ export const LoginPage: React.FC = () => {
           </Link>
           <h1 className="text-xl font-black text-slate-900">Sign in to your account</h1>
           <p className="text-xs text-slate-500">
-            Access your orders, saved addresses, and wishlisted items
+            Protected by Argon2id password hashing &amp; rotating refresh tokens
           </p>
         </div>
 
-        {/* STITCH SCREEN 5: ACCOUNT LOCKOUT ALERT STATE */}
-        {isLockedOut && (
-          <div className="p-4 rounded-2xl bg-rose-50 border border-rose-300 text-xs space-y-3 animate-shake">
-            <div className="flex items-start gap-2.5">
-              <span className="material-symbols-outlined text-rose-600 text-xl shrink-0">
-                lock_clock
-              </span>
-              <div>
-                <h4 className="font-bold text-rose-950">Account Temporarily Locked</h4>
-                <p className="text-rose-800 mt-0.5 leading-relaxed">
-                  Too many consecutive failed login attempts. Your account has been secured for 15 minutes to protect against brute-force attacks (OWASP A07:2021).
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between pt-2 border-t border-rose-200">
-              <span className="font-mono font-bold text-rose-900">Lockout: ~14:48 remaining</span>
+        {/* Quick Fill Credentials Banner */}
+        <div className="p-3 bg-indigo-50 border border-indigo-200 rounded-2xl space-y-2">
+          <div className="flex items-center justify-between text-xs font-bold text-indigo-950">
+            <span>Development Quick-Fill:</span>
+            <div className="flex gap-1.5">
               <button
-                onClick={resetLockout}
-                className="px-2.5 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-bold text-[11px] transition-colors"
+                type="button"
+                onClick={() => handleQuickFill('admin')}
+                className="px-2 py-0.5 rounded bg-indigo-600 text-white font-mono text-[10px] hover:bg-indigo-700 cursor-pointer"
               >
-                Reset Lockout (Demo)
+                Admin
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickFill('customer')}
+                className="px-2 py-0.5 rounded bg-white text-indigo-700 border border-indigo-300 font-mono text-[10px] hover:bg-indigo-100 cursor-pointer"
+              >
+                Customer
               </button>
             </div>
           </div>
-        )}
+          <p className="text-[11px] text-indigo-800">
+            Click to fill seed credentials. Accounts automatically lock for 15m after 5 failed attempts.
+          </p>
+        </div>
 
-        {errorMessage && !isLockedOut && (
-          <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
-            <span className="material-symbols-outlined text-base">error</span>
+        {/* Error Alert */}
+        {errorMessage && (
+          <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-start gap-2">
+            <span className="material-symbols-outlined text-base text-rose-600 shrink-0">error</span>
             <span>{errorMessage}</span>
           </div>
         )}
 
         {/* Login Form */}
-        <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="login-email-input" className="block text-slate-700 font-bold mb-1">Email Address</label>
+            <label className="block text-xs font-bold text-slate-700 mb-1">Email Address</label>
             <input
-              id="login-email-input"
               type="email"
               required
-              disabled={isLockedOut}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-slate-900 focus:outline-none focus:border-indigo-600 disabled:bg-slate-100 disabled:cursor-not-allowed"
+              placeholder="you@domain.com"
+              className="w-full px-4 py-3 text-xs rounded-xl border border-slate-300 focus:outline-none focus:border-indigo-600 transition-colors shadow-xs"
             />
           </div>
 
           <div>
             <div className="flex justify-between items-center mb-1">
-              <label htmlFor="login-password-input" className="text-slate-700 font-bold">Password</label>
-              <Link to="/" className="text-indigo-600 hover:text-indigo-800 font-medium">
+              <label className="block text-xs font-bold text-slate-700">Password</label>
+              <span className="text-[11px] text-indigo-600 hover:underline cursor-pointer">
                 Forgot password?
-              </Link>
+              </span>
             </div>
             <div className="relative">
               <input
-                id="login-password-input"
                 type={showPassword ? 'text' : 'password'}
                 required
-                disabled={isLockedOut}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter password"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-slate-900 focus:outline-none focus:border-indigo-600 disabled:bg-slate-100 disabled:cursor-not-allowed pr-10"
+                placeholder="••••••••"
+                className="w-full px-4 py-3 text-xs rounded-xl border border-slate-300 focus:outline-none focus:border-indigo-600 transition-colors pr-10 shadow-xs"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
-                <span className="material-symbols-outlined text-base">
+                <span className="material-symbols-outlined text-lg">
                   {showPassword ? 'visibility_off' : 'visibility'}
                 </span>
               </button>
@@ -144,51 +145,29 @@ export const LoginPage: React.FC = () => {
 
           <button
             type="submit"
-            disabled={isLockedOut}
-            className="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs shadow-md shadow-indigo-600/25 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            disabled={isLoading}
+            className="w-full py-3.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs shadow-md shadow-indigo-600/20 transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
           >
-            Sign In to UniCart
+            {isLoading ? (
+              <>
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                <span>Authenticating...</span>
+              </>
+            ) : (
+              <span>Sign In to UniCart</span>
+            )}
           </button>
         </form>
 
-        {/* 1-Click Demo Logins */}
-        <div className="pt-2 border-t border-slate-100 space-y-2">
-          <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider text-center">
-            Or Sign In with 1-Click Demo
+        {/* Footer Link */}
+        <div className="text-center pt-2 border-t border-slate-100">
+          <p className="text-xs text-slate-500">
+            Don&apos;t have an account?{' '}
+            <Link to="/register" className="font-bold text-indigo-600 hover:text-indigo-800">
+              Create account
+            </Link>
           </p>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              onClick={() => handleDemoLogin('customer')}
-              className="py-2 px-3 rounded-xl border border-indigo-200 bg-indigo-50/50 hover:bg-indigo-100 text-indigo-700 font-bold text-xs transition-colors"
-            >
-              Demo Buyer
-            </button>
-            <button
-              type="button"
-              onClick={() => handleDemoLogin('admin')}
-              className="py-2 px-3 rounded-xl border border-purple-200 bg-purple-50/50 hover:bg-purple-100 text-purple-700 font-bold text-xs transition-colors"
-            >
-              Demo Admin
-            </button>
-          </div>
-
-          <button
-            type="button"
-            onClick={triggerLockoutDemo}
-            className="w-full py-1.5 text-[11px] text-amber-700 hover:text-amber-800 font-semibold bg-amber-50 rounded-lg border border-amber-200 transition-colors"
-          >
-            ⚡ Test Stitch Screen 5: Trigger Account Lockout
-          </button>
         </div>
-
-        {/* Link to Register */}
-        <p className="text-center text-xs text-slate-500 pt-2">
-          Don&apos;t have an account yet?{' '}
-          <Link to="/register" className="font-bold text-indigo-600 hover:text-indigo-800">
-            Create an account
-          </Link>
-        </p>
       </div>
     </div>
   );

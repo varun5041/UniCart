@@ -1,29 +1,55 @@
+export interface Category {
+  _id?: string;
+  id?: string;
+  name: string;
+  slug: string;
+  image?: string;
+  icon?: string;
+}
+
 export interface Product {
-  id: string;
+  _id?: string;
+  id?: string;
   name: string;
   slug: string;
   description: string;
-  price: number; // in paise or rupees (we will use rupees for display, paise internally)
-  originalPrice: number;
-  discountPercentage: number;
+  price: number; // in paise or rupees
   stock: number;
-  category: string;
-  brand: string;
+  category: string | Category;
   images: string[];
-  rating: number;
-  reviewCount: number;
-  tags?: string[];
-  specifications?: Record<string, string>;
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  // Enhanced fields
+  originalPrice?: number;
+  discountPercentage?: number;
+  rating?: number;
+  reviewCount?: number;
+  brand?: string;
   isFeatured?: boolean;
+  specifications?: Record<string, string>;
 }
 
 export interface CartItem {
-  product: Product;
-  quantity: number;
+  productId: string;
+  product?: Product;
+  name?: string;
+  price?: number;
+  qty: number;
+  quantity?: number;
+  images?: string[];
+}
+
+export interface CartResponse {
+  userId: string;
+  items: CartItem[];
+  subtotal: number; // paise
+  itemCount: number;
 }
 
 export interface Address {
-  id: string;
+  _id?: string;
+  id?: string;
   line1: string;
   city: string;
   state: string;
@@ -33,6 +59,7 @@ export interface Address {
 }
 
 export interface User {
+  _id?: string;
   id: string;
   name: string;
   email: string;
@@ -45,21 +72,50 @@ export type OrderStatus = 'pending_payment' | 'paid' | 'shipped' | 'delivered' |
 export interface OrderItem {
   productId: string;
   name: string;
-  price: number; // snapshot in INR
+  price: number; // in paise or rupees
   qty: number;
   image?: string;
 }
 
 export interface Order {
-  id: string;
+  _id?: string;
+  id?: string;
   userId: string;
   items: OrderItem[];
-  subtotal: number;
-  shipping: number;
-  total: number;
+  subtotal: number; // in paise or rupees
+  shipping: number; // in paise or rupees
+  total: number; // in paise or rupees
   shippingAddress: Address;
   status: OrderStatus;
   paymentRef?: string;
-  idempotencyKey: string;
+  idempotencyKey?: string;
   createdAt: string;
+  updatedAt?: string;
+}
+
+export interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  meta?: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+  error?: {
+    code: string;
+    message: string;
+    details?: unknown[];
+  };
+}
+
+export function formatInr(paise: number): string {
+  if (typeof paise !== 'number' || isNaN(paise)) return '₹0.00';
+  const rupees = paise / 100;
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(rupees);
 }

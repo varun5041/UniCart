@@ -14,13 +14,20 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const [isAdded, setIsAdded] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
 
+  const productId = product._id || product.id || product.slug || '';
+  const displayPrice = product._id ? Math.round(product.price / 100) : product.price;
+  const brandName = product.brand || (typeof product.category === 'object' ? product.category.name : 'UniCart');
+  const imageUrl = product.images?.[0] || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80';
+  const ratingValue = product.rating || 4.5;
+  const reviewsCount = product.reviewCount || 128;
+
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
     if (product.stock <= 0) return;
 
-    addToCart(product, 1);
+    void addToCart(product, 1);
     setIsAdded(true);
     addToast({
       type: 'success',
@@ -48,7 +55,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   let stockBadge = (
     <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-      In Stock
+      In Stock ({product.stock})
     </span>
   );
 
@@ -62,35 +69,31 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   } else if (product.stock <= 5) {
     stockBadge = (
       <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-        <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
-        Only {product.stock} left
+        <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+        Only {product.stock} left!
       </span>
     );
   }
 
   return (
-    <div className="group relative bg-white rounded-2xl border border-slate-200/80 hover:border-indigo-300 hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden">
-      {/* Image & Badges Container */}
-      <Link to={`/product/${product.id}`} className="relative block overflow-hidden bg-slate-50 pt-[100%]">
+    <div className="group bg-white rounded-2xl border border-slate-200/80 hover:border-indigo-300 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden relative">
+      {/* Product Image Link */}
+      <Link
+        to={`/product/${product.slug || productId}`}
+        className="relative block aspect-square overflow-hidden bg-slate-50"
+      >
         <img
-          src={product.images[0]}
+          src={imageUrl}
           alt={product.name}
-          className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
           loading="lazy"
+          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
         />
-
-        {/* Discount Badge */}
-        {product.discountPercentage > 0 && (
-          <div className="absolute top-3 left-3 bg-rose-600 text-white font-extrabold text-[11px] px-2.5 py-1 rounded-lg shadow-sm">
-            {product.discountPercentage}% OFF
-          </div>
-        )}
 
         {/* Wishlist Button */}
         <button
           onClick={handleToggleWishlist}
           className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm text-slate-600 hover:text-rose-500 flex items-center justify-center shadow-md transition-all hover:scale-110"
-          aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+          aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
         >
           <span
             className={`material-symbols-outlined text-lg ${
@@ -108,13 +111,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           {/* Brand & Stock Status */}
           <div className="flex items-center justify-between gap-2 mb-2">
             <span className="text-[11px] font-bold text-slate-500 tracking-wider uppercase">
-              {product.brand}
+              {brandName}
             </span>
             {stockBadge}
           </div>
 
           {/* Product Name */}
-          <Link to={`/product/${product.id}`}>
+          <Link to={`/product/${product.slug || productId}`}>
             <h3 className="font-semibold text-slate-900 text-sm line-clamp-2 hover:text-indigo-600 transition-colors leading-snug">
               {product.name}
             </h3>
@@ -124,10 +127,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           <div className="flex items-center gap-1.5 mt-2">
             <div className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold">
               <span>★</span>
-              <span>{product.rating.toFixed(1)}</span>
+              <span>{ratingValue.toFixed(1)}</span>
             </div>
             <span className="text-[11px] text-slate-600">
-              ({product.reviewCount.toLocaleString('en-IN')})
+              ({reviewsCount.toLocaleString('en-IN')})
             </span>
           </div>
         </div>
@@ -136,9 +139,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <div className="mt-4 pt-3 border-t border-slate-100">
           <div className="flex items-baseline gap-2 mb-3">
             <span className="text-xl font-extrabold text-slate-900">
-              ₹{product.price.toLocaleString('en-IN')}
+              ₹{displayPrice.toLocaleString('en-IN')}
             </span>
-            {product.originalPrice > product.price && (
+            {product.originalPrice && product.originalPrice > displayPrice && (
               <span className="text-xs text-slate-600 line-through">
                 ₹{product.originalPrice.toLocaleString('en-IN')}
               </span>

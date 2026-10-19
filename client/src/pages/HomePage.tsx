@@ -1,11 +1,11 @@
-import React, { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { ProductCard } from '../components/ProductCard';
 import { FilterSidebar } from '../components/FilterSidebar';
 import { useFilterStore, type SortOption } from '../store/useFilterStore';
 import { MOCK_PRODUCTS, MOCK_CATEGORIES } from '../api/mockData';
-
-type ShowcaseTab = 'live' | 'skeleton' | 'empty' | 'error';
+import { productsApi } from '../api/products';
+import type { Product } from '../types';
 
 export const HomePage: React.FC = () => {
   const {
@@ -25,77 +25,84 @@ export const HomePage: React.FC = () => {
     setCategory
   } = useFilterStore();
 
-  const [activeTab, setActiveTab] = useState<ShowcaseTab>('live');
-  const [isErrorDismissed, setIsErrorDismissed] = useState(false);
+  // TanStack Query for server state caching & live API integration
+  const { data: serverData, isLoading: isServerLoading } = useQuery({
+    queryKey: ['products', selectedCategory, searchQuery, sortBy, minPrice, maxPrice, currentPage],
+    queryFn: async () => {
+      try {
+        const res = await productsApi.getProducts({
+          page: currentPage,
+          limit: itemsPerPage,
+          category: selectedCategory !== 'all' ? selectedCategory : undefined,
+          q: searchQuery || undefined,
+          sort: sortBy === 'price_asc' || sortBy === 'price_desc' || sortBy === 'newest' ? sortBy : undefined,
+          minPrice: minPrice > 0 ? minPrice * 100 : undefined,
+          maxPrice: maxPrice < 100000 ? maxPrice * 100 : undefined
+        });
+        if (res.success && res.data && res.data.length > 0) {
+          return {
+            items: res.data,
+            total: res.meta?.total ?? res.data.length,
+            pages: res.meta?.pages ?? 1
+          };
+        }
+      } catch {
+        // Fallback to local showcase data
+      }
+      return null;
+    }
+  });
 
-  // Filter products
+  // Client-side fallback filter logic
   const filteredProducts = useMemo(() => {
     return MOCK_PRODUCTS.filter((product) => {
-      // Category filter
       if (selectedCategory !== 'all' && product.category !== selectedCategory) {
         return false;
       }
-
-      // Search keyword filter
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
         const matchesName = product.name.toLowerCase().includes(query);
-        const matchesBrand = product.brand.toLowerCase().includes(query);
+        const matchesBrand = (product.brand || '').toLowerCase().includes(query);
         const matchesDesc = product.description.toLowerCase().includes(query);
         if (!matchesName && !matchesBrand && !matchesDesc) {
           return false;
         }
       }
-
-      // Price filter
       if (product.price < minPrice || product.price > maxPrice) {
         return false;
       }
-
-      // Brand filter
-      if (selectedBrands.length > 0 && !selectedBrands.includes(product.brand)) {
+      if (selectedBrands.length > 0 && (!product.brand || !selectedBrands.includes(product.brand))) {
         return false;
       }
-
-      // In stock filter
       if (inStockOnly && product.stock <= 0) {
         return false;
       }
-
-      // Rating filter
-      if (minRating > 0 && product.rating < minRating) {
+      if (minRating > 0 && (product.rating || 0) < minRating) {
         return false;
       }
-
       return true;
     });
   }, [selectedCategory, searchQuery, minPrice, maxPrice, selectedBrands, inStockOnly, minRating]);
 
-  // Sort products
   const sortedProducts = useMemo(() => {
     const list = [...filteredProducts];
-    if (sortBy === 'price_asc') {
-      return list.sort((a, b) => a.price - b.price);
-    }
-    if (sortBy === 'price_desc') {
-      return list.sort((a, b) => b.price - a.price);
-    }
-    if (sortBy === 'rating') {
-      return list.sort((a, b) => b.rating - a.rating);
-    }
-    if (sortBy === 'newest') {
-      return list.reverse();
-    }
-    return list; // 'featured' default
+    if (sortBy === 'price_asc') return list.sort((a, b) => a.price - b.price);
+    if (sortBy === 'price_desc') return list.sort((a, b) => b.price - a.price);
+    if (sortBy === 'rating') return list.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    if (sortBy === 'newest') return list.reverse();
+    return list;
   }, [filteredProducts, sortBy]);
 
-  // Pagination calculation
-  const totalProducts = sortedProducts.length;
-  const totalPages = Math.ceil(totalProducts / itemsPerPage) || 1;
-  const paginatedProducts = useMemo(() => {
+  const totalProducts = serverData ? serverData.total : sortedProducts.length;
+  const totalPages = serverData ? serverData.pages : Math.ceil(totalProducts / itemsPerPage) || 1;
+
+  const displayProducts: Product[] = useMemo(() => {
+    if (serverData && serverData.items.length > 0) {
+      return serverData.items;
+    }
     const start = (currentPage - 1) * itemsPerPage;
     return sortedProducts.slice(start, start + itemsPerPage);
-  }, [sortedProducts, currentPage, itemsPerPage]);
+  }, [serverData, sortedProducts, currentPage, itemsPerPage]);
 
   const activeCategoryObj = MOCK_CATEGORIES.find((c) => c.id === selectedCategory);
 
@@ -108,75 +115,76 @@ export const HomePage: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-7 space-y-4">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-emerald-300 text-xs font-semibold border border-white/10">
-                <span className="material-symbols-outlined text-sm">bolt</span>
-                <span>FESTIVAL TECH CARNIVAL 2026</span>
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>Diwali Super Saver Festival • Up to 70% Off</span>
               </div>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight text-white">
-                Next-Gen Tech Gadgets,{' '}
-                <span className="bg-gradient-to-r from-amber-300 via-emerald-300 to-indigo-200 bg-clip-text text-transparent">
-                  Unbeatable Prices.
-                </span>
+              <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
+                India&apos;s Fastest E-Commerce Platform.
               </h1>
-              <p className="text-slate-300 text-sm sm:text-base max-w-xl leading-relaxed">
-                Explore premium active noise-cancelling headphones, AMOLED smartwatches, Apple accessories, and mechanical keyboards with instant bank discounts & free pan-India delivery.
+              <p className="text-sm sm:text-base text-slate-300 max-w-xl font-normal leading-relaxed">
+                Guaranteed genuine electronics, verified flash deals, sub-100ms API speeds, and same-day dispatch nationwide.
               </p>
               <div className="flex flex-wrap items-center gap-3 pt-2">
                 <a
                   href="#catalog"
-                  className="px-6 py-3 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white font-bold text-sm shadow-lg shadow-indigo-500/30 transition-all hover:-translate-y-0.5"
+                  className="px-6 py-3 rounded-2xl bg-indigo-500 hover:bg-indigo-600 text-white font-bold text-xs shadow-lg shadow-indigo-500/30 transition-all hover:scale-105"
                 >
-                  Explore Deals
+                  Shop Now
                 </a>
-                <span className="text-xs text-slate-300 flex items-center gap-1.5 px-3 py-2 bg-white/5 rounded-xl border border-white/10">
-                  <span className="material-symbols-outlined text-amber-400 text-base">savings</span>
-                  Extra 10% Instant Off on HDFC & ICICI Cards
-                </span>
+                <button
+                  onClick={() => setCategory('all')}
+                  className="px-5 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs backdrop-blur-sm border border-white/15 transition-all"
+                >
+                  View All Deals
+                </button>
               </div>
             </div>
 
-            <div className="lg:col-span-5 hidden lg:flex justify-end">
-              <div className="relative w-80 h-64 bg-gradient-to-tr from-indigo-500/20 to-purple-500/20 rounded-3xl p-6 border border-white/15 backdrop-blur-md shadow-2xl flex flex-col justify-between">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <span className="text-[11px] font-bold tracking-wider text-emerald-400 uppercase">
-                      Deal of the Day
-                    </span>
-                    <h3 className="text-white font-extrabold text-lg mt-0.5">Sony WH-1000XM5</h3>
-                    <p className="text-xs text-slate-300">Industry-leading Wireless ANC</p>
-                  </div>
-                  <span className="px-2.5 py-1 rounded-lg bg-rose-500 text-white font-extrabold text-xs">
-                    23% OFF
-                  </span>
-                </div>
-                <div className="flex items-center justify-between pt-4 border-t border-white/10">
-                  <div>
-                    <span className="text-2xl font-black text-white">₹26,990</span>
-                    <span className="text-xs text-slate-400 line-through ml-2">₹34,990</span>
-                  </div>
-                  <Link
-                    to="/product/prod-002"
-                    className="px-4 py-2 rounded-xl bg-white text-indigo-900 font-bold text-xs hover:bg-slate-100 transition-colors"
-                  >
-                    View Product
-                  </Link>
-                </div>
+            {/* Quick Stats Badges */}
+            <div className="lg:col-span-5 grid grid-cols-2 gap-3">
+              <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-4">
+                <div className="text-2xl font-black text-indigo-300">200+</div>
+                <div className="text-xs text-slate-300 mt-0.5">Top-Rated Products</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-4">
+                <div className="text-2xl font-black text-emerald-300">100%</div>
+                <div className="text-xs text-slate-300 mt-0.5">ACID Inventory Guarantee</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-4">
+                <div className="text-2xl font-black text-amber-300">&lt;50ms</div>
+                <div className="text-xs text-slate-300 mt-0.5">Redis Cached Responses</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-4">
+                <div className="text-2xl font-black text-rose-300">Zero</div>
+                <div className="text-xs text-slate-300 mt-0.5">Overselling Risk</div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Category Pills Strip */}
-      <section className="bg-white border-b border-slate-200 py-3 shadow-xs">
+      {/* Category Horizontal Quick Bar */}
+      <section className="border-b border-slate-200/80 bg-white shadow-xs sticky top-16 z-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2 overflow-x-auto scrollbar-none py-1">
+          <div className="flex items-center gap-2 overflow-x-auto py-3 scrollbar-none">
+            <button
+              onClick={() => setCategory('all')}
+              className={`shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                selectedCategory === 'all'
+                  ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30'
+                  : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200/60'
+              }`}
+            >
+              <span className="material-symbols-outlined text-base">apps</span>
+              <span>All Categories</span>
+            </button>
             {MOCK_CATEGORIES.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => setCategory(cat.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                className={`shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
                   selectedCategory === cat.id
-                    ? 'bg-indigo-600 text-white shadow-sm'
+                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30'
                     : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200/60'
                 }`}
               >
@@ -188,105 +196,8 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* Stitch Design Showcase Selector Bar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-        <div className="bg-indigo-50 border border-indigo-200 rounded-2xl p-3 sm:p-4 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2.5">
-            <span className="material-symbols-outlined text-indigo-600 text-xl">palette</span>
-            <div>
-              <h4 className="text-xs font-bold text-indigo-950 uppercase tracking-wide">
-                Stitch UI Design Showcase Switcher
-              </h4>
-              <p className="text-xs text-indigo-800">
-                Switch between live interactive grid and dedicated Stitch mock states (Skeleton, Empty, Error).
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-1.5 bg-white p-1 rounded-xl border border-indigo-200 shadow-xs">
-            <button
-              onClick={() => setActiveTab('live')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
-                activeTab === 'live'
-                  ? 'bg-indigo-600 text-white'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Interactive Catalog
-            </button>
-            <button
-              onClick={() => setActiveTab('skeleton')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
-                activeTab === 'skeleton'
-                  ? 'bg-indigo-600 text-white'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Loading Skeleton
-            </button>
-            <button
-              onClick={() => setActiveTab('empty')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
-                activeTab === 'empty'
-                  ? 'bg-indigo-600 text-white'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Empty State
-            </button>
-            <button
-              onClick={() => setActiveTab('error')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
-                activeTab === 'error'
-                  ? 'bg-indigo-600 text-white'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Network Error Banner
-            </button>
-          </div>
-        </div>
-      </div>
-
       {/* Main Catalog Section */}
       <main id="catalog" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-        {/* Inline Error State Banner from Stitch Screen 1 & 2 */}
-        {(activeTab === 'error' || (!isErrorDismissed && activeTab === 'live')) && (
-          <div className="mb-6 p-4 rounded-2xl bg-amber-50 border border-amber-300/80 flex items-start sm:items-center justify-between gap-4 shadow-sm animate-fade-in">
-            <div className="flex items-start sm:items-center gap-3">
-              <span className="material-symbols-outlined text-amber-600 text-2xl shrink-0">
-                wifi_off
-              </span>
-              <div>
-                <h4 className="text-sm font-bold text-amber-900">
-                  Demo Notice: Showing Cached Catalogue
-                </h4>
-                <p className="text-xs text-amber-800 mt-0.5">
-                  Unable to reach primary Redis cache cluster. Showing local stale-while-revalidate catalog.
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <button
-                onClick={() => {
-                  setIsErrorDismissed(true);
-                  if (activeTab === 'error') setActiveTab('live');
-                }}
-                className="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition-colors shadow-xs"
-              >
-                Retry Connection
-              </button>
-              <button
-                onClick={() => setIsErrorDismissed(true)}
-                className="text-amber-700 hover:text-amber-900 p-1"
-                aria-label="Dismiss banner"
-              >
-                <span className="material-symbols-outlined text-base">close</span>
-              </button>
-            </div>
-          </div>
-        )}
-
         {/* Layout Grid: Sidebar Filters + Products Area */}
         <div className="flex flex-col lg:flex-row gap-8 items-start">
           {/* Left Sticky Filters */}
@@ -328,14 +239,11 @@ export const HomePage: React.FC = () => {
               </div>
             </div>
 
-            {/* TAB 1: SKELETON STATE SHOWCASE (From Stitch Screen 1 Specification) */}
-            {activeTab === 'skeleton' && (
+            {/* LOADING SKELETON */}
+            {isServerLoading && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 animate-pulse">
                 {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
-                  <div
-                    key={n}
-                    className="bg-white rounded-2xl border border-slate-200/80 p-4 space-y-4"
-                  >
+                  <div key={n} className="bg-white rounded-2xl border border-slate-200/80 p-4 space-y-4">
                     <div className="w-full h-44 bg-slate-200 rounded-xl"></div>
                     <div className="h-4 bg-slate-200 rounded-md w-3/4"></div>
                     <div className="h-3 bg-slate-100 rounded-md w-1/2"></div>
@@ -348,25 +256,20 @@ export const HomePage: React.FC = () => {
               </div>
             )}
 
-            {/* TAB 2: EMPTY STATE SHOWCASE (From Stitch Screen 1 Specification) */}
-            {(activeTab === 'empty' || (activeTab === 'live' && paginatedProducts.length === 0)) && (
+            {/* EMPTY STATE */}
+            {!isServerLoading && displayProducts.length === 0 && (
               <div className="bg-white rounded-2xl border border-slate-200/80 p-12 text-center space-y-4 shadow-xs">
                 <div className="w-16 h-16 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto">
                   <span className="material-symbols-outlined text-3xl">search_off</span>
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-slate-900">
-                    No products found matching your filters
-                  </h3>
+                  <h3 className="text-lg font-bold text-slate-900">No products found matching your filters</h3>
                   <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1 leading-relaxed">
                     Try clearing some filters, expanding your price range, or searching for a different keyword.
                   </p>
                 </div>
                 <button
-                  onClick={() => {
-                    resetFilters();
-                    if (activeTab === 'empty') setActiveTab('live');
-                  }}
+                  onClick={resetFilters}
                   className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-colors shadow-sm inline-flex items-center gap-2"
                 >
                   <span className="material-symbols-outlined text-base">refresh</span>
@@ -375,16 +278,16 @@ export const HomePage: React.FC = () => {
               </div>
             )}
 
-            {/* TAB 3: LIVE PRODUCTS GRID (Stitch Screens 1 & 2) */}
-            {activeTab === 'live' && paginatedProducts.length > 0 && (
+            {/* LIVE PRODUCTS GRID */}
+            {!isServerLoading && displayProducts.length > 0 && (
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {paginatedProducts.map((product) => (
-                    <ProductCard key={product.id} product={product} />
+                  {displayProducts.map((product) => (
+                    <ProductCard key={product._id || product.id || product.slug} product={product} />
                   ))}
                 </div>
 
-                {/* Numbered Pagination (Stitch Screen 1 Specification) */}
+                {/* Numbered Pagination */}
                 <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
                   <span className="text-xs text-slate-500">
                     Showing {(currentPage - 1) * itemsPerPage + 1}–

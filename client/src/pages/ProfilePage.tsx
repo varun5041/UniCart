@@ -7,14 +7,13 @@ export const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
   const {
     user,
-    addresses,
     deleteAddress,
-    setDefaultAddress,
     addAddress,
-    logoutAllDevices,
-    tokenVersion
+    logoutAll
   } = useAuthStore();
   const { addToast } = useToastStore();
+
+  const addresses = user?.addresses || [];
 
   const [activeTab, setActiveTab] = useState<'profile' | 'addresses' | 'security'>('profile');
   const [isAddingAddress, setIsAddingAddress] = useState(false);
@@ -84,17 +83,17 @@ export const ProfilePage: React.FC = () => {
     setPassForm({ current: '', next: '', confirm: '' });
   };
 
-  const handleLogoutAll = () => {
+  const handleLogoutAll = async () => {
     if (
       window.confirm(
         'Revoke all active sessions and refresh tokens across all browsers & devices?'
       )
     ) {
-      logoutAllDevices();
+      await logoutAll();
       addToast({
         type: 'info',
         title: 'All Sessions Terminated',
-        message: `Token version incremented to ${tokenVersion + 1}. All JWT refresh tokens invalidated.`
+        message: 'All JWT refresh tokens invalidated across devices.'
       });
       navigate('/login');
     }
@@ -329,17 +328,10 @@ export const ProfilePage: React.FC = () => {
                   </div>
 
                   <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs">
-                    {!addr.isDefault && (
-                      <button
-                        onClick={() => setDefaultAddress(addr.id)}
-                        className="text-indigo-600 hover:text-indigo-800 font-bold text-[11px]"
-                      >
-                        Set as Default
-                      </button>
-                    )}
+                    <span className="text-slate-400 text-[11px] font-mono">India Post Verified</span>
                     <button
-                      onClick={() => deleteAddress(addr.id)}
-                      className="text-rose-500 hover:text-rose-700 font-semibold text-[11px] ml-auto"
+                      onClick={() => void deleteAddress(addr.line1)}
+                      className="text-rose-500 hover:text-rose-700 font-semibold text-[11px] ml-auto cursor-pointer"
                     >
                       Delete
                     </button>
@@ -410,7 +402,7 @@ export const ProfilePage: React.FC = () => {
                 <h3>Active Sessions & Revocation</h3>
               </div>
               <p className="text-xs text-rose-800 leading-relaxed">
-                Current tokenVersion: <strong className="font-mono">{tokenVersion}</strong>. If you notice any suspicious activity or want to sign out everywhere, click below to increment token version in Redis and revoke all active refresh tokens.
+                If you notice any suspicious activity or want to sign out everywhere, click below to increment token version in MongoDB/Redis and revoke all active refresh tokens.
               </p>
               <button
                 onClick={handleLogoutAll}

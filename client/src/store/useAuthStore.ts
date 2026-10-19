@@ -1,256 +1,170 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { authApi } from '../api/auth';
+import { usersApi } from '../api/users';
 import type { User, Address } from '../types';
 
 interface AuthStore {
   user: User | null;
   isAuthenticated: boolean;
-  tokenVersion: number;
-  failedLoginAttempts: number;
-  isLockedOut: boolean;
-  lockoutRemainingSeconds: number;
-  addresses: Address[];
-  selectedAddressId: string | null;
+  isLoading: boolean;
+  isInitialized: boolean;
+  selectedAddress: Address | null;
 
-  login: (email: string, pass: string) => { success: boolean; error?: string };
-  loginDemo: (role?: 'customer' | 'admin') => void;
-  logout: () => void;
-  logoutAllDevices: () => void;
-  triggerLockoutDemo: () => void;
-  resetLockout: () => void;
-
-  addAddress: (addr: Omit<Address, 'id'>) => Address;
-  updateAddress: (id: string, addr: Partial<Address>) => void;
-  deleteAddress: (id: string) => void;
-  setDefaultAddress: (id: string) => void;
-  setSelectedAddress: (id: string) => void;
+  initAuth: () => Promise<void>;
+  login: (email: string, pass: string) => Promise<{ success: boolean; error?: string }>;
+  register: (name: string, email: string, pass: string) => Promise<{ success: boolean; error?: string }>;
+  logout: () => Promise<void>;
+  logoutAll: () => Promise<void>;
+  setUser: (user: User | null) => void;
+  setSelectedAddress: (addr: Address | null) => void;
+  addAddress: (addr: Omit<Address, '_id' | 'id'>) => Promise<boolean>;
+  deleteAddress: (addressLine: string) => Promise<boolean>;
 }
 
-const DEFAULT_ADDRESSES: Address[] = [
-  {
-    id: 'addr-001',
-    line1: 'Flat 402, Sunshine Heights, Andheri West',
-    city: 'Mumbai',
-    state: 'Maharashtra',
-    pincode: '400053',
-    country: 'India',
-    isDefault: true
-  },
-  {
-    id: 'addr-002',
-    line1: 'Tower B - 1204, Tech Park Residency, Whitefield',
-    city: 'Bengaluru',
-    state: 'Karnataka',
-    pincode: '560066',
-    country: 'India',
-    isDefault: false
-  }
-];
+export const useAuthStore = create<AuthStore>((set, get) => ({
+  user: null,
+  isAuthenticated: false,
+  isLoading: false,
+  isInitialized: false,
+  selectedAddress: null,
 
-const DEFAULT_USER: User = {
-  id: 'user-001',
-  name: 'Rahul Sharma',
-  email: 'rahul.sharma@example.com',
-  role: 'customer',
-  addresses: DEFAULT_ADDRESSES
-};
-
-export const useAuthStore = create<AuthStore>()(
-  persist(
-    (set, get) => ({
-      user: DEFAULT_USER,
-      isAuthenticated: true,
-      tokenVersion: 1,
-      failedLoginAttempts: 0,
-      isLockedOut: false,
-      lockoutRemainingSeconds: 0,
-      addresses: DEFAULT_ADDRESSES,
-      selectedAddressId: 'addr-001',
-
-      login: (email, pass) => {
-        const { isLockedOut, failedLoginAttempts } = get();
-        if (isLockedOut) {
-          return {
-            success: false,
-            error: 'Account temporarily locked due to excessive failed attempts. Please wait 15 minutes.'
-          };
-        }
-
-        // Demo credential check
-        if (email === 'admin@unicart.in' && pass === 'Admin@12345') {
-          const adminUser: User = {
-            id: 'admin-001',
-            name: 'Priya Patel (Admin)',
-            email: 'admin@unicart.in',
-            role: 'admin',
-            addresses: DEFAULT_ADDRESSES
-          };
+  initAuth: async () => {
+    try {
+      set({ isLoading: true });
+      // Silently refresh token using httpOnly cookie
+      const refreshRes = await authApi.refresh();
+      if (refreshRes.success) {
+        // Fetch fresh profile
+        const userRes = await usersApi.getMe();
+        if (userRes.success && userRes.data) {
+          const user = userRes.data;
+          const defaultAddr = user.addresses?.find((a) => a.isDefault) || user.addresses?.[0] || null;
           set({
-            user: adminUser,
+            user,
             isAuthenticated: true,
-            failedLoginAttempts: 0,
-            isLockedOut: false
+            selectedAddress: defaultAddr,
+            isInitialized: true
           });
-          return { success: true };
+          return;
         }
-
-        if (email === 'customer@unicart.in' && pass === 'Customer@12345') {
-          set({
-            user: DEFAULT_USER,
-            isAuthenticated: true,
-            failedLoginAttempts: 0,
-            isLockedOut: false
-          });
-          return { success: true };
-        }
-
-        // Any custom user login simulation
-        if (pass.length >= 8) {
-          const customUser: User = {
-            id: `usr-${Date.now()}`,
-            name: email.split('@')[0].replace('.', ' '),
-            email,
-            role: 'customer',
-            addresses: get().addresses
-          };
-          set({
-            user: customUser,
-            isAuthenticated: true,
-            failedLoginAttempts: 0,
-            isLockedOut: false
-          });
-          return { success: true };
-        }
-
-        // Incorrect password handling -> increment failure count
-        const newAttempts = failedLoginAttempts + 1;
-        if (newAttempts >= 5) {
-          set({
-            failedLoginAttempts: newAttempts,
-            isLockedOut: true,
-            lockoutRemainingSeconds: 900 // 15 mins
-          });
-          return {
-            success: false,
-            error: '5 consecutive failed attempts. Your account has been locked for 15 minutes.'
-          };
-        } else {
-          set({ failedLoginAttempts: newAttempts });
-          return {
-            success: false,
-            error: `Invalid credentials. Attempt ${newAttempts} of 5 before account lock.`
-          };
-        }
-      },
-
-      loginDemo: (role = 'customer') => {
-        if (role === 'admin') {
-          const adminUser: User = {
-            id: 'admin-001',
-            name: 'Priya Patel (Store Admin)',
-            email: 'admin@unicart.in',
-            role: 'admin',
-            addresses: DEFAULT_ADDRESSES
-          };
-          set({
-            user: adminUser,
-            isAuthenticated: true,
-            failedLoginAttempts: 0,
-            isLockedOut: false
-          });
-        } else {
-          set({
-            user: DEFAULT_USER,
-            isAuthenticated: true,
-            failedLoginAttempts: 0,
-            isLockedOut: false
-          });
-        }
-      },
-
-      logout: () => {
-        set({
-          user: null,
-          isAuthenticated: false
-        });
-      },
-
-      logoutAllDevices: () => {
-        set((state) => ({
-          user: null,
-          isAuthenticated: false,
-          tokenVersion: state.tokenVersion + 1
-        }));
-      },
-
-      triggerLockoutDemo: () => {
-        set({
-          failedLoginAttempts: 5,
-          isLockedOut: true,
-          lockoutRemainingSeconds: 894
-        });
-      },
-
-      resetLockout: () => {
-        set({
-          failedLoginAttempts: 0,
-          isLockedOut: false,
-          lockoutRemainingSeconds: 0
-        });
-      },
-
-      addAddress: (addrData) => {
-        const id = `addr-${Date.now()}`;
-        const newAddress: Address = {
-          ...addrData,
-          id,
-          isDefault: addrData.isDefault || get().addresses.length === 0
-        };
-
-        set((state) => {
-          let updated = [...state.addresses];
-          if (newAddress.isDefault) {
-            updated = updated.map((a) => ({ ...a, isDefault: false }));
-          }
-          return {
-            addresses: [...updated, newAddress],
-            selectedAddressId: newAddress.isDefault ? id : state.selectedAddressId
-          };
-        });
-        return newAddress;
-      },
-
-      updateAddress: (id, updated) => {
-        set((state) => {
-          let addresses = state.addresses.map((a) => (a.id === id ? { ...a, ...updated } : a));
-          if (updated.isDefault) {
-            addresses = addresses.map((a) => (a.id === id ? a : { ...a, isDefault: false }));
-          }
-          return { addresses };
-        });
-      },
-
-      deleteAddress: (id) => {
-        set((state) => {
-          const filtered = state.addresses.filter((a) => a.id !== id);
-          const newSelected = state.selectedAddressId === id ? (filtered[0]?.id || null) : state.selectedAddressId;
-          return { addresses: filtered, selectedAddressId: newSelected };
-        });
-      },
-
-      setDefaultAddress: (id) => {
-        set((state) => ({
-          addresses: state.addresses.map((a) => ({ ...a, isDefault: a.id === id })),
-          selectedAddressId: id
-        }));
-      },
-
-      setSelectedAddress: (id) => {
-        set({ selectedAddressId: id });
       }
-    }),
-    {
-      name: 'unicart-auth-storage'
+    } catch {
+      // Refresh failed (no active session cookie) - keep guest state
+    } finally {
+      set({ isLoading: false, isInitialized: true });
     }
-  )
-);
+  },
+
+  login: async (email: string, pass: string) => {
+    try {
+      set({ isLoading: true });
+      const res = await authApi.login({ email, password: pass });
+      if (res.success) {
+        const userRes = await usersApi.getMe();
+        const user = userRes.data;
+        const defaultAddr = user.addresses?.find((a) => a.isDefault) || user.addresses?.[0] || null;
+        set({
+          user,
+          isAuthenticated: true,
+          selectedAddress: defaultAddr,
+          isLoading: false
+        });
+        return { success: true };
+      }
+      set({ isLoading: false });
+      return { success: false, error: res.error?.message || 'Login failed' };
+    } catch (err: any) {
+      set({ isLoading: false });
+      const msg = err.response?.data?.error?.message || err.message || 'Login failed';
+      return { success: false, error: msg };
+    }
+  },
+
+  register: async (name: string, email: string, pass: string) => {
+    try {
+      set({ isLoading: true });
+      const res = await authApi.register({ name, email, password: pass });
+      set({ isLoading: false });
+      if (res.success) {
+        return { success: true };
+      }
+      return { success: false, error: res.error?.message || 'Registration failed' };
+    } catch (err: any) {
+      set({ isLoading: false });
+      const msg = err.response?.data?.error?.message || err.message || 'Registration failed';
+      return { success: false, error: msg };
+    }
+  },
+
+  logout: async () => {
+    try {
+      set({ isLoading: true });
+      await authApi.logout();
+    } catch {
+      // Ignore network errors on logout
+    } finally {
+      set({
+        user: null,
+        isAuthenticated: false,
+        selectedAddress: null,
+        isLoading: false
+      });
+    }
+  },
+
+  logoutAll: async () => {
+    try {
+      set({ isLoading: true });
+      await authApi.logoutAll();
+    } catch {
+      // Ignore
+    } finally {
+      set({
+        user: null,
+        isAuthenticated: false,
+        selectedAddress: null,
+        isLoading: false
+      });
+    }
+  },
+
+  setUser: (user) => set({ user, isAuthenticated: !!user }),
+
+  setSelectedAddress: (addr) => set({ selectedAddress: addr }),
+
+  addAddress: async (addr) => {
+    const { user } = get();
+    if (!user) return false;
+    const currentAddresses = user.addresses || [];
+    const newAddresses: Address[] = [...currentAddresses, { ...addr, isDefault: currentAddresses.length === 0 }];
+    try {
+      const res = await usersApi.updateMe({ addresses: newAddresses });
+      if (res.success) {
+        set({
+          user: res.data,
+          selectedAddress: get().selectedAddress || newAddresses[0]
+        });
+        return true;
+      }
+      return false;
+    } catch {
+      return false;
+    }
+  },
+
+  deleteAddress: async (line1) => {
+    const { user } = get();
+    if (!user) return false;
+    const filtered = (user.addresses || []).filter((a) => a.line1 !== line1);
+    try {
+      const res = await usersApi.updateMe({ addresses: filtered });
+      if (res.success) {
+        set({ user: res.data });
+        return true;
+      }
+      return false;
+    } catch {
+      return false;
+    }
+  }
+}));
