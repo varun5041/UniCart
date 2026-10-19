@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import { useToastStore } from '../store/useToastStore';
@@ -31,23 +31,26 @@ export const GoogleSignInButton: React.FC = () => {
   const searchParams = new URLSearchParams(location.search);
   const redirect = searchParams.get('redirect') || '/';
 
-  const handleCredentialResponse = async (response: { credential: string }) => {
-    const res = await loginWithGoogle(response.credential);
-    if (res.success) {
-      addToast({
-        type: 'success',
-        title: 'Signed in with Google',
-        message: 'Welcome to UniCart! Your session is authenticated.'
-      });
-      navigate(redirect);
-    } else {
-      addToast({
-        type: 'error',
-        title: 'Authentication Failed',
-        message: res.error || 'Failed to authenticate with Google'
-      });
-    }
-  };
+  const handleCredentialResponse = useCallback(
+    async (response: { credential: string }) => {
+      const res = await loginWithGoogle(response.credential);
+      if (res.success) {
+        addToast({
+          type: 'success',
+          title: 'Signed in with Google',
+          message: 'Welcome to UniCart! Your session is authenticated.'
+        });
+        navigate(redirect);
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Authentication Failed',
+          message: res.error || 'Failed to authenticate with Google'
+        });
+      }
+    },
+    [loginWithGoogle, addToast, navigate, redirect]
+  );
 
   useEffect(() => {
     // If Google Client ID is configured and GIS script is loaded, initialize official widget
@@ -65,7 +68,7 @@ export const GoogleSignInButton: React.FC = () => {
         shape: 'pill'
       });
     }
-  }, [clientId]);
+  }, [clientId, handleCredentialResponse]);
 
   const handleCustomGoogleClick = () => {
     if (clientId && window.google?.accounts?.id) {
