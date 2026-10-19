@@ -1,5 +1,11 @@
 import { Request, Response } from 'express';
 import { productService } from '../products/product.service.js';
+import { adminService } from './admin.service.js';
+import {
+  AdminListOrdersQuery,
+  AdminUpdateOrderStatusInput,
+  AdminListAuditLogsQuery
+} from './admin.schema.js';
 
 export class AdminController {
   async createProduct(req: Request, res: Response): Promise<void> {
@@ -32,6 +38,39 @@ export class AdminController {
     res.status(200).json({
       success: true,
       data: signature
+    });
+  }
+
+  async listOrders(req: Request, res: Response): Promise<void> {
+    const query = req.query as unknown as AdminListOrdersQuery;
+    const result = await adminService.listOrders(query);
+    res.status(200).json({
+      success: true,
+      data: result.items,
+      meta: result.meta
+    });
+  }
+
+  async updateOrderStatus(req: Request, res: Response): Promise<void> {
+    const { id } = req.params;
+    const body = req.body as AdminUpdateOrderStatusInput;
+    const actorId = req.user!.id;
+    const ip = req.ip || req.socket.remoteAddress;
+
+    const order = await adminService.updateOrderStatus(id, body.status, actorId, ip);
+    res.status(200).json({
+      success: true,
+      data: order
+    });
+  }
+
+  async listAuditLogs(req: Request, res: Response): Promise<void> {
+    const query = req.query as unknown as AdminListAuditLogsQuery;
+    const result = await adminService.listAuditLogs(query);
+    res.status(200).json({
+      success: true,
+      data: result.items,
+      meta: result.meta
     });
   }
 }

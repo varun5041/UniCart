@@ -6,6 +6,7 @@ import { Cart } from '../../models/Cart.js';
 import { IAddress } from '../../models/User.js';
 import { ApiError } from '../../utils/ApiError.js';
 import { getCache, setCache, incrementCacheVersion } from '../../utils/cache.js';
+import { enqueueOrderEmail } from '../../jobs/email.job.js';
 import { logger } from '../../config/logger.js';
 import { ListOrdersQuery } from './order.schema.js';
 
@@ -136,6 +137,18 @@ export class OrderService {
 
       // Cache order under idempotency key for 24h (86,400s)
       await setCache(redisKey, order.toObject ? order.toObject() : order, 86400);
+
+      // Asynchronously offload email sending to background worker queue
+      void enqueueOrderEmail({
+        orderId: order._id.toString(),
+        userId: order.userId.toString(),
+        total: order.total,
+        items: order.items.map((i) => ({
+          name: i.name,
+          qty: i.qty,
+          price: i.price
+        }))
+      });
 
       return order;
     } catch (error) {

@@ -8,6 +8,12 @@ import {
   adminUpdateProductSchema,
   productIdParamSchema
 } from '../products/product.schema.js';
+import { orderIdParamSchema } from '../orders/order.schema.js';
+import {
+  adminListOrdersQuerySchema,
+  adminUpdateOrderStatusSchema,
+  adminListAuditLogsQuerySchema
+} from './admin.schema.js';
 import { asyncHandler } from '../../utils/asyncHandler.js';
 
 export const adminRouter = Router();
@@ -38,6 +44,26 @@ adminRouter.delete(
 adminRouter.post(
   '/uploads/signature',
   (req, res) => adminController.getUploadSignature(req, res)
+);
+
+// Admin orders management
+adminRouter.get(
+  '/orders',
+  validate({ query: adminListOrdersQuerySchema }),
+  asyncHandler((req, res) => adminController.listOrders(req, res))
+);
+
+adminRouter.patch(
+  '/orders/:id/status',
+  validate({ params: orderIdParamSchema, body: adminUpdateOrderStatusSchema }),
+  asyncHandler((req, res) => adminController.updateOrderStatus(req, res))
+);
+
+// Admin audit logs inspection
+adminRouter.get(
+  '/audit-logs',
+  validate({ query: adminListAuditLogsQuerySchema }),
+  asyncHandler((req, res) => adminController.listAuditLogs(req, res))
 );
 
 export default adminRouter;
