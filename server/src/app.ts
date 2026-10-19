@@ -17,6 +17,9 @@ import { isRedisConnected } from './config/redis.js';
 import { ApiError } from './utils/ApiError.js';
 import { globalRateLimiter } from './middleware/rateLimit.js';
 import { authRouter } from './modules/auth/auth.routes.js';
+import { productRouter } from './modules/products/product.routes.js';
+import { categoryRouter } from './modules/products/category.routes.js';
+import { adminRouter } from './modules/admin/admin.routes.js';
 import { authenticate } from './middleware/auth.js';
 import { authorize } from './middleware/rbac.js';
 
@@ -166,6 +169,9 @@ if (env.NODE_ENV !== 'production') {
 
 // 10. API v1 Routes
 app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/products', productRouter);
+app.use('/api/v1/categories', categoryRouter);
+app.use('/api/v1/admin', adminRouter);
 
 app.get('/api/v1/users/me', authenticate, (req: Request, res: Response) => {
   res.status(200).json({
