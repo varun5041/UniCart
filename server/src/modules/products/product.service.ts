@@ -255,17 +255,26 @@ export class ProductService {
   /**
    * Admin: Bulk soft-delete products and invalidate cache
    */
-  async bulkDeleteProducts(ids: string[]): Promise<{ count: number; message: string }> {
-    const validObjectIds = ids
-      .filter((id) => mongoose.isValidObjectId(id))
-      .map((id) => new Types.ObjectId(id));
+  async bulkDeleteProducts(input: { ids?: string[]; all?: boolean }): Promise<{ count: number; message: string }> {
+    let query: Record<string, unknown> = {};
 
-    if (validObjectIds.length === 0) {
-      return { count: 0, message: 'No valid products to delete' };
+    if (input.all) {
+      query = { isActive: true };
+    } else if (input.ids && input.ids.length > 0) {
+      const validObjectIds = input.ids
+        .filter((id) => mongoose.isValidObjectId(id))
+        .map((id) => new Types.ObjectId(id));
+
+      if (validObjectIds.length === 0) {
+        return { count: 0, message: 'No valid products to delete' };
+      }
+      query = { _id: { $in: validObjectIds } };
+    } else {
+      return { count: 0, message: 'No products targeted for deletion' };
     }
 
     const result = await Product.updateMany(
-      { _id: { $in: validObjectIds } },
+      query,
       { $set: { isActive: false } }
     );
 

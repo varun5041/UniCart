@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
-import { AnyZodObject, ZodError } from 'zod';
+import { ZodTypeAny, ZodError } from 'zod';
 
 export interface RequestValidationSchema {
-  body?: AnyZodObject;
-  query?: AnyZodObject;
-  params?: AnyZodObject;
+  body?: ZodTypeAny;
+  query?: ZodTypeAny;
+  params?: ZodTypeAny;
 }
 
-export function validate(schema: RequestValidationSchema | AnyZodObject) {
+export function validate(schema: RequestValidationSchema | ZodTypeAny) {
   return async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
     try {
       if ('body' in schema || 'query' in schema || 'params' in schema) {
@@ -22,7 +22,7 @@ export function validate(schema: RequestValidationSchema | AnyZodObject) {
           req.params = await composite.params.parseAsync(req.params);
         }
       } else {
-        req.body = await (schema as AnyZodObject).parseAsync(req.body);
+        req.body = await (schema as ZodTypeAny).parseAsync(req.body);
       }
       next();
     } catch (error) {

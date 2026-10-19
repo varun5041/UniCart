@@ -29,9 +29,13 @@ export const adminBulkDeleteProductsSchema = z
   .object({
     ids: z
       .array(z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid product ObjectId'))
-      .min(1, 'At least one product ID required')
+      .optional(),
+    all: z.boolean().optional()
   })
-  .strict();
+  .strict()
+  .refine((data) => (data.ids && data.ids.length > 0) || data.all === true, {
+    message: 'Must provide product IDs or specify all: true'
+  });
 
 export type AdminListOrdersQuery = z.infer<typeof adminListOrdersQuerySchema>;
 export type AdminUpdateOrderStatusInput = z.infer<typeof adminUpdateOrderStatusSchema>;

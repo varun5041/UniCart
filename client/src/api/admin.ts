@@ -76,8 +76,9 @@ export const adminApi = {
     return res.data;
   },
 
-  async bulkDeleteProducts(ids: string[]): Promise<ApiResponse<{ count: number; message: string }>> {
-    const res = await api.post<ApiResponse<{ count: number; message: string }>>('/admin/products/bulk-delete', { ids });
+  async bulkDeleteProducts(payload: { ids?: string[]; all?: boolean } | string[]): Promise<ApiResponse<{ count: number; message: string }>> {
+    const body = Array.isArray(payload) ? { ids: payload } : payload;
+    const res = await api.post<ApiResponse<{ count: number; message: string }>>('/admin/products/bulk-delete', body);
     return res.data;
   },
 

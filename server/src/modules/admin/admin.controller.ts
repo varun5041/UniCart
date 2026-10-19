@@ -33,7 +33,7 @@ export class AdminController {
   }
 
   async bulkDeleteProducts(req: Request, res: Response): Promise<void> {
-    const result = await productService.bulkDeleteProducts(req.body.ids);
+    const result = await productService.bulkDeleteProducts(req.body);
     res.status(200).json({
       success: true,
       data: result

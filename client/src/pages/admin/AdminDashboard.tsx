@@ -17,6 +17,11 @@ export const AdminDashboard: React.FC = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [orderStatusFilter, setOrderStatusFilter] = useState<OrderStatus | 'all'>('all');
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
+  const [confirmDeleteModal, setConfirmDeleteModal] = useState<{
+    open: boolean;
+    mode: 'selected' | 'all';
+    count: number;
+  } | null>(null);
 
   // New product form state
   const [newProd, setNewProd] = useState({
@@ -136,14 +141,15 @@ export const AdminDashboard: React.FC = () => {
 
   // Mutation: Bulk Delete Products
   const bulkDeleteMutation = useMutation({
-    mutationFn: async (ids: string[]) => {
-      return adminApi.bulkDeleteProducts(ids);
+    mutationFn: async (payload: { ids?: string[]; all?: boolean } | string[]) => {
+      return adminApi.bulkDeleteProducts(payload);
     },
     onSuccess: (res) => {
       void queryClient.invalidateQueries({ queryKey: ['admin-products'] });
       void queryClient.invalidateQueries({ queryKey: ['products'] });
       const count = res.data?.count ?? selectedProductIds.length;
       setSelectedProductIds([]);
+      setConfirmDeleteModal(null);
       addToast({
         type: 'info',
         title: 'Bulk Deactivation Complete',
@@ -151,6 +157,7 @@ export const AdminDashboard: React.FC = () => {
       });
     },
     onError: (err: any) => {
+      setConfirmDeleteModal(null);
       addToast({
         type: 'error',
         title: 'Bulk Deletion Failed',
@@ -328,17 +335,16 @@ export const AdminDashboard: React.FC = () => {
                       </span>
                       <span>{isAllProductsSelected ? 'Deselect All' : 'Select All'}</span>
                     </button>
-                    {selectedProductIds.length > 0 && (
+
+                    {selectedProductIds.length > 0 ? (
                       <button
                         type="button"
                         onClick={() => {
-                          if (
-                            window.confirm(
-                              `Are you sure you want to deactivate ${selectedProductIds.length} selected product(s)?`
-                            )
-                          ) {
-                            bulkDeleteMutation.mutate(selectedProductIds);
-                          }
+                          setConfirmDeleteModal({
+                            open: true,
+                            mode: 'selected',
+                            count: selectedProductIds.length
+                          });
                         }}
                         disabled={bulkDeleteMutation.isPending}
                         className="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-50"
@@ -350,6 +356,24 @@ export const AdminDashboard: React.FC = () => {
                             : `Delete Selected (${selectedProductIds.length})`}
                         </span>
                       </button>
+                    ) : (
+                      validProductIds.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setConfirmDeleteModal({
+                              open: true,
+                              mode: 'all',
+                              count: validProductIds.length
+                            });
+                          }}
+                          disabled={bulkDeleteMutation.isPending}
+                          className="px-3.5 py-2 rounded-xl border border-rose-200 bg-rose-50/70 hover:bg-rose-100 text-rose-700 text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs disabled:opacity-50"
+                        >
+                          <span className="material-symbols-outlined text-base text-rose-600">delete_forever</span>
+                          <span>Delete All</span>
+                        </button>
+                      )
                     )}
                   </div>
                 </div>
@@ -366,6 +390,20 @@ export const AdminDashboard: React.FC = () => {
                       </span>
                     </div>
                     <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setConfirmDeleteModal({
+                            open: true,
+                            mode: 'selected',
+                            count: selectedProductIds.length
+                          });
+                        }}
+                        className="text-xs font-bold text-rose-700 hover:text-rose-900 hover:underline cursor-pointer flex items-center gap-1"
+                      >
+                        <span className="material-symbols-outlined text-sm">delete</span>
+                        Delete selected
+                      </button>
                       <button
                         type="button"
                         onClick={handleToggleSelectAll}
@@ -459,11 +497,10 @@ export const AdminDashboard: React.FC = () => {
                                 <button
                                   type="button"
                                   onClick={() => {
-                                    if (window.confirm(`Deactivate product '${prod.name}'?`)) {
-                                      deleteProductMutation.mutate(id);
-                                    }
+                                    deleteProductMutation.mutate(id);
                                   }}
-                                  className="text-rose-600 hover:text-rose-800 font-bold text-xs cursor-pointer"
+                                  disabled={deleteProductMutation.isPending}
+                                  className="text-rose-600 hover:text-rose-800 font-bold text-xs cursor-pointer disabled:opacity-50"
                                 >
                                   Delete
                                 </button>
@@ -741,6 +778,65 @@ export const AdminDashboard: React.FC = () => {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        )}
+
+        {/* Bulk Delete In-App Confirmation Modal */}
+        {confirmDeleteModal?.open && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in">
+            <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-100 space-y-5">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-2xl">delete_sweep</span>
+                </div>
+                <div>
+                  <h3 className="text-base font-black text-slate-900">
+                    {confirmDeleteModal.mode === 'all'
+                      ? 'Deactivate All Products?'
+                      : `Deactivate ${confirmDeleteModal.count} Selected Product(s)?`}
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5">Admin Catalogue Operation</p>
+                </div>
+              </div>
+
+              <p className="text-xs text-slate-600 leading-relaxed bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
+                {confirmDeleteModal.mode === 'all'
+                  ? 'Are you sure you want to delete ALL active products in the store? This will immediately remove them from the customer marketplace and invalidate the Redis cache.'
+                  : `Are you sure you want to deactivate these ${confirmDeleteModal.count} selected product(s)? They will be hidden from the storefront and search queries.`}
+              </p>
+
+              <div className="flex justify-end items-center gap-2 pt-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setConfirmDeleteModal(null)}
+                  disabled={bulkDeleteMutation.isPending}
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 cursor-pointer transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (confirmDeleteModal.mode === 'all') {
+                      bulkDeleteMutation.mutate({ all: true });
+                    } else {
+                      bulkDeleteMutation.mutate({ ids: selectedProductIds });
+                    }
+                  }}
+                  disabled={bulkDeleteMutation.isPending}
+                  className="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-xs cursor-pointer disabled:opacity-50 flex items-center gap-1.5 transition-colors"
+                >
+                  <span className="material-symbols-outlined text-sm">check_circle</span>
+                  <span>
+                    {bulkDeleteMutation.isPending
+                      ? 'Deactivating...'
+                      : confirmDeleteModal.mode === 'all'
+                      ? 'Yes, Delete All'
+                      : 'Yes, Delete Selected'}
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
         )}
