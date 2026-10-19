@@ -48,17 +48,17 @@ Nginx also applies `limit_req` as a first line of defence.
 - Route guards for customer/admin pages (UX only — server is the real enforcer).
 
 ## 7. Final security checklist
-- [ ] Helmet + CSP configured
-- [ ] CORS allow-list from env
-- [ ] Zod validation on all routes
-- [ ] Mongo sanitize + hpp
-- [ ] argon2id hashing
-- [ ] Refresh rotation + reuse detection
-- [ ] Account lockout
-- [ ] Redis rate limiting
-- [ ] Ownership checks (IDOR tests written)
-- [ ] Prod error handler hides internals
-- [ ] Audit log
-- [ ] Secrets in env only, `.env` gitignored
-- [ ] `npm audit` clean (high/critical)
-- [ ] HTTPS/HSTS in Nginx
+- [x] Helmet + CSP configured
+- [x] CORS allow-list from env
+- [x] Zod validation on all routes
+- [x] Mongo sanitize + hpp
+- [x] argon2id hashing
+- [x] Refresh rotation + reuse detection
+- [x] Account lockout
+- [x] Redis rate limiting
+- [x] Ownership checks (IDOR tests written)
+- [x] Prod error handler hides internals
+- [x] Audit log
+- [x] Secrets in env only, `.env` gitignored
+- [x] `npm audit` clean (high/critical)
+- [x] HTTPS/HSTS in Nginx
