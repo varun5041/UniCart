@@ -27,36 +27,7 @@ export const AdminDashboard: React.FC = () => {
     imageUrl: 'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800&q=80'
   });
 
-  // Guard: Admin role verification
-  if (!isAuthenticated || user?.role !== 'admin') {
-    return (
-      <div className="min-h-[80vh] flex items-center justify-center p-4">
-        <div className="bg-white rounded-3xl border border-rose-200 p-8 max-w-md w-full text-center space-y-4 shadow-sm">
-          <div className="w-16 h-16 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mx-auto">
-            <span className="material-symbols-outlined text-3xl">gpp_maybe</span>
-          </div>
-          <h2 className="text-xl font-black text-slate-900">Access Denied (403)</h2>
-          <p className="text-xs text-slate-500 leading-relaxed">
-            You must be authenticated with the <strong>admin</strong> role to view and manage UniCart administrative controls.
-          </p>
-          <div className="pt-2 flex justify-center gap-3">
-            <button
-              onClick={() => navigate('/login?redirect=/admin')}
-              className="px-5 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow-xs"
-            >
-              Sign In as Admin
-            </button>
-            <Link
-              to="/"
-              className="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-50"
-            >
-              Back to Store
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const isAdmin = Boolean(isAuthenticated && user?.role === 'admin');
 
   // TanStack Query: Fetch Orders
   const { data: ordersData, isLoading: isOrdersLoading } = useQuery({
@@ -67,7 +38,8 @@ export const AdminDashboard: React.FC = () => {
         limit: 50
       });
       return res.data || [];
-    }
+    },
+    enabled: isAdmin
   });
 
   // TanStack Query: Fetch Products
@@ -76,7 +48,8 @@ export const AdminDashboard: React.FC = () => {
     queryFn: async () => {
       const res = await productsApi.getProducts({ limit: 50 });
       return res.data || [];
-    }
+    },
+    enabled: isAdmin
   });
 
   // TanStack Query: Fetch Audit Logs
@@ -85,7 +58,8 @@ export const AdminDashboard: React.FC = () => {
     queryFn: async () => {
       const res = await adminApi.listAuditLogs({ limit: 30 });
       return res.data || [];
-    }
+    },
+    enabled: isAdmin
   });
 
   // Mutation: Create Product
@@ -158,6 +132,37 @@ export const AdminDashboard: React.FC = () => {
       });
     }
   });
+
+  // Guard: Admin role verification
+  if (!isAdmin) {
+    return (
+      <div className="min-h-[80vh] flex items-center justify-center p-4">
+        <div className="bg-white rounded-3xl border border-rose-200 p-8 max-w-md w-full text-center space-y-4 shadow-sm">
+          <div className="w-16 h-16 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mx-auto">
+            <span className="material-symbols-outlined text-3xl">gpp_maybe</span>
+          </div>
+          <h2 className="text-xl font-black text-slate-900">Access Denied (403)</h2>
+          <p className="text-xs text-slate-500 leading-relaxed">
+            You must be authenticated with the <strong>admin</strong> role to view and manage UniCart administrative controls.
+          </p>
+          <div className="pt-2 flex justify-center gap-3">
+            <button
+              onClick={() => navigate('/login?redirect=/admin')}
+              className="px-5 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow-xs"
+            >
+              Sign In as Admin
+            </button>
+            <Link
+              to="/"
+              className="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-50"
+            >
+              Back to Store
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleCreateProductSubmit = (e: React.FormEvent) => {
     e.preventDefault();

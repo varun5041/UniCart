@@ -24,6 +24,7 @@ import { cartRouter } from './modules/cart/cart.routes.js';
 import { orderRouter } from './modules/orders/order.routes.js';
 import { authenticate } from './middleware/auth.js';
 import { authorize } from './middleware/rbac.js';
+import { metricsMiddleware, metricsHandler } from './config/metrics.js';
 
 export const app = express();
 
@@ -33,6 +34,9 @@ app.use((_req: Request, res: Response, next: NextFunction) => {
   res.setHeader('X-Served-By', os.hostname());
   next();
 });
+
+// Prometheus request duration and count metrics
+app.use(metricsMiddleware);
 
 // 2. Structured request logging via pino-http
 app.use(
@@ -97,7 +101,10 @@ app.use(hpp());
 // 9. Global rate limiting per IP
 app.use(globalRateLimiter);
 
-// Health & Liveness / Readiness Probes
+// Health & Liveness / Readiness Probes & Metrics
+// Prometheus scrape target
+app.get('/metrics', metricsHandler);
+
 // Liveness probe: returns 200 if server process is alive
 app.get('/health/live', (_req: Request, res: Response) => {
   res.status(200).json({
