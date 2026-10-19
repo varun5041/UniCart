@@ -14,7 +14,8 @@
     "build": "npm run build --workspace=server && npm run build --workspace=client",
     "lint": "npm run lint --workspace=server && npm run lint --workspace=client",
     "test": "npm run test --workspace=server",
-    "seed": "npm run seed --workspace=server"
+    "seed": "npm run seed --workspace=server",
+    "worker": "npm run worker --workspace=server"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

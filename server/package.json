@@ -10,7 +10,8 @@
     "lint": "oxlint",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "seed": "tsx src/scripts/seed.ts"
+    "seed": "tsx src/scripts/seed.ts",
+    "worker": "tsx src/jobs/worker.ts"
   },
   "dependencies": {
     "@faker-js/faker": "^10.6.0",
