@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import { useToastStore } from '../store/useToastStore';
+import { GoogleSignInButton } from '../components/GoogleSignInButton';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -158,6 +159,21 @@ export const LoginPage: React.FC = () => {
             )}
           </button>
         </form>
+
+        {/* Divider */}
+        <div className="relative my-4">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-slate-200"></div>
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-white px-3 text-[10px] font-bold text-slate-400 tracking-wider">
+              Or continue with
+            </span>
+          </div>
+        </div>
+
+        {/* Google OAuth Button */}
+        <GoogleSignInButton />
 
         {/* Footer Link */}
         <div className="text-center pt-2 border-t border-slate-100">

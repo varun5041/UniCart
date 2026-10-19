@@ -32,6 +32,20 @@ export class AuthController {
     });
   }
 
+  async googleAuth(req: Request, res: Response): Promise<void> {
+    const result = await authService.googleLogin(req.body.idToken, req.ip);
+
+    res.cookie('rt', result.rawRefreshToken, getRefreshTokenCookieOptions());
+
+    res.status(200).json({
+      success: true,
+      data: {
+        user: result.user,
+        accessToken: result.accessToken
+      }
+    });
+  }
+
   async refresh(req: Request, res: Response): Promise<void> {
     const rawRefreshToken = req.cookies?.rt || req.body?.refreshToken;
 

@@ -12,6 +12,7 @@ interface AuthStore {
 
   initAuth: () => Promise<void>;
   login: (email: string, pass: string) => Promise<{ success: boolean; error?: string }>;
+  loginWithGoogle: (idToken: string) => Promise<{ success: boolean; error?: string }>;
   register: (name: string, email: string, pass: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   logoutAll: () => Promise<void>;
@@ -76,6 +77,31 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     } catch (err: any) {
       set({ isLoading: false });
       const msg = err.response?.data?.error?.message || err.message || 'Login failed';
+      return { success: false, error: msg };
+    }
+  },
+
+  loginWithGoogle: async (idToken: string) => {
+    try {
+      set({ isLoading: true });
+      const res = await authApi.googleLogin(idToken);
+      if (res.success) {
+        const userRes = await usersApi.getMe();
+        const user = userRes.data;
+        const defaultAddr = user.addresses?.find((a) => a.isDefault) || user.addresses?.[0] || null;
+        set({
+          user,
+          isAuthenticated: true,
+          selectedAddress: defaultAddr,
+          isLoading: false
+        });
+        return { success: true };
+      }
+      set({ isLoading: false });
+      return { success: false, error: res.error?.message || 'Google sign-in failed' };
+    } catch (err: any) {
+      set({ isLoading: false });
+      const msg = err.response?.data?.error?.message || err.message || 'Google sign-in failed';
       return { success: false, error: msg };
     }
   },

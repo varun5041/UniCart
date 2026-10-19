@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
+import { OAuth2Client } from 'google-auth-library';
 import { User, RefreshToken, AuditLog } from '../../models/index.js';
 import { ApiError } from '../../utils/ApiError.js';
 import { env } from '../../config/env.js';
@@ -9,6 +10,8 @@ import {
   hashToken
 } from '../../utils/token.js';
 import { RegisterInput, LoginInput } from './auth.schema.js';
+
+const googleClient = new OAuth2Client(env.GOOGLE_CLIENT_ID);
 
 export interface AuthResult {
   user: {
@@ -322,6 +325,125 @@ export class AuthService {
     });
 
     return { message: 'Logged out from all sessions successfully' };
+  }
+
+  /**
+   * Authenticates or registers a user via Google OAuth (ID token)
+   */
+  async googleLogin(idToken: string, ip?: string): Promise<AuthResult> {
+    let email: string;
+    let name: string;
+    let googleId: string;
+    let avatar: string | undefined;
+
+    // Handle mock token for test/dev mode
+    if (idToken.startsWith('mock-google-token') && env.NODE_ENV !== 'production') {
+      const parts = idToken.split(':');
+      email = (parts[1] || 'google.user@example.com').toLowerCase();
+      name = parts[2] || 'Google User';
+      googleId = parts[3] || 'google_sub_12345';
+      avatar = 'https://lh3.googleusercontent.com/a/default-user';
+    } else {
+      try {
+        const ticket = await googleClient.verifyIdToken({
+          idToken,
+          audience: env.GOOGLE_CLIENT_ID
+        });
+        const payload = ticket.getPayload();
+
+        if (!payload || !payload.email) {
+          throw ApiError.unauthorized('Invalid Google ID token payload', 'INVALID_GOOGLE_TOKEN');
+        }
+
+        email = payload.email.toLowerCase();
+        name = payload.name || email.split('@')[0];
+        googleId = payload.sub;
+        avatar = payload.picture;
+      } catch (err) {
+        if (err instanceof ApiError) throw err;
+        throw ApiError.unauthorized('Google authentication failed: invalid or expired token', 'INVALID_GOOGLE_TOKEN');
+      }
+    }
+
+    // Find existing user by googleId or email
+    let user = await User.findOne({
+      $or: [{ googleId }, { email }]
+    });
+
+    if (!user) {
+      // Create new user authenticated via Google
+      user = new User({
+        name,
+        email,
+        googleId,
+        avatar,
+        role: 'customer'
+      });
+      await user.save();
+
+      await AuditLog.create({
+        actorId: user._id,
+        action: 'auth.register.google',
+        target: user._id.toString(),
+        ip,
+        meta: { email: user.email, googleId }
+      });
+    } else {
+      // Link googleId or update avatar if missing
+      let modified = false;
+      if (!user.googleId) {
+        user.googleId = googleId;
+        modified = true;
+      }
+      if (avatar && !user.avatar) {
+        user.avatar = avatar;
+        modified = true;
+      }
+      if (user.failedLogins > 0 || user.lockUntil) {
+        user.failedLogins = 0;
+        user.lockUntil = null;
+        modified = true;
+      }
+      if (modified) {
+        await user.save();
+      }
+
+      await AuditLog.create({
+        actorId: user._id,
+        action: 'auth.login.google',
+        target: user._id.toString(),
+        ip,
+        meta: { email: user.email, googleId }
+      });
+    }
+
+    const accessToken = signAccessToken({
+      sub: user._id.toString(),
+      role: user.role,
+      tokenVersion: user.tokenVersion
+    });
+
+    const { rawToken, tokenHash } = generateRefreshToken();
+    const familyId = uuidv4();
+    const expiresAt = new Date(Date.now() + env.REFRESH_TOKEN_TTL_DAYS * 24 * 60 * 60 * 1000);
+
+    await RefreshToken.create({
+      tokenHash,
+      userId: user._id,
+      familyId,
+      expiresAt
+    });
+
+    return {
+      user: {
+        id: user._id.toString(),
+        name: user.name,
+        email: user.email,
+        role: user.role
+      },
+      accessToken,
+      rawRefreshToken: rawToken
+    };
   }
 }
 

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { authController } from './auth.controller.js';
 import { validate } from '../../middleware/validate.js';
-import { registerSchema, loginSchema } from './auth.schema.js';
+import { registerSchema, loginSchema, googleAuthSchema } from './auth.schema.js';
 import { authRateLimiter } from '../../middleware/rateLimit.js';
 import { authenticate } from '../../middleware/auth.js';
 import { asyncHandler } from '../../utils/asyncHandler.js';
@@ -20,6 +20,13 @@ authRouter.post(
   authRateLimiter,
   validate({ body: loginSchema }),
   asyncHandler((req, res) => authController.login(req, res))
+);
+
+authRouter.post(
+  '/google',
+  authRateLimiter,
+  validate({ body: googleAuthSchema }),
+  asyncHandler((req, res) => authController.googleAuth(req, res))
 );
 
 authRouter.post(

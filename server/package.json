@@ -23,6 +23,7 @@
     "express": "^4.21.2",
     "express-mongo-sanitize": "^2.2.0",
     "express-rate-limit": "^8.7.1",
+    "google-auth-library": "^11.3.1",
     "helmet": "^8.1.0",
     "hpp": "^0.2.3",
     "ioredis": "^5.5.0",

@@ -20,6 +20,14 @@ export const authApi = {
     return res.data;
   },
 
+  async googleLogin(idToken: string): Promise<ApiResponse<LoginResponse>> {
+    const res = await api.post<ApiResponse<LoginResponse>>('/auth/google', { idToken });
+    if (res.data.success && res.data.data?.accessToken) {
+      setAccessToken(res.data.data.accessToken);
+    }
+    return res.data;
+  },
+
   async refresh(): Promise<ApiResponse<{ accessToken: string; user?: User }>> {
     const res = await api.post<ApiResponse<{ accessToken: string; user?: User }>>('/auth/refresh');
     if (res.data.success && res.data.data?.accessToken) {

@@ -58,9 +58,17 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        imgSrc: ["'self'", 'https://res.cloudinary.com', 'https://images.unsplash.com', 'data:'],
-        scriptSrc: ["'self'"],
-        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: [
+          "'self'",
+          'https://res.cloudinary.com',
+          'https://images.unsplash.com',
+          'https://lh3.googleusercontent.com',
+          'data:'
+        ],
+        scriptSrc: ["'self'", 'https://accounts.google.com'],
+        styleSrc: ["'self'", "'unsafe-inline'", 'https://accounts.google.com'],
+        frameSrc: ["'self'", 'https://accounts.google.com'],
+        connectSrc: ["'self'", 'https://accounts.google.com'],
         frameAncestors: ["'none'"]
       }
     },

@@ -41,5 +41,12 @@ export const loginSchema = z
   })
   .strict();
 
+export const googleAuthSchema = z
+  .object({
+    idToken: z.string().min(1, 'Google ID token is required')
+  })
+  .strict();
+
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
+export type GoogleAuthInput = z.infer<typeof googleAuthSchema>;

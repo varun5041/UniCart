@@ -13,6 +13,8 @@ export interface IUser extends Document {
   name: string;
   email: string;
   password?: string;
+  googleId?: string;
+  avatar?: string;
   role: 'customer' | 'admin';
   tokenVersion: number;
   failedLogins: number;
@@ -54,8 +56,19 @@ const userSchema = new Schema<IUser>(
     },
     password: {
       type: String,
-      required: true,
+      required: function (this: any) {
+        return !this.googleId;
+      },
       select: false
+    },
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true,
+      index: true
+    },
+    avatar: {
+      type: String
     },
     role: {
       type: String,
