@@ -93,9 +93,26 @@ async function startServer() {
   }
 }
 
+import cluster from 'node:cluster';
+import os from 'node:os';
+
 // Start if executed directly
 if (process.env.NODE_ENV !== 'test') {
-  void startServer();
+  if (process.env.ENABLE_CLUSTER === 'true' && cluster.isPrimary) {
+    const numCPUs = Math.min(os.availableParallelism ? os.availableParallelism() : os.cpus().length, 4);
+    logger.info(`[Cluster] Primary master ${process.pid} running. Forking ${numCPUs} worker processes...`);
+
+    for (let i = 0; i < numCPUs; i++) {
+      cluster.fork();
+    }
+
+    cluster.on('exit', (worker, code, signal) => {
+      logger.warn(`[Cluster] Worker ${worker.process.pid} died (${signal || code}). Spawning replacement...`);
+      cluster.fork();
+    });
+  } else {
+    void startServer();
+  }
 }
 
 export { startServer };
