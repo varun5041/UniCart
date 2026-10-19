@@ -16,6 +16,7 @@ export const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'products' | 'orders' | 'logs'>('products');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [orderStatusFilter, setOrderStatusFilter] = useState<OrderStatus | 'all'>('all');
+  const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
 
   // New product form state
   const [newProd, setNewProd] = useState({
@@ -129,6 +130,31 @@ export const AdminDashboard: React.FC = () => {
         type: 'info',
         title: 'Product Deleted',
         message: 'Product deactivated and catalogue cache updated.'
+      });
+    }
+  });
+
+  // Mutation: Bulk Delete Products
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (ids: string[]) => {
+      return adminApi.bulkDeleteProducts(ids);
+    },
+    onSuccess: (res) => {
+      void queryClient.invalidateQueries({ queryKey: ['admin-products'] });
+      void queryClient.invalidateQueries({ queryKey: ['products'] });
+      const count = res.data?.count ?? selectedProductIds.length;
+      setSelectedProductIds([]);
+      addToast({
+        type: 'info',
+        title: 'Bulk Deactivation Complete',
+        message: `Deactivated ${count} product(s) from store catalogue.`
+      });
+    },
+    onError: (err: any) => {
+      addToast({
+        type: 'error',
+        title: 'Bulk Deletion Failed',
+        message: err.response?.data?.error?.message || err.message || 'Failed to bulk deactivate products'
       });
     }
   });
@@ -261,90 +287,198 @@ export const AdminDashboard: React.FC = () => {
         </div>
 
         {/* TAB 1: PRODUCTS INVENTORY */}
-        {activeTab === 'products' && (
-          <div className="space-y-4">
-            <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
-              <div className="p-4 sm:p-6 border-b border-slate-100 flex items-center justify-between">
-                <div>
-                  <h3 className="text-base font-black text-slate-900">Catalogue Management</h3>
-                  <p className="text-xs text-slate-500">Live prices &amp; inventory stocks synced in Redis</p>
+        {activeTab === 'products' && (() => {
+          const productList = productsData || [];
+          const validProductIds = productList.map((p: Product) => p._id || p.id || '').filter(Boolean);
+          const isAllProductsSelected =
+            validProductIds.length > 0 && selectedProductIds.length === validProductIds.length;
+          const isSomeProductsSelected =
+            selectedProductIds.length > 0 && !isAllProductsSelected;
+
+          const handleToggleSelectAll = () => {
+            if (isAllProductsSelected) {
+              setSelectedProductIds([]);
+            } else {
+              setSelectedProductIds([...validProductIds]);
+            }
+          };
+
+          const handleToggleProduct = (id: string) => {
+            setSelectedProductIds((prev) =>
+              prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+            );
+          };
+
+          return (
+            <div className="space-y-4">
+              <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
+                <div className="p-4 sm:p-6 border-b border-slate-100 flex flex-wrap items-center justify-between gap-4">
+                  <div>
+                    <h3 className="text-base font-black text-slate-900">Catalogue Management</h3>
+                    <p className="text-xs text-slate-500">Live prices &amp; inventory stocks synced in Redis</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={handleToggleSelectAll}
+                      className="px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                    >
+                      <span className="material-symbols-outlined text-base text-indigo-600">
+                        {isAllProductsSelected ? 'deselect' : 'select_all'}
+                      </span>
+                      <span>{isAllProductsSelected ? 'Deselect All' : 'Select All'}</span>
+                    </button>
+                    {selectedProductIds.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (
+                            window.confirm(
+                              `Are you sure you want to deactivate ${selectedProductIds.length} selected product(s)?`
+                            )
+                          ) {
+                            bulkDeleteMutation.mutate(selectedProductIds);
+                          }
+                        }}
+                        disabled={bulkDeleteMutation.isPending}
+                        className="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-50"
+                      >
+                        <span className="material-symbols-outlined text-base">delete_sweep</span>
+                        <span>
+                          {bulkDeleteMutation.isPending
+                            ? 'Deactivating...'
+                            : `Delete Selected (${selectedProductIds.length})`}
+                        </span>
+                      </button>
+                    )}
+                  </div>
                 </div>
+
+                {/* Bulk Selection Notification Bar */}
+                {selectedProductIds.length > 0 && (
+                  <div className="bg-indigo-50/90 border-b border-indigo-100 px-4 sm:px-6 py-2.5 flex items-center justify-between text-xs text-indigo-900 font-medium">
+                    <div className="flex items-center gap-2">
+                      <span className="w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px] font-bold">
+                        {selectedProductIds.length}
+                      </span>
+                      <span>
+                        <strong>{selectedProductIds.length}</strong> of <strong>{validProductIds.length}</strong> items selected
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={handleToggleSelectAll}
+                        className="text-xs font-bold text-indigo-700 hover:underline cursor-pointer"
+                      >
+                        {isAllProductsSelected ? 'Clear selection' : `Select all ${validProductIds.length} products`}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {isProductsLoading ? (
+                  <div className="p-12 text-center text-xs text-slate-500 font-semibold">
+                    Loading catalogue...
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs">
+                      <thead className="bg-slate-50 border-b border-slate-100 text-slate-500 uppercase tracking-wider text-[10px]">
+                        <tr>
+                          <th className="p-4 w-12 text-center">
+                            <input
+                              type="checkbox"
+                              checked={isAllProductsSelected}
+                              ref={(el) => {
+                                if (el) el.indeterminate = isSomeProductsSelected;
+                              }}
+                              onChange={handleToggleSelectAll}
+                              className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                              title={isAllProductsSelected ? 'Deselect All' : 'Select All'}
+                            />
+                          </th>
+                          <th className="p-4">Product</th>
+                          <th className="p-4">Category</th>
+                          <th className="p-4">Price (₹)</th>
+                          <th className="p-4">Stock</th>
+                          <th className="p-4 text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {(productList || []).map((prod: Product) => {
+                          const pricePaise = prod.price || 0;
+                          const priceRupees = Math.round(pricePaise > 1000 ? pricePaise / 100 : pricePaise);
+                          const id = prod._id || prod.id || '';
+                          const isSelected = selectedProductIds.includes(id);
+
+                          return (
+                            <tr
+                              key={id}
+                              className={`transition-colors ${
+                                isSelected ? 'bg-indigo-50/50 hover:bg-indigo-50/70' : 'hover:bg-slate-50/50'
+                              }`}
+                            >
+                              <td className="p-4 w-12 text-center">
+                                <input
+                                  type="checkbox"
+                                  checked={isSelected}
+                                  onChange={() => handleToggleProduct(id)}
+                                  className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                                />
+                              </td>
+                              <td className="p-4 flex items-center gap-3">
+                                <img
+                                  src={prod.images?.[0] || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80'}
+                                  alt=""
+                                  className="w-10 h-10 rounded-lg object-cover bg-slate-100 shrink-0"
+                                />
+                                <div>
+                                  <span className="font-bold text-slate-900 block truncate max-w-xs">{prod.name}</span>
+                                  <span className="text-[11px] text-slate-400 font-mono">slug: {prod.slug}</span>
+                                </div>
+                              </td>
+                              <td className="p-4 font-semibold text-slate-700 capitalize">
+                                {typeof prod.category === 'object' ? prod.category.name : prod.category}
+                              </td>
+                              <td className="p-4 font-black text-slate-900">₹{priceRupees.toLocaleString('en-IN')}</td>
+                              <td className="p-4 font-semibold text-slate-700">
+                                <span
+                                  className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                                    prod.stock > 10
+                                      ? 'bg-emerald-50 text-emerald-700'
+                                      : prod.stock > 0
+                                      ? 'bg-amber-50 text-amber-700'
+                                      : 'bg-rose-50 text-rose-700'
+                                  }`}
+                                >
+                                  {prod.stock} units
+                                </span>
+                              </td>
+                              <td className="p-4 text-right">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    if (window.confirm(`Deactivate product '${prod.name}'?`)) {
+                                      deleteProductMutation.mutate(id);
+                                    }
+                                  }}
+                                  className="text-rose-600 hover:text-rose-800 font-bold text-xs cursor-pointer"
+                                >
+                                  Delete
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
-
-              {isProductsLoading ? (
-                <div className="p-12 text-center text-xs text-slate-500 font-semibold">
-                  Loading catalogue...
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-50 border-b border-slate-100 text-slate-500 uppercase tracking-wider text-[10px]">
-                      <tr>
-                        <th className="p-4">Product</th>
-                        <th className="p-4">Category</th>
-                        <th className="p-4">Price (₹)</th>
-                        <th className="p-4">Stock</th>
-                        <th className="p-4">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {(productsData || []).map((prod: Product) => {
-                        const pricePaise = prod.price || 0;
-                        const priceRupees = Math.round(pricePaise > 1000 ? pricePaise / 100 : pricePaise);
-                        const id = prod._id || prod.id || '';
-
-                        return (
-                          <tr key={id} className="hover:bg-slate-50/50 transition-colors">
-                            <td className="p-4 flex items-center gap-3">
-                              <img
-                                src={prod.images?.[0] || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80'}
-                                alt=""
-                                className="w-10 h-10 rounded-lg object-cover bg-slate-100 shrink-0"
-                              />
-                              <div>
-                                <span className="font-bold text-slate-900 block truncate max-w-xs">{prod.name}</span>
-                                <span className="text-[11px] text-slate-400 font-mono">slug: {prod.slug}</span>
-                              </div>
-                            </td>
-                            <td className="p-4 font-semibold text-slate-700 capitalize">
-                              {typeof prod.category === 'object' ? prod.category.name : prod.category}
-                            </td>
-                            <td className="p-4 font-black text-slate-900">₹{priceRupees.toLocaleString('en-IN')}</td>
-                            <td className="p-4 font-semibold text-slate-700">
-                              <span
-                                className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                                  prod.stock > 10
-                                    ? 'bg-emerald-50 text-emerald-700'
-                                    : prod.stock > 0
-                                    ? 'bg-amber-50 text-amber-700'
-                                    : 'bg-rose-50 text-rose-700'
-                                }`}
-                              >
-                                {prod.stock} units
-                              </span>
-                            </td>
-                            <td className="p-4">
-                              <button
-                                onClick={() => {
-                                  if (window.confirm(`Deactivate product '${prod.name}'?`)) {
-                                    deleteProductMutation.mutate(id);
-                                  }
-                                }}
-                                className="text-rose-600 hover:text-rose-800 font-bold text-xs cursor-pointer"
-                              >
-                                Delete
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              )}
             </div>
-          </div>
-        )}
+          );
+        })()}
 
         {/* TAB 2: ORDERS MANAGEMENT & STATUS TRANSITIONS */}
         {activeTab === 'orders' && (

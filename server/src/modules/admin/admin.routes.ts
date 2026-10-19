@@ -12,7 +12,8 @@ import { orderIdParamSchema } from '../orders/order.schema.js';
 import {
   adminListOrdersQuerySchema,
   adminUpdateOrderStatusSchema,
-  adminListAuditLogsQuerySchema
+  adminListAuditLogsQuerySchema,
+  adminBulkDeleteProductsSchema
 } from './admin.schema.js';
 import { asyncHandler } from '../../utils/asyncHandler.js';
 
@@ -26,6 +27,12 @@ adminRouter.post(
   '/products',
   validate({ body: adminCreateProductSchema }),
   asyncHandler((req, res) => adminController.createProduct(req, res))
+);
+
+adminRouter.post(
+  '/products/bulk-delete',
+  validate({ body: adminBulkDeleteProductsSchema }),
+  asyncHandler((req, res) => adminController.bulkDeleteProducts(req, res))
 );
 
 adminRouter.patch(

@@ -25,6 +25,15 @@ export const adminListAuditLogsQuerySchema = z
   })
   .strict();
 
+export const adminBulkDeleteProductsSchema = z
+  .object({
+    ids: z
+      .array(z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid product ObjectId'))
+      .min(1, 'At least one product ID required')
+  })
+  .strict();
+
 export type AdminListOrdersQuery = z.infer<typeof adminListOrdersQuerySchema>;
 export type AdminUpdateOrderStatusInput = z.infer<typeof adminUpdateOrderStatusSchema>;
 export type AdminListAuditLogsQuery = z.infer<typeof adminListAuditLogsQuerySchema>;
+export type AdminBulkDeleteProductsInput = z.infer<typeof adminBulkDeleteProductsSchema>;

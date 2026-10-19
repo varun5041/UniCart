@@ -253,6 +253,32 @@ export class ProductService {
   }
 
   /**
+   * Admin: Bulk soft-delete products and invalidate cache
+   */
+  async bulkDeleteProducts(ids: string[]): Promise<{ count: number; message: string }> {
+    const validObjectIds = ids
+      .filter((id) => mongoose.isValidObjectId(id))
+      .map((id) => new Types.ObjectId(id));
+
+    if (validObjectIds.length === 0) {
+      return { count: 0, message: 'No valid products to delete' };
+    }
+
+    const result = await Product.updateMany(
+      { _id: { $in: validObjectIds } },
+      { $set: { isActive: false } }
+    );
+
+    // Cache invalidation
+    await incrementCacheVersion('products');
+
+    return {
+      count: result.modifiedCount,
+      message: `Successfully deactivated ${result.modifiedCount} product(s)`
+    };
+  }
+
+  /**
    * Admin: Signed upload parameters for direct client-to-cloud upload (Cloudinary/S3)
    */
   generateUploadSignature(folder = 'unicart/products') {

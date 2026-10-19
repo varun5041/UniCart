@@ -76,6 +76,11 @@ export const adminApi = {
     return res.data;
   },
 
+  async bulkDeleteProducts(ids: string[]): Promise<ApiResponse<{ count: number; message: string }>> {
+    const res = await api.post<ApiResponse<{ count: number; message: string }>>('/admin/products/bulk-delete', { ids });
+    return res.data;
+  },
+
   async getUploadSignature(folder?: string): Promise<ApiResponse<AdminUploadSignature>> {
     const res = await api.post<ApiResponse<AdminUploadSignature>>('/admin/uploads/signature', { folder });
     return res.data;

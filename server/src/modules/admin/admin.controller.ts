@@ -32,6 +32,14 @@ export class AdminController {
     });
   }
 
+  async bulkDeleteProducts(req: Request, res: Response): Promise<void> {
+    const result = await productService.bulkDeleteProducts(req.body.ids);
+    res.status(200).json({
+      success: true,
+      data: result
+    });
+  }
+
   getUploadSignature(req: Request, res: Response): void {
     const folder = req.body?.folder || 'unicart/products';
     const signature = productService.generateUploadSignature(folder);
