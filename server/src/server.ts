@@ -57,17 +57,9 @@ export function createShutdownHandler(server: { close: (cb: (err?: Error) => voi
   };
 }
 
-// 2. Connect external dependencies and listen
+// 2. Start HTTP server immediately and connect external dependencies in parallel
 async function startServer() {
   try {
-    await connectDB().catch((err) => {
-      logger.warn({ msg: '[Boot] MongoDB not yet reachable (readiness will report degraded)', err: err.message });
-    });
-
-    await connectRedis().catch((err) => {
-      logger.warn({ msg: '[Boot] Redis not yet reachable (readiness will report degraded)', err: err.message });
-    });
-
     const server = app.listen(env.PORT, () => {
       logger.info({
         msg: `[UniCart] Server listening on port ${env.PORT}`,
@@ -85,6 +77,16 @@ async function startServer() {
     process.on('SIGINT', () => {
       void shutdown('SIGINT', true);
     });
+
+    // Connect MongoDB and Redis in parallel without blocking initial HTTP port bind
+    await Promise.all([
+      connectDB().catch((err) => {
+        logger.warn({ msg: '[Boot] MongoDB not yet reachable (readiness will report degraded)', err: err.message });
+      }),
+      connectRedis().catch((err) => {
+        logger.warn({ msg: '[Boot] Redis not yet reachable (readiness will report degraded)', err: err.message });
+      })
+    ]);
 
     return { server, shutdown };
   } catch (err) {
