@@ -3,9 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import { ProductCard } from '../components/ProductCard';
 import { FilterSidebar } from '../components/FilterSidebar';
 import { useFilterStore, type SortOption } from '../store/useFilterStore';
-import { MOCK_CATEGORIES } from '../api/mockData';
 import { productsApi } from '../api/products';
-import type { Product } from '../types';
+import type { Product, Category } from '../types';
 
 export const HomePage: React.FC = () => {
   const {
@@ -21,6 +20,21 @@ export const HomePage: React.FC = () => {
     resetFilters,
     setCategory
   } = useFilterStore();
+
+  // TanStack Query for categories dynamically from backend
+  const { data: categoriesData } = useQuery({
+    queryKey: ['categories'],
+    queryFn: async () => {
+      try {
+        const res = await productsApi.getCategories();
+        return res.success && Array.isArray(res.data) ? res.data : [];
+      } catch {
+        return [];
+      }
+    }
+  });
+
+  const categories: Category[] = categoriesData || [];
 
   // TanStack Query for server state caching & live API integration
   const { data: serverData, isLoading: isServerLoading } = useQuery({
@@ -58,7 +72,9 @@ export const HomePage: React.FC = () => {
   const totalPages = serverData?.pages ?? 1;
   const displayProducts: Product[] = serverData?.items ?? [];
 
-  const activeCategoryObj = MOCK_CATEGORIES.find((c) => c.id === selectedCategory);
+  const activeCategoryObj = categories.find(
+    (c) => c.slug === selectedCategory || c._id === selectedCategory || c.id === selectedCategory || c.name.toLowerCase() === selectedCategory.toLowerCase()
+  );
 
   return (
     <div className="bg-[#FAF8FF] min-h-screen pb-16">
@@ -97,8 +113,8 @@ export const HomePage: React.FC = () => {
             {/* Quick Stats Badges */}
             <div className="lg:col-span-5 grid grid-cols-2 gap-3">
               <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-4">
-                <div className="text-2xl font-black text-indigo-300">200+</div>
-                <div className="text-xs text-slate-300 mt-0.5">Top-Rated Products</div>
+                <div className="text-2xl font-black text-indigo-300">{totalProducts}</div>
+                <div className="text-xs text-slate-300 mt-0.5">Active Products in Store</div>
               </div>
               <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-4">
                 <div className="text-2xl font-black text-emerald-300">100%</div>
@@ -109,46 +125,55 @@ export const HomePage: React.FC = () => {
                 <div className="text-xs text-slate-300 mt-0.5">Redis Cached Responses</div>
               </div>
               <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-4">
-                <div className="text-2xl font-black text-rose-300">Zero</div>
-                <div className="text-xs text-slate-300 mt-0.5">Overselling Risk</div>
+                <div className="text-2xl font-black text-rose-300">Admin</div>
+                <div className="text-xs text-slate-300 mt-0.5">Verified Direct Catalogue</div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Category Horizontal Quick Bar */}
-      <section className="border-b border-slate-200/80 bg-white shadow-xs sticky top-16 z-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2 overflow-x-auto py-3 scrollbar-none">
-            <button
-              onClick={() => setCategory('all')}
-              className={`shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-                selectedCategory === 'all'
-                  ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30'
-                  : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200/60'
-              }`}
-            >
-              <span className="material-symbols-outlined text-base">apps</span>
-              <span>All Categories</span>
-            </button>
-            {MOCK_CATEGORIES.map((cat) => (
+      {/* Category Horizontal Quick Bar (Only rendered if categories exist) */}
+      {categories.length > 0 && (
+        <section className="border-b border-slate-200/80 bg-white shadow-xs sticky top-16 z-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center gap-2 overflow-x-auto py-3 scrollbar-none">
               <button
-                key={cat.id}
-                onClick={() => setCategory(cat.id)}
+                onClick={() => setCategory('all')}
                 className={`shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-                  selectedCategory === cat.id
+                  selectedCategory === 'all'
                     ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30'
                     : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200/60'
                 }`}
               >
-                <span className="material-symbols-outlined text-base">{cat.icon}</span>
-                <span>{cat.name}</span>
+                <span className="material-symbols-outlined text-base">apps</span>
+                <span>All Products</span>
               </button>
-            ))}
+              {categories.map((cat) => {
+                const isSelected =
+                  selectedCategory === cat.slug ||
+                  selectedCategory === cat._id ||
+                  selectedCategory === cat.name;
+
+                return (
+                  <button
+                    key={cat._id || cat.slug || cat.name}
+                    onClick={() => setCategory(cat.slug || cat.name)}
+                    className={`shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                      isSelected
+                        ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30'
+                        : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200/60'
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-base">{cat.icon || 'category'}</span>
+                    <span>{cat.name}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Main Catalog Section */}
       <main id="catalog" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">

@@ -1,9 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { useCartStore } from '../store/useCartStore';
 import { useAuthStore } from '../store/useAuthStore';
 import { useFilterStore } from '../store/useFilterStore';
-import { MOCK_CATEGORIES } from '../api/mockData';
+import { productsApi } from '../api/products';
+import type { Category } from '../types';
 
 export const Navbar: React.FC = () => {
   const navigate = useNavigate();
@@ -11,6 +13,20 @@ export const Navbar: React.FC = () => {
   const { getItemCount } = useCartStore();
   const { user, isAuthenticated, logout } = useAuthStore();
   const { searchQuery, setSearchQuery, selectedCategory, setCategory } = useFilterStore();
+
+  const { data: categoriesData } = useQuery({
+    queryKey: ['categories'],
+    queryFn: async () => {
+      try {
+        const res = await productsApi.getCategories();
+        return res.success && Array.isArray(res.data) ? res.data : [];
+      } catch {
+        return [];
+      }
+    }
+  });
+
+  const categories: Category[] = categoriesData || [];
 
   const [isAccountOpen, setIsAccountOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -117,8 +133,9 @@ export const Navbar: React.FC = () => {
               aria-label="Filter by category"
               className="h-11 pl-3 pr-8 rounded-l-xl bg-slate-100 text-xs font-semibold text-slate-700 border-r border-slate-300 focus:outline-none cursor-pointer hover:bg-slate-200 transition-colors"
             >
-              {MOCK_CATEGORIES.map((cat) => (
-                <option key={cat.id} value={cat.id}>
+              <option value="all">All Categories</option>
+              {categories.map((cat) => (
+                <option key={cat._id || cat.slug || cat.name} value={cat.slug || cat.name}>
                   {cat.name}
                 </option>
               ))}
@@ -329,31 +346,40 @@ export const Navbar: React.FC = () => {
             <span className="text-slate-600">Deliver to: <strong>Mumbai 400053</strong></span>
           </div>
 
-          <div className="space-y-1">
-            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2 py-1">
-              Shop Categories
-            </p>
-            {MOCK_CATEGORIES.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => {
-                  setCategory(cat.id);
-                  setIsMobileMenuOpen(false);
-                  navigate('/');
-                }}
-                className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg text-left transition-colors ${
-                  selectedCategory === cat.id
-                    ? 'bg-indigo-50 font-bold text-indigo-600'
-                    : 'text-slate-700 hover:bg-slate-50'
-                }`}
-              >
-                <span>{cat.name}</span>
-                <span className="material-symbols-outlined text-sm text-slate-400">
-                  chevron_right
-                </span>
-              </button>
-            ))}
-          </div>
+          {categories.length > 0 && (
+            <div className="space-y-1">
+              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2 py-1">
+                Shop Categories
+              </p>
+              {categories.map((cat) => {
+                const isSelected =
+                  selectedCategory === cat.slug ||
+                  selectedCategory === cat._id ||
+                  selectedCategory === cat.name;
+
+                return (
+                  <button
+                    key={cat._id || cat.slug || cat.name}
+                    onClick={() => {
+                      setCategory(cat.slug || cat.name);
+                      setIsMobileMenuOpen(false);
+                      navigate('/');
+                    }}
+                    className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg text-left transition-colors ${
+                      isSelected
+                        ? 'bg-indigo-50 font-bold text-indigo-600'
+                        : 'text-slate-700 hover:bg-slate-50'
+                    }`}
+                  >
+                    <span>{cat.name}</span>
+                    <span className="material-symbols-outlined text-sm text-slate-400">
+                      chevron_right
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
           <div className="border-t border-slate-100 pt-2 space-y-1">
             {user?.role === 'admin' && (

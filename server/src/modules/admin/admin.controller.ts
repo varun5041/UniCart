@@ -25,7 +25,8 @@ export class AdminController {
   }
 
   async deleteProduct(req: Request, res: Response): Promise<void> {
-    const result = await productService.deleteProduct(req.params.id);
+    const isPermanent = req.query.permanent === 'true';
+    const result = await productService.deleteProduct(req.params.id, isPermanent);
     res.status(200).json({
       success: true,
       data: result
@@ -34,6 +35,30 @@ export class AdminController {
 
   async bulkDeleteProducts(req: Request, res: Response): Promise<void> {
     const result = await productService.bulkDeleteProducts(req.body);
+    res.status(200).json({
+      success: true,
+      data: result
+    });
+  }
+
+  async listCategories(_req: Request, res: Response): Promise<void> {
+    const categories = await productService.listAllCategories();
+    res.status(200).json({
+      success: true,
+      data: categories
+    });
+  }
+
+  async createCategory(req: Request, res: Response): Promise<void> {
+    const category = await productService.createCategory(req.body);
+    res.status(201).json({
+      success: true,
+      data: category
+    });
+  }
+
+  async deleteCategory(req: Request, res: Response): Promise<void> {
+    const result = await productService.deleteCategory(req.params.id);
     res.status(200).json({
       success: true,
       data: result

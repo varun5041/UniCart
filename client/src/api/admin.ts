@@ -1,5 +1,10 @@
 import { api } from './client';
-import type { ApiResponse, Product, Order, OrderStatus } from '../types';
+import type { ApiResponse, Product, Order, OrderStatus, Category } from '../types';
+
+export interface AdminCreateCategoryInput {
+  name: string;
+  description?: string;
+}
 
 export interface AdminCreateProductInput {
   name: string;
@@ -71,12 +76,27 @@ export const adminApi = {
     return res.data;
   },
 
-  async deleteProduct(id: string): Promise<ApiResponse<{ id: string; isActive: boolean }>> {
-    const res = await api.delete<ApiResponse<{ id: string; isActive: boolean }>>(`/admin/products/${id}`);
+  async deleteProduct(id: string, permanent: boolean = true): Promise<ApiResponse<{ id: string; isActive?: boolean }>> {
+    const res = await api.delete<ApiResponse<{ id: string; isActive?: boolean }>>(`/admin/products/${id}${permanent ? '?permanent=true' : ''}`);
     return res.data;
   },
 
-  async bulkDeleteProducts(payload: { ids?: string[]; all?: boolean } | string[]): Promise<ApiResponse<{ count: number; message: string }>> {
+  async listCategories(): Promise<ApiResponse<Category[]>> {
+    const res = await api.get<ApiResponse<Category[]>>('/admin/categories');
+    return res.data;
+  },
+
+  async createCategory(data: AdminCreateCategoryInput): Promise<ApiResponse<Category>> {
+    const res = await api.post<ApiResponse<Category>>('/admin/categories', data);
+    return res.data;
+  },
+
+  async deleteCategory(id: string): Promise<ApiResponse<{ id: string; message: string }>> {
+    const res = await api.delete<ApiResponse<{ id: string; message: string }>>(`/admin/categories/${id}`);
+    return res.data;
+  },
+
+  async bulkDeleteProducts(payload: { ids?: string[]; all?: boolean; hardDelete?: boolean } | string[]): Promise<ApiResponse<{ count: number; message: string }>> {
     const body = Array.isArray(payload) ? { ids: payload } : payload;
     const res = await api.post<ApiResponse<{ count: number; message: string }>>('/admin/products/bulk-delete', body);
     return res.data;

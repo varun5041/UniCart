@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { adminApi, type AdminCreateProductInput } from '../../api/admin';
+import { adminApi, type AdminCreateProductInput, type AdminCreateCategoryInput } from '../../api/admin';
 import { productsApi } from '../../api/products';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useToastStore } from '../../store/useToastStore';
-import type { OrderStatus, Product } from '../../types';
+import type { OrderStatus, Product, Category } from '../../types';
 
 export const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -13,7 +13,7 @@ export const AdminDashboard: React.FC = () => {
   const { user, isAuthenticated } = useAuthStore();
   const { addToast } = useToastStore();
 
-  const [activeTab, setActiveTab] = useState<'products' | 'orders' | 'logs'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'categories' | 'orders' | 'logs'>('products');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [orderStatusFilter, setOrderStatusFilter] = useState<OrderStatus | 'all'>('all');
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
@@ -23,17 +23,35 @@ export const AdminDashboard: React.FC = () => {
     count: number;
   } | null>(null);
 
+  // Category creation states
+  const [isCategoryFormOpen, setIsCategoryFormOpen] = useState(false);
+  const [categoryForm, setCategoryForm] = useState<AdminCreateCategoryInput>({ name: '', description: '' });
+
+  // Product category selection mode inside create modal
+  const [categoryMode, setCategoryMode] = useState<'existing' | 'new'>('existing');
+  const [newCategoryName, setNewCategoryName] = useState('');
+
   // New product form state
   const [newProd, setNewProd] = useState({
     name: '',
-    category: 'electronics',
-    priceRupees: 1999,
-    stock: 50,
+    category: '',
+    priceRupees: 999,
+    stock: 20,
     description: '',
-    imageUrl: 'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800&q=80'
+    imageUrl: ''
   });
 
   const isAdmin = Boolean(isAuthenticated && user?.role === 'admin');
+
+  // TanStack Query: Fetch Categories
+  const { data: categoriesData } = useQuery({
+    queryKey: ['categories'],
+    queryFn: async () => {
+      const res = await productsApi.getCategories();
+      return res.data || [];
+    },
+    enabled: isAdmin
+  });
 
   // TanStack Query: Fetch Orders
   const { data: ordersData, isLoading: isOrdersLoading } = useQuery({
@@ -68,6 +86,54 @@ export const AdminDashboard: React.FC = () => {
     enabled: isAdmin
   });
 
+  // Mutation: Create Category
+  const createCategoryMutation = useMutation({
+    mutationFn: async (input: AdminCreateCategoryInput) => {
+      return adminApi.createCategory(input);
+    },
+    onSuccess: (res) => {
+      void queryClient.invalidateQueries({ queryKey: ['categories'] });
+      setCategoryForm({ name: '', description: '' });
+      setIsCategoryFormOpen(false);
+      addToast({
+        type: 'success',
+        title: 'Category Created',
+        message: `Category '${res.data?.name || ''}' added successfully.`
+      });
+    },
+    onError: (err: any) => {
+      addToast({
+        type: 'error',
+        title: 'Creation Failed',
+        message: err.response?.data?.error?.message || err.message || 'Failed to create category'
+      });
+    }
+  });
+
+  // Mutation: Delete Category
+  const deleteCategoryMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return adminApi.deleteCategory(id);
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['categories'] });
+      void queryClient.invalidateQueries({ queryKey: ['admin-products'] });
+      void queryClient.invalidateQueries({ queryKey: ['products'] });
+      addToast({
+        type: 'info',
+        title: 'Category Deleted',
+        message: 'Category removed successfully from database.'
+      });
+    },
+    onError: (err: any) => {
+      addToast({
+        type: 'error',
+        title: 'Deletion Failed',
+        message: err.response?.data?.error?.message || err.message || 'Failed to delete category'
+      });
+    }
+  });
+
   // Mutation: Create Product
   const createProductMutation = useMutation({
     mutationFn: async (input: AdminCreateProductInput) => {
@@ -76,19 +142,22 @@ export const AdminDashboard: React.FC = () => {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['admin-products'] });
       void queryClient.invalidateQueries({ queryKey: ['products'] });
+      void queryClient.invalidateQueries({ queryKey: ['categories'] });
       setIsCreateModalOpen(false);
       setNewProd({
         name: '',
-        category: 'electronics',
-        priceRupees: 1999,
-        stock: 50,
+        category: '',
+        priceRupees: 999,
+        stock: 20,
         description: '',
-        imageUrl: 'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800&q=80'
+        imageUrl: ''
       });
+      setNewCategoryName('');
+      setCategoryMode('existing');
       addToast({
         type: 'success',
         title: 'Product Created',
-        message: 'Product catalog cache version bumped and inventory initialized.'
+        message: 'Product catalog cache updated and inventory initialized.'
       });
     },
     onError: (err: any) => {
@@ -131,29 +200,31 @@ export const AdminDashboard: React.FC = () => {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['admin-products'] });
       void queryClient.invalidateQueries({ queryKey: ['products'] });
+      void queryClient.invalidateQueries({ queryKey: ['categories'] });
       addToast({
         type: 'info',
         title: 'Product Deleted',
-        message: 'Product deactivated and catalogue cache updated.'
+        message: 'Product removed from catalogue and cache updated.'
       });
     }
   });
 
   // Mutation: Bulk Delete Products
   const bulkDeleteMutation = useMutation({
-    mutationFn: async (payload: { ids?: string[]; all?: boolean } | string[]) => {
+    mutationFn: async (payload: { ids?: string[]; all?: boolean; hardDelete?: boolean } | string[]) => {
       return adminApi.bulkDeleteProducts(payload);
     },
     onSuccess: (res) => {
       void queryClient.invalidateQueries({ queryKey: ['admin-products'] });
       void queryClient.invalidateQueries({ queryKey: ['products'] });
+      void queryClient.invalidateQueries({ queryKey: ['categories'] });
       const count = res.data?.count ?? selectedProductIds.length;
       setSelectedProductIds([]);
       setConfirmDeleteModal(null);
       addToast({
         type: 'info',
-        title: 'Bulk Deactivation Complete',
-        message: `Deactivated ${count} product(s) from store catalogue.`
+        title: 'Catalogue Purged',
+        message: `Successfully removed ${count} product(s) from database.`
       });
     },
     onError: (err: any) => {
@@ -161,7 +232,7 @@ export const AdminDashboard: React.FC = () => {
       addToast({
         type: 'error',
         title: 'Bulk Deletion Failed',
-        message: err.response?.data?.error?.message || err.message || 'Failed to bulk deactivate products'
+        message: err.response?.data?.error?.message || err.message || 'Failed to bulk remove products'
       });
     }
   });
@@ -197,20 +268,42 @@ export const AdminDashboard: React.FC = () => {
     );
   }
 
+  const handleOpenCreateModal = () => {
+    if (categoriesData && categoriesData.length > 0) {
+      setCategoryMode('existing');
+      setNewProd((prev) => ({
+        ...prev,
+        category: prev.category || categoriesData[0]?.name || ''
+      }));
+    } else {
+      setCategoryMode('new');
+      setNewProd((prev) => ({ ...prev, category: '' }));
+    }
+    setNewCategoryName('');
+    setIsCreateModalOpen(true);
+  };
+
   const handleCreateProductSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newProd.name || !newProd.description) {
-      addToast({ type: 'error', title: 'Incomplete Form', message: 'Name and description are required.' });
+    const effectiveCategory = (categoryMode === 'new' ? newCategoryName : newProd.category).trim();
+
+    if (!newProd.name.trim() || !newProd.description.trim() || !effectiveCategory) {
+      addToast({
+        type: 'error',
+        title: 'Incomplete Form',
+        message: 'Product name, description, and category are required.'
+      });
       return;
     }
 
+    const defaultImg = 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80';
     createProductMutation.mutate({
-      name: newProd.name,
-      description: newProd.description,
-      price: Math.round(newProd.priceRupees * 100), // convert to paise
-      stock: newProd.stock,
-      category: newProd.category,
-      images: [newProd.imageUrl]
+      name: newProd.name.trim(),
+      description: newProd.description.trim(),
+      price: Math.max(100, Math.round(newProd.priceRupees * 100)), // convert to paise
+      stock: Math.max(0, newProd.stock),
+      category: effectiveCategory,
+      images: [newProd.imageUrl.trim() || defaultImg]
     });
   };
 
@@ -244,7 +337,7 @@ export const AdminDashboard: React.FC = () => {
 
           <div className="flex items-center gap-3">
             <button
-              onClick={() => setIsCreateModalOpen(true)}
+              onClick={handleOpenCreateModal}
               className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
             >
               <span className="material-symbols-outlined text-base">add_box</span>
@@ -270,6 +363,16 @@ export const AdminDashboard: React.FC = () => {
             }`}
           >
             Products Inventory ({productsData?.length || 0})
+          </button>
+          <button
+            onClick={() => setActiveTab('categories')}
+            className={`px-5 py-3 text-xs font-bold border-b-2 transition-all cursor-pointer ${
+              activeTab === 'categories'
+                ? 'border-indigo-600 text-indigo-600'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            Categories ({categoriesData?.length || 0})
           </button>
           <button
             onClick={() => setActiveTab('orders')}
@@ -357,23 +460,22 @@ export const AdminDashboard: React.FC = () => {
                         </span>
                       </button>
                     ) : (
-                      validProductIds.length > 0 && (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setConfirmDeleteModal({
-                              open: true,
-                              mode: 'all',
-                              count: validProductIds.length
-                            });
-                          }}
-                          disabled={bulkDeleteMutation.isPending}
-                          className="px-3.5 py-2 rounded-xl border border-rose-200 bg-rose-50/70 hover:bg-rose-100 text-rose-700 text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs disabled:opacity-50"
-                        >
-                          <span className="material-symbols-outlined text-base text-rose-600">delete_forever</span>
-                          <span>Delete All</span>
-                        </button>
-                      )
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setConfirmDeleteModal({
+                            open: true,
+                            mode: 'all',
+                            count: validProductIds.length
+                          });
+                        }}
+                        disabled={bulkDeleteMutation.isPending}
+                        className="px-3.5 py-2 rounded-xl border border-rose-200 bg-rose-50/70 hover:bg-rose-100 text-rose-700 text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs disabled:opacity-50"
+                        title="Permanently remove all seeded products and categories from database"
+                      >
+                        <span className="material-symbols-outlined text-base text-rose-600">delete_forever</span>
+                        <span>Purge Seeded Data / Reset</span>
+                      </button>
                     )}
                   </div>
                 </div>
@@ -477,7 +579,7 @@ export const AdminDashboard: React.FC = () => {
                                 </div>
                               </td>
                               <td className="p-4 font-semibold text-slate-700 capitalize">
-                                {typeof prod.category === 'object' ? prod.category.name : prod.category}
+                                {typeof prod.category === 'object' && prod.category !== null ? prod.category.name : prod.category || 'General'}
                               </td>
                               <td className="p-4 font-black text-slate-900">₹{priceRupees.toLocaleString('en-IN')}</td>
                               <td className="p-4 font-semibold text-slate-700">
@@ -517,7 +619,203 @@ export const AdminDashboard: React.FC = () => {
           );
         })()}
 
-        {/* TAB 2: ORDERS MANAGEMENT & STATUS TRANSITIONS */}
+        {/* TAB 2: CATEGORIES MANAGEMENT */}
+        {activeTab === 'categories' && (
+          <div className="space-y-6 animate-fade-in">
+            {/* Header with Quick Create Button */}
+            <div className="bg-white rounded-3xl border border-slate-200 p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-base font-black text-slate-900">Custom Categories</h3>
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-indigo-50 text-indigo-700">
+                    {categoriesData?.length || 0} active
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 mt-1">
+                  Only categories created by admins exist in UniCart. Create new categories anytime or while adding a product.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsCategoryFormOpen(!isCategoryFormOpen)}
+                className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-base">
+                  {isCategoryFormOpen ? 'close' : 'add'}
+                </span>
+                <span>{isCategoryFormOpen ? 'Close Form' : 'New Category'}</span>
+              </button>
+            </div>
+
+            {/* Create Category Inline Card */}
+            {isCategoryFormOpen && (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (!categoryForm.name.trim()) {
+                    addToast({ type: 'error', title: 'Missing Name', message: 'Category name is required.' });
+                    return;
+                  }
+                  createCategoryMutation.mutate({
+                    name: categoryForm.name.trim(),
+                    description: categoryForm.description?.trim() || undefined
+                  });
+                }}
+                className="bg-white rounded-3xl border border-indigo-200 p-6 shadow-sm space-y-4 animate-fade-in"
+              >
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                  <h4 className="text-xs font-black uppercase tracking-wider text-indigo-700">
+                    Create New Category
+                  </h4>
+                  <span className="text-[11px] text-slate-400">Slugs are auto-generated from the name</span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <label className="block text-slate-700 font-bold mb-1">Category Name *</label>
+                    <input
+                      type="text"
+                      required
+                      value={categoryForm.name}
+                      onChange={(e) => setCategoryForm({ ...categoryForm, name: e.target.value })}
+                      placeholder="e.g. Mechanical Keyboards, Gaming Mice, Monitors..."
+                      className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:border-indigo-600"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-700 font-bold mb-1">Description (Optional)</label>
+                    <input
+                      type="text"
+                      value={categoryForm.description || ''}
+                      onChange={(e) => setCategoryForm({ ...categoryForm, description: e.target.value })}
+                      placeholder="e.g. Custom mechanical switches, keycaps, and accessories"
+                      className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:border-indigo-600"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsCategoryFormOpen(false);
+                      setCategoryForm({ name: '', description: '' });
+                    }}
+                    className="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-100 font-bold text-xs cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={createCategoryMutation.isPending}
+                    className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs disabled:opacity-50 cursor-pointer shadow-xs"
+                  >
+                    {createCategoryMutation.isPending ? 'Creating...' : 'Save Category'}
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {/* Categories Table / List */}
+            <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-xs">
+              {(!categoriesData || categoriesData.length === 0) ? (
+                <div className="p-12 text-center space-y-3">
+                  <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto">
+                    <span className="material-symbols-outlined text-2xl">category</span>
+                  </div>
+                  <h4 className="text-sm font-black text-slate-800">No Categories in Database</h4>
+                  <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                    There are no fixed categories. Click &ldquo;New Category&rdquo; above or add one directly while creating a product.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setIsCategoryFormOpen(true)}
+                    className="px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold text-xs hover:bg-indigo-700 cursor-pointer shadow-xs"
+                  >
+                    + Create First Category
+                  </button>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead>
+                      <tr className="border-b border-slate-200 bg-slate-50 text-slate-500 font-extrabold uppercase tracking-wider text-[10px]">
+                        <th className="p-4">Category Name</th>
+                        <th className="p-4">Slug (URL Key)</th>
+                        <th className="p-4">Description</th>
+                        <th className="p-4 text-center">Assigned Products</th>
+                        <th className="p-4 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {categoriesData.map((cat: Category) => {
+                        const catId = cat._id || cat.id || '';
+                        const catName = cat.name;
+                        const catSlug = cat.slug;
+
+                        // Count products attached to this category
+                        const attachedProductsCount = (productsData || []).filter((p: Product) => {
+                          if (typeof p.category === 'object' && p.category !== null) {
+                            return p.category._id === catId || p.category.slug === catSlug || p.category.name === catName;
+                          }
+                          return p.category === catId || p.category === catSlug || p.category === catName;
+                        }).length;
+
+                        return (
+                          <tr key={catId || catSlug} className="hover:bg-slate-50/70 transition-colors">
+                            <td className="p-4 font-bold text-slate-900 flex items-center gap-2">
+                              <span className="material-symbols-outlined text-indigo-500 text-base">folder</span>
+                              <span>{catName}</span>
+                            </td>
+                            <td className="p-4 font-mono text-[11px] text-slate-600">
+                              <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">
+                                {catSlug}
+                              </span>
+                            </td>
+                            <td className="p-4 text-slate-500 max-w-xs truncate">
+                              {cat.description || '—'}
+                            </td>
+                            <td className="p-4 text-center font-bold">
+                              <span
+                                className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${
+                                  attachedProductsCount > 0
+                                    ? 'bg-emerald-50 text-emerald-700'
+                                    : 'bg-slate-100 text-slate-500'
+                                }`}
+                              >
+                                {attachedProductsCount} product{attachedProductsCount === 1 ? '' : 's'}
+                              </span>
+                            </td>
+                            <td className="p-4 text-right">
+                              <button
+                                type="button"
+                                disabled={deleteCategoryMutation.isPending}
+                                onClick={() => {
+                                  if (
+                                    window.confirm(
+                                      `Are you sure you want to delete category "${catName}"? This will permanently remove it from the database.`
+                                    )
+                                  ) {
+                                    deleteCategoryMutation.mutate(catId);
+                                  }
+                                }}
+                                className="text-rose-600 hover:text-rose-800 font-bold text-xs cursor-pointer disabled:opacity-50"
+                              >
+                                Delete
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* TAB 3: ORDERS MANAGEMENT & STATUS TRANSITIONS */}
         {activeTab === 'orders' && (
           <div className="space-y-4">
             {/* Filter chips */}
@@ -699,15 +997,106 @@ export const AdminDashboard: React.FC = () => {
                   />
                 </div>
 
+                {/* Category Selection / Creation */}
+                <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-3 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-slate-800 font-bold text-xs">
+                      Category *
+                    </label>
+                    {categoriesData && categoriesData.length > 0 && (
+                      <div className="flex items-center gap-1 bg-white p-0.5 rounded-lg border border-slate-200 text-[10px]">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCategoryMode('existing');
+                            if (!newProd.category && categoriesData.length > 0) {
+                              setNewProd({ ...newProd, category: categoriesData[0].name });
+                            }
+                          }}
+                          className={`px-2 py-0.5 rounded-md font-bold transition-all cursor-pointer ${
+                            categoryMode === 'existing'
+                              ? 'bg-indigo-600 text-white shadow-2xs'
+                              : 'text-slate-600 hover:text-slate-900'
+                          }`}
+                        >
+                          Choose Existing
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setCategoryMode('new')}
+                          className={`px-2 py-0.5 rounded-md font-bold transition-all cursor-pointer ${
+                            categoryMode === 'new'
+                              ? 'bg-indigo-600 text-white shadow-2xs'
+                              : 'text-slate-600 hover:text-slate-900'
+                          }`}
+                        >
+                          + Create New
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {categoryMode === 'existing' && categoriesData && categoriesData.length > 0 ? (
+                    <div className="space-y-1">
+                      <select
+                        required
+                        value={newProd.category}
+                        onChange={(e) => {
+                          if (e.target.value === '__CREATE_NEW__') {
+                            setCategoryMode('new');
+                          } else {
+                            setNewProd({ ...newProd, category: e.target.value });
+                          }
+                        }}
+                        className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:border-indigo-600 bg-white"
+                      >
+                        <option value="">-- Select an Existing Category --</option>
+                        {categoriesData.map((cat: Category) => (
+                          <option key={cat._id || cat.slug || cat.name} value={cat.name}>
+                            {cat.name}
+                          </option>
+                        ))}
+                        <option value="__CREATE_NEW__">+ Create a new category...</option>
+                      </select>
+                      <p className="text-[11px] text-slate-500">
+                        Select one of the {categoriesData.length} categories registered by admin.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-1">
+                      <input
+                        type="text"
+                        required
+                        value={newCategoryName}
+                        onChange={(e) => setNewCategoryName(e.target.value)}
+                        placeholder="Enter new category name (e.g. Mechanical Keyboards)"
+                        className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:border-indigo-600 bg-white"
+                      />
+                      <div className="flex items-center justify-between text-[11px] text-slate-500">
+                        <span>A new category will be created and saved to DB.</span>
+                        {categoriesData && categoriesData.length > 0 && (
+                          <button
+                            type="button"
+                            onClick={() => setCategoryMode('existing')}
+                            className="text-indigo-600 font-bold hover:underline cursor-pointer"
+                          >
+                            ← Choose from existing ({categoriesData.length})
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-slate-700 font-bold mb-1">Category</label>
+                    <label className="block text-slate-700 font-bold mb-1">Retail Price (₹ INR)</label>
                     <input
-                      type="text"
+                      type="number"
                       required
-                      value={newProd.category}
-                      onChange={(e) => setNewProd({ ...newProd, category: e.target.value })}
-                      placeholder="e.g. electronics"
+                      min={1}
+                      value={newProd.priceRupees}
+                      onChange={(e) => setNewProd({ ...newProd, priceRupees: parseFloat(e.target.value) || 0 })}
                       className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:border-indigo-600"
                     />
                   </div>
@@ -724,29 +1113,15 @@ export const AdminDashboard: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-slate-700 font-bold mb-1">Retail Price (₹ INR)</label>
-                    <input
-                      type="number"
-                      required
-                      min={1}
-                      value={newProd.priceRupees}
-                      onChange={(e) => setNewProd({ ...newProd, priceRupees: parseFloat(e.target.value) || 0 })}
-                      className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:border-indigo-600"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-slate-700 font-bold mb-1">Image URL</label>
-                    <input
-                      type="url"
-                      required
-                      value={newProd.imageUrl}
-                      onChange={(e) => setNewProd({ ...newProd, imageUrl: e.target.value })}
-                      placeholder="https://..."
-                      className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:border-indigo-600"
-                    />
-                  </div>
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Image URL (Optional)</label>
+                  <input
+                    type="url"
+                    value={newProd.imageUrl}
+                    onChange={(e) => setNewProd({ ...newProd, imageUrl: e.target.value })}
+                    placeholder="https://... (or leave empty for default)"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:border-indigo-600"
+                  />
                 </div>
 
                 <div>
@@ -793,8 +1168,8 @@ export const AdminDashboard: React.FC = () => {
                 <div>
                   <h3 className="text-base font-black text-slate-900">
                     {confirmDeleteModal.mode === 'all'
-                      ? 'Deactivate All Products?'
-                      : `Deactivate ${confirmDeleteModal.count} Selected Product(s)?`}
+                      ? 'Permanently Purge All Products & Categories?'
+                      : `Permanently Delete ${confirmDeleteModal.count} Selected Product(s)?`}
                   </h3>
                   <p className="text-xs text-slate-500 mt-0.5">Admin Catalogue Operation</p>
                 </div>
@@ -802,8 +1177,8 @@ export const AdminDashboard: React.FC = () => {
 
               <p className="text-xs text-slate-600 leading-relaxed bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
                 {confirmDeleteModal.mode === 'all'
-                  ? 'Are you sure you want to delete ALL active products in the store? This will immediately remove them from the customer marketplace and invalidate the Redis cache.'
-                  : `Are you sure you want to deactivate these ${confirmDeleteModal.count} selected product(s)? They will be hidden from the storefront and search queries.`}
+                  ? 'Are you sure you want to permanently delete ALL products and categories from the database? This purges any seeded data and leaves a completely clean store where only products added by you will be visible.'
+                  : `Are you sure you want to permanently delete these ${confirmDeleteModal.count} selected product(s) from the database?`}
               </p>
 
               <div className="flex justify-end items-center gap-2 pt-2 border-t border-slate-100">
@@ -819,9 +1194,9 @@ export const AdminDashboard: React.FC = () => {
                   type="button"
                   onClick={() => {
                     if (confirmDeleteModal.mode === 'all') {
-                      bulkDeleteMutation.mutate({ all: true });
+                      bulkDeleteMutation.mutate({ all: true, hardDelete: true });
                     } else {
-                      bulkDeleteMutation.mutate({ ids: selectedProductIds });
+                      bulkDeleteMutation.mutate({ ids: selectedProductIds, hardDelete: true });
                     }
                   }}
                   disabled={bulkDeleteMutation.isPending}
@@ -830,9 +1205,9 @@ export const AdminDashboard: React.FC = () => {
                   <span className="material-symbols-outlined text-sm">check_circle</span>
                   <span>
                     {bulkDeleteMutation.isPending
-                      ? 'Deactivating...'
+                      ? 'Deleting...'
                       : confirmDeleteModal.mode === 'all'
-                      ? 'Yes, Delete All'
+                      ? 'Yes, Purge All'
                       : 'Yes, Delete Selected'}
                   </span>
                 </button>

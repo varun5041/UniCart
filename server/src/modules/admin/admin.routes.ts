@@ -6,7 +6,9 @@ import { validate } from '../../middleware/validate.js';
 import {
   adminCreateProductSchema,
   adminUpdateProductSchema,
-  productIdParamSchema
+  productIdParamSchema,
+  adminCreateCategorySchema,
+  categoryIdParamSchema
 } from '../products/product.schema.js';
 import { orderIdParamSchema } from '../orders/order.schema.js';
 import {
@@ -45,6 +47,24 @@ adminRouter.delete(
   '/products/:id',
   validate({ params: productIdParamSchema }),
   asyncHandler((req, res) => adminController.deleteProduct(req, res))
+);
+
+// Admin categories CRUD
+adminRouter.get(
+  '/categories',
+  asyncHandler((req, res) => adminController.listCategories(req, res))
+);
+
+adminRouter.post(
+  '/categories',
+  validate({ body: adminCreateCategorySchema }),
+  asyncHandler((req, res) => adminController.createCategory(req, res))
+);
+
+adminRouter.delete(
+  '/categories/:id',
+  validate({ params: categoryIdParamSchema }),
+  asyncHandler((req, res) => adminController.deleteCategory(req, res))
 );
 
 // Signed direct upload parameters endpoint (Cloudinary/S3)

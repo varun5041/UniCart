@@ -1,13 +1,14 @@
 import crypto from 'node:crypto';
 import mongoose, { Types } from 'mongoose';
 import { Product, IProduct } from '../../models/Product.js';
-import { Category } from '../../models/Category.js';
+import { Category, ICategory } from '../../models/Category.js';
 import { ApiError } from '../../utils/ApiError.js';
 import { cacheAside, incrementCacheVersion } from '../../utils/cache.js';
 import {
   ListProductsQuery,
   AdminCreateProductInput,
-  AdminUpdateProductInput
+  AdminUpdateProductInput,
+  AdminCreateCategoryInput
 } from './product.schema.js';
 
 export interface PaginatedProducts {
@@ -163,9 +164,20 @@ export class ProductService {
     if (mongoose.isValidObjectId(input.category)) {
       categoryId = new Types.ObjectId(input.category);
     } else {
-      const cat = await Category.findOne({ slug: input.category });
+      const rawCat = (input.category || '').trim();
+      if (!rawCat) {
+        throw ApiError.badRequest('Category is required', 'CATEGORY_REQUIRED');
+      }
+      const catSlug = this.generateSlug(rawCat);
+      let cat = await Category.findOne({
+        $or: [{ slug: catSlug }, { name: { $regex: `^${rawCat}$`, $options: 'i' } }]
+      });
       if (!cat) {
-        throw ApiError.badRequest(`Category '${input.category}' does not exist`, 'CATEGORY_NOT_FOUND');
+        cat = await Category.create({
+          name: rawCat,
+          slug: catSlug,
+          description: `${rawCat} products`
+        });
       }
       categoryId = cat._id as Types.ObjectId;
     }
@@ -191,6 +203,7 @@ export class ProductService {
 
     // Cache invalidation (O(1) scope version bump)
     await incrementCacheVersion('products');
+    await incrementCacheVersion('categories');
 
     return product;
   }
@@ -216,12 +229,21 @@ export class ProductService {
       if (mongoose.isValidObjectId(input.category)) {
         product.category = new Types.ObjectId(input.category);
       } else {
-        const cat = await Category.findOne({ slug: input.category });
+        const rawCat = (input.category || '').trim();
+        const catSlug = this.generateSlug(rawCat);
+        let cat = await Category.findOne({
+          $or: [{ slug: catSlug }, { name: { $regex: `^${rawCat}$`, $options: 'i' } }]
+        });
         if (!cat) {
-          throw ApiError.badRequest(`Category '${input.category}' not found`, 'CATEGORY_NOT_FOUND');
+          cat = await Category.create({
+            name: rawCat,
+            slug: catSlug,
+            description: `${rawCat} products`
+          });
         }
         product.category = cat._id as Types.ObjectId;
       }
+      await incrementCacheVersion('categories');
     }
 
     await product.save();
@@ -233,14 +255,19 @@ export class ProductService {
   }
 
   /**
-   * Admin: Soft-delete product and invalidate cache
+   * Admin: Delete product (supports permanent hard delete or soft delete)
    */
-  async deleteProduct(id: string): Promise<{ message: string }> {
-    const product = await Product.findByIdAndUpdate(
-      id,
-      { isActive: false },
-      { new: true }
-    );
+  async deleteProduct(id: string, permanent = false): Promise<{ message: string }> {
+    let product;
+    if (permanent) {
+      product = await Product.findByIdAndDelete(id);
+    } else {
+      product = await Product.findByIdAndUpdate(
+        id,
+        { isActive: false },
+        { new: true }
+      );
+    }
 
     if (!product) {
       throw ApiError.notFound('Product not found', 'PRODUCT_NOT_FOUND');
@@ -248,18 +275,19 @@ export class ProductService {
 
     // Cache invalidation
     await incrementCacheVersion('products');
+    await incrementCacheVersion('categories');
 
-    return { message: 'Product deleted successfully' };
+    return { message: permanent ? 'Product permanently removed from database' : 'Product deleted successfully' };
   }
 
   /**
-   * Admin: Bulk soft-delete products and invalidate cache
+   * Admin: Bulk delete products and invalidate cache (removes directly from MongoDB)
    */
-  async bulkDeleteProducts(input: { ids?: string[]; all?: boolean }): Promise<{ count: number; message: string }> {
+  async bulkDeleteProducts(input: { ids?: string[]; all?: boolean; hardDelete?: boolean }): Promise<{ count: number; message: string }> {
     let query: Record<string, unknown> = {};
 
     if (input.all) {
-      query = { isActive: true };
+      query = {}; // All products targeted for complete removal
     } else if (input.ids && input.ids.length > 0) {
       const validObjectIds = input.ids
         .filter((id) => mongoose.isValidObjectId(id))
@@ -273,18 +301,72 @@ export class ProductService {
       return { count: 0, message: 'No products targeted for deletion' };
     }
 
-    const result = await Product.updateMany(
-      query,
-      { $set: { isActive: false } }
-    );
+    // Permanently remove products from database
+    const result = await Product.deleteMany(query);
+    const count = result.deletedCount || 0;
+
+    if (input.all) {
+      await Category.deleteMany({});
+    }
 
     // Cache invalidation
     await incrementCacheVersion('products');
+    await incrementCacheVersion('categories');
 
     return {
-      count: result.modifiedCount,
-      message: `Successfully deactivated ${result.modifiedCount} product(s)`
+      count,
+      message: `Successfully permanently removed ${count} product(s) from database`
     };
+  }
+
+  /**
+   * Admin: List all categories currently created in MongoDB
+   */
+  async listAllCategories(): Promise<unknown[]> {
+    return Category.find().sort({ name: 1 }).lean();
+  }
+
+  /**
+   * Admin: Create a new custom category
+   */
+  async createCategory(input: AdminCreateCategoryInput): Promise<ICategory> {
+    const rawName = input.name.trim();
+    if (!rawName) {
+      throw ApiError.badRequest('Category name is required', 'CATEGORY_NAME_REQUIRED');
+    }
+    const slug = this.generateSlug(rawName);
+
+    const existing = await Category.findOne({
+      $or: [{ slug }, { name: { $regex: `^${rawName}$`, $options: 'i' } }]
+    });
+
+    if (existing) {
+      throw ApiError.conflict(`Category '${rawName}' already exists`, 'CATEGORY_ALREADY_EXISTS');
+    }
+
+    const category = new Category({
+      name: rawName,
+      slug,
+      description: input.description?.trim() || `${rawName} collection`
+    });
+
+    await category.save();
+
+    await incrementCacheVersion('categories');
+    return category;
+  }
+
+  /**
+   * Admin: Delete a category from MongoDB
+   */
+  async deleteCategory(id: string): Promise<{ message: string }> {
+    const category = await Category.findByIdAndDelete(id);
+    if (!category) {
+      throw ApiError.notFound('Category not found', 'CATEGORY_NOT_FOUND');
+    }
+
+    await incrementCacheVersion('categories');
+    return { message: 'Category deleted successfully' };
   }
 
   /**

@@ -11,6 +11,7 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "seed": "tsx src/scripts/seed.ts",
+    "purge": "tsx src/scripts/purgeCatalogue.ts",
     "worker": "tsx src/jobs/worker.ts"
   },
   "dependencies": {

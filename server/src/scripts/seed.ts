@@ -95,58 +95,60 @@ export async function seedDatabase(): Promise<void> {
       logger.info({ msg: '[Seed] Admin user already exists', email: adminEmail });
     }
 
-    // 3. Seed Standard Categories
-    const categoriesMap: Record<string, string> = {};
-    for (const catData of CATEGORIES_DATA) {
-      const category = await Category.findOneAndUpdate(
-        { slug: catData.slug },
-        { $set: catData },
-        { upsert: true, new: true, setDefaultsOnInsert: true }
-      );
-      categoriesMap[catData.slug] = category._id.toString();
-    }
-    logger.info({ msg: '[Seed] Seeded 5 core categories', count: Object.keys(categoriesMap).length });
-
-    // 4. Seed 200 Products
-    const categoryIds = Object.values(categoriesMap);
-    const existingProductsCount = await Product.countDocuments();
-
-    if (existingProductsCount >= 200) {
-      logger.info({
-        msg: '[Seed] Catalogue already contains 200+ products. Skipping duplicate generation.',
-        count: existingProductsCount
-      });
-    } else {
-      logger.info('[Seed] Generating 200 products with realistic pricing and inventory...');
-      const productsToCreate = [];
-
-      for (let i = 1; i <= 200; i++) {
-        const title = `${faker.commerce.productAdjective()} ${faker.commerce.productMaterial()} ${faker.commerce.productName()} ${i}`;
-        const slug = faker.helpers.slugify(title).toLowerCase() + `-${i}`;
-        const rupeePrice = faker.number.int({ min: 199, max: 24999 }); // ₹199 to ₹24,999
-        const paisePrice = rupeePrice * 100; // Converted to paise
-
-        const categoryId = categoryIds[i % categoryIds.length];
-        const selectedImages = [
-          CURATED_IMAGES[i % CURATED_IMAGES.length],
-          CURATED_IMAGES[(i + 1) % CURATED_IMAGES.length]
-        ];
-
-        productsToCreate.push({
-          name: title,
-          slug,
-          description: faker.commerce.productDescription() + ' Guaranteed authentic with manufacturer warranty.',
-          price: paisePrice,
-          stock: faker.number.int({ min: 10, max: 350 }),
-          category: categoryId,
-          images: selectedImages,
-          isActive: true
-        });
+    // 3. Optional Dummy Data (Only seeded if SEED_DUMMY_PRODUCTS=true)
+    if (process.env.SEED_DUMMY_PRODUCTS === 'true') {
+      logger.info('[Seed] SEED_DUMMY_PRODUCTS=true detected. Seeding categories and products...');
+      const categoriesMap: Record<string, string> = {};
+      for (const catData of CATEGORIES_DATA) {
+        const category = await Category.findOneAndUpdate(
+          { slug: catData.slug },
+          { $set: catData },
+          { upsert: true, new: true, setDefaultsOnInsert: true }
+        );
+        categoriesMap[catData.slug] = category._id.toString();
       }
 
-      await Product.deleteMany({}); // Reset product catalog for clean seed
-      await Product.insertMany(productsToCreate);
-      logger.info({ msg: '[Seed] Successfully seeded 200 products into catalog', count: 200 });
+      const categoryIds = Object.values(categoriesMap);
+      const existingProductsCount = await Product.countDocuments();
+
+      if (existingProductsCount >= 200) {
+        logger.info({
+          msg: '[Seed] Catalogue already contains 200+ products. Skipping duplicate generation.',
+          count: existingProductsCount
+        });
+      } else {
+        const productsToCreate = [];
+
+        for (let i = 1; i <= 200; i++) {
+          const title = `${faker.commerce.productAdjective()} ${faker.commerce.productMaterial()} ${faker.commerce.productName()} ${i}`;
+          const slug = faker.helpers.slugify(title).toLowerCase() + `-${i}`;
+          const rupeePrice = faker.number.int({ min: 199, max: 24999 });
+          const paisePrice = rupeePrice * 100;
+
+          const categoryId = categoryIds[i % categoryIds.length];
+          const selectedImages = [
+            CURATED_IMAGES[i % CURATED_IMAGES.length],
+            CURATED_IMAGES[(i + 1) % CURATED_IMAGES.length]
+          ];
+
+          productsToCreate.push({
+            name: title,
+            slug,
+            description: faker.commerce.productDescription() + ' Guaranteed authentic with manufacturer warranty.',
+            price: paisePrice,
+            stock: faker.number.int({ min: 10, max: 350 }),
+            category: categoryId,
+            images: selectedImages,
+            isActive: true
+          });
+        }
+
+        await Product.deleteMany({});
+        await Product.insertMany(productsToCreate);
+        logger.info({ msg: '[Seed] Successfully seeded 200 sample products into catalog', count: 200 });
+      }
+    } else {
+      logger.info('[Seed] Clean initialization: Skipping dummy products and inbuilt categories. Store inventory is ready for admin additions.');
     }
 
     logger.info('[Seed] Database seeding completed successfully! ✨');

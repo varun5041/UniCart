@@ -30,7 +30,8 @@ export const adminBulkDeleteProductsSchema = z
     ids: z
       .array(z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid product ObjectId'))
       .optional(),
-    all: z.boolean().optional()
+    all: z.boolean().optional(),
+    hardDelete: z.boolean().optional()
   })
   .strict()
   .refine((data) => (data.ids && data.ids.length > 0) || data.all === true, {

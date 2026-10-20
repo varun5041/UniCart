@@ -1,19 +1,18 @@
 @import "tailwindcss";
 
-@layer base {
-  :root {
-    --font-inter: 'Inter', system-ui, -apple-system, sans-serif;
-  }
-
-  body {
-    font-family: var(--font-inter);
-    background-color: #faf8ff;
-    color: #131b2e;
-    min-height: 100vh;
-    margin: 0;
-    -webkit-font-smoothing: antialiased;
-  }
+:root {
+  --font-inter: 'Inter', system-ui, -apple-system, sans-serif;
 }
+
+body {
+  font-family: var(--font-inter);
+  background-color: #faf8ff;
+  color: #131b2e;
+  min-height: 100vh;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
 
 .material-symbols-outlined {
   font-family: 'Material Symbols Outlined';

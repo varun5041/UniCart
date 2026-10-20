@@ -50,6 +50,20 @@ export const adminUpdateProductSchema = z
   })
   .strict();
 
+export const adminCreateCategorySchema = z
+  .object({
+    name: z.string().trim().min(2, 'Category name must be at least 2 characters').max(100),
+    description: z.string().trim().max(1000).optional()
+  })
+  .strict();
+
+export const categoryIdParamSchema = z
+  .object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid category ID format')
+  })
+  .strict();
+
 export type ListProductsQuery = z.infer<typeof listProductsQuerySchema>;
 export type AdminCreateProductInput = z.infer<typeof adminCreateProductSchema>;
 export type AdminUpdateProductInput = z.infer<typeof adminUpdateProductSchema>;
+export type AdminCreateCategoryInput = z.infer<typeof adminCreateCategorySchema>;
