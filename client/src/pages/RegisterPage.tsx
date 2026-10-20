@@ -6,7 +6,7 @@ import { GoogleSignInButton } from '../components/GoogleSignInButton';
 
 export const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
-  const { register, login, isLoading } = useAuthStore();
+  const { register, login, logout, isLoading, isAuthenticated, user } = useAuthStore();
   const { addToast } = useToastStore();
 
   const [name, setName] = useState('');
@@ -14,6 +14,56 @@ export const RegisterPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+
+  if (isAuthenticated && user) {
+    const destination = user.role === 'admin' ? '/admin' : '/';
+    return (
+      <div className="bg-[#FAF8FF] min-h-[85vh] flex items-center justify-center py-12 px-4 animate-fade-in">
+        <div className="bg-white rounded-3xl border border-slate-200/80 p-8 sm:p-10 max-w-md w-full shadow-lg text-center space-y-6">
+          <div className="w-16 h-16 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto text-2xl font-black shadow-inner">
+            {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+          </div>
+
+          <div className="space-y-1.5">
+            <span className="inline-block px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-indigo-100 text-indigo-700">
+              Signed In as {user.role}
+            </span>
+            <h2 className="text-xl font-black text-slate-900">You already have an active account</h2>
+            <p className="text-xs text-slate-500">
+              Signed in as <strong>{user.name}</strong> ({user.email}).
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-2.5 pt-2">
+            <button
+              onClick={() => navigate(destination)}
+              className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-sm transition-all cursor-pointer flex items-center justify-center gap-2"
+            >
+              <span className="material-symbols-outlined text-base">
+                {user.role === 'admin' ? 'admin_panel_settings' : 'storefront'}
+              </span>
+              <span>{user.role === 'admin' ? 'Go to Admin Dashboard' : 'Continue Shopping'}</span>
+            </button>
+
+            <button
+              onClick={async () => {
+                await logout();
+                addToast({
+                  type: 'info',
+                  title: 'Signed Out',
+                  message: 'Signed out successfully. You can now register a new account.'
+                });
+              }}
+              className="w-full py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs transition-colors cursor-pointer flex items-center justify-center gap-2"
+            >
+              <span className="material-symbols-outlined text-base text-slate-400">logout</span>
+              <span>Sign Out &amp; Register New Account</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
