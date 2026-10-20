@@ -8,7 +8,11 @@ export interface ListOrdersParams {
 }
 
 export const ordersApi = {
-  async createOrder(shippingAddress: Address, idempotencyKey: string): Promise<ApiResponse<Order>> {
+  async createOrder(
+    shippingAddress: Address,
+    idempotencyKey: string,
+    couponCode?: string | null
+  ): Promise<ApiResponse<Order>> {
     const res = await api.post<ApiResponse<Order>>(
       '/orders',
       {
@@ -18,7 +22,8 @@ export const ordersApi = {
           state: shippingAddress.state,
           pincode: shippingAddress.pincode,
           country: shippingAddress.country || 'India'
-        }
+        },
+        ...(couponCode ? { couponCode } : {})
       },
       {
         headers: {

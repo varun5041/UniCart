@@ -1,41 +1,66 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { adminApi, type AdminCreateProductInput } from '../../api/admin';
-import { productsApi } from '../../api/products';
+import { adminApi } from '../../api/admin';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useToastStore } from '../../store/useToastStore';
-import type { OrderStatus, Product } from '../../types';
+import { formatRupees, type Order, type OrderStatus } from '../../types';
+import { ProductsPanel } from './ProductsPanel';
+import { CouponsPanel } from './CouponsPanel';
+import { apiErrorMessage } from './adminUtils';
+
+type Tab = 'products' | 'orders' | 'coupons' | 'activity';
+
+const TABS: Array<{ id: Tab; icon: string; label: string }> = [
+  { id: 'products', icon: 'inventory_2', label: 'Products' },
+  { id: 'orders', icon: 'receipt_long', label: 'Orders' },
+  { id: 'coupons', icon: 'sell', label: 'Coupons' },
+  { id: 'activity', icon: 'history', label: 'Activity' }
+];
+
+const NEXT_STATUS: Record<OrderStatus, OrderStatus[]> = {
+  pending_payment: ['paid', 'cancelled'],
+  paid: ['shipped', 'cancelled'],
+  shipped: ['delivered', 'cancelled'],
+  delivered: [],
+  cancelled: []
+};
+
+const STATUS_STYLE: Record<OrderStatus, string> = {
+  pending_payment: 'bg-amber-50 text-amber-700',
+  paid: 'bg-sky-50 text-sky-700',
+  shipped: 'bg-brand-50 text-brand-700',
+  delivered: 'bg-emerald-50 text-emerald-700',
+  cancelled: 'bg-rose-50 text-rose-700'
+};
+
+const ACTION_LABELS: Record<string, string> = {
+  'order.status.update': 'Order status changed',
+  'coupon.create': 'Coupon created',
+  'coupon.update': 'Coupon updated',
+  'coupon.delete': 'Coupon deleted'
+};
+
+function customerOf(order: Order): { name: string; email: string } {
+  const u = order.userId as unknown;
+  if (u && typeof u === 'object') {
+    const obj = u as { name?: string; email?: string };
+    return { name: obj.name || 'Customer', email: obj.email || '' };
+  }
+  return { name: order.shippingAddress?.city || 'Customer', email: '' };
+}
 
 export const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { user, isAuthenticated } = useAuthStore();
-  const { addToast } = useToastStore();
+  const addToast = useToastStore((s) => s.addToast);
 
-  const [activeTab, setActiveTab] = useState<'products' | 'orders' | 'logs'>('products');
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<Tab>('products');
   const [orderStatusFilter, setOrderStatusFilter] = useState<OrderStatus | 'all'>('all');
-  const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
-  const [confirmDeleteModal, setConfirmDeleteModal] = useState<{
-    open: boolean;
-    mode: 'selected' | 'all';
-    count: number;
-  } | null>(null);
-
-  // New product form state
-  const [newProd, setNewProd] = useState({
-    name: '',
-    category: 'electronics',
-    priceRupees: 1999,
-    stock: 50,
-    description: '',
-    imageUrl: 'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800&q=80'
-  });
 
   const isAdmin = Boolean(isAuthenticated && user?.role === 'admin');
 
-  // TanStack Query: Fetch Orders
   const { data: ordersData, isLoading: isOrdersLoading } = useQuery({
     queryKey: ['admin-orders', orderStatusFilter],
     queryFn: async () => {
@@ -45,151 +70,46 @@ export const AdminDashboard: React.FC = () => {
       });
       return res.data || [];
     },
-    enabled: isAdmin
+    enabled: isAdmin && activeTab === 'orders'
   });
 
-  // TanStack Query: Fetch Products
-  const { data: productsData, isLoading: isProductsLoading } = useQuery({
-    queryKey: ['admin-products'],
-    queryFn: async () => {
-      const res = await productsApi.getProducts({ limit: 50 });
-      return res.data || [];
-    },
-    enabled: isAdmin
-  });
-
-  // TanStack Query: Fetch Audit Logs
-  const { data: auditLogsData } = useQuery({
+  const { data: activity } = useQuery({
     queryKey: ['admin-audit-logs'],
-    queryFn: async () => {
-      const res = await adminApi.listAuditLogs({ limit: 30 });
-      return res.data || [];
-    },
-    enabled: isAdmin
+    queryFn: async () => (await adminApi.listAuditLogs({ limit: 50 })).data || [],
+    enabled: isAdmin && activeTab === 'activity'
   });
 
-  // Mutation: Create Product
-  const createProductMutation = useMutation({
-    mutationFn: async (input: AdminCreateProductInput) => {
-      return adminApi.createProduct(input);
-    },
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['admin-products'] });
-      void queryClient.invalidateQueries({ queryKey: ['products'] });
-      setIsCreateModalOpen(false);
-      setNewProd({
-        name: '',
-        category: 'electronics',
-        priceRupees: 1999,
-        stock: 50,
-        description: '',
-        imageUrl: 'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800&q=80'
-      });
-      addToast({
-        type: 'success',
-        title: 'Product Created',
-        message: 'Product catalog cache version bumped and inventory initialized.'
-      });
-    },
-    onError: (err: any) => {
-      addToast({
-        type: 'error',
-        title: 'Creation Failed',
-        message: err.response?.data?.error?.message || err.message || 'Failed to create product'
-      });
-    }
-  });
-
-  // Mutation: Update Order Status
   const updateStatusMutation = useMutation({
-    mutationFn: async ({ orderId, status }: { orderId: string; status: OrderStatus }) => {
-      return adminApi.updateOrderStatus(orderId, status);
-    },
-    onSuccess: (_data, variables) => {
+    mutationFn: async ({ orderId, status }: { orderId: string; status: OrderStatus }) =>
+      adminApi.updateOrderStatus(orderId, status),
+    onSuccess: (_data, vars) => {
       void queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
       void queryClient.invalidateQueries({ queryKey: ['admin-audit-logs'] });
       addToast({
         type: 'success',
-        title: 'Order Status Updated',
-        message: `Order #${variables.orderId.slice(-6)} transitioned to '${variables.status}'.`
+        title: 'Order updated',
+        message: `Order #${vars.orderId.slice(-8).toUpperCase()} is now ${vars.status.replace('_', ' ')}.`
       });
     },
-    onError: (err: any) => {
-      addToast({
-        type: 'error',
-        title: 'Invalid Transition',
-        message: err.response?.data?.error?.message || 'Status transition rejected by state machine.'
-      });
-    }
+    onError: (err) =>
+      addToast({ type: 'error', title: 'Could not update order', message: apiErrorMessage(err, 'Try again') })
   });
 
-  // Mutation: Delete Product
-  const deleteProductMutation = useMutation({
-    mutationFn: async (id: string) => {
-      return adminApi.deleteProduct(id);
-    },
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['admin-products'] });
-      void queryClient.invalidateQueries({ queryKey: ['products'] });
-      addToast({
-        type: 'info',
-        title: 'Product Deleted',
-        message: 'Product deactivated and catalogue cache updated.'
-      });
-    }
-  });
-
-  // Mutation: Bulk Delete Products
-  const bulkDeleteMutation = useMutation({
-    mutationFn: async (payload: { ids?: string[]; all?: boolean } | string[]) => {
-      return adminApi.bulkDeleteProducts(payload);
-    },
-    onSuccess: (res) => {
-      void queryClient.invalidateQueries({ queryKey: ['admin-products'] });
-      void queryClient.invalidateQueries({ queryKey: ['products'] });
-      const count = res.data?.count ?? selectedProductIds.length;
-      setSelectedProductIds([]);
-      setConfirmDeleteModal(null);
-      addToast({
-        type: 'info',
-        title: 'Bulk Deactivation Complete',
-        message: `Deactivated ${count} product(s) from store catalogue.`
-      });
-    },
-    onError: (err: any) => {
-      setConfirmDeleteModal(null);
-      addToast({
-        type: 'error',
-        title: 'Bulk Deletion Failed',
-        message: err.response?.data?.error?.message || err.message || 'Failed to bulk deactivate products'
-      });
-    }
-  });
-
-  // Guard: Admin role verification
   if (!isAdmin) {
     return (
-      <div className="min-h-[80vh] flex items-center justify-center p-4">
-        <div className="bg-white rounded-3xl border border-rose-200 p-8 max-w-md w-full text-center space-y-4 shadow-sm">
-          <div className="w-16 h-16 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mx-auto">
-            <span className="material-symbols-outlined text-3xl">gpp_maybe</span>
-          </div>
-          <h2 className="text-xl font-black text-slate-900">Access Denied (403)</h2>
-          <p className="text-xs text-slate-500 leading-relaxed">
-            You must be authenticated with the <strong>admin</strong> role to view and manage UniCart administrative controls.
-          </p>
-          <div className="pt-2 flex justify-center gap-3">
-            <button
-              onClick={() => navigate('/login?redirect=/admin')}
-              className="px-5 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow-xs"
-            >
-              Sign In as Admin
+      <div className="flex min-h-[70vh] items-center justify-center p-4">
+        <div className="w-full max-w-md space-y-4 rounded-3xl bg-white p-8 text-center ring-1 ring-slate-200/70">
+          <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 text-slate-500">
+            <span className="material-symbols-outlined text-3xl">lock</span>
+          </span>
+          <h2 className="text-xl font-extrabold text-slate-900">Admins only</h2>
+          <p className="text-sm text-slate-500">Sign in with an administrator account to manage the store.</p>
+          <div className="flex justify-center gap-3 pt-2">
+            <button onClick={() => navigate('/login')} className="rounded-xl bg-brand-600 px-5 py-2.5 text-sm font-bold text-white">
+              Sign in
             </button>
-            <Link
-              to="/"
-              className="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-50"
-            >
-              Back to Store
+            <Link to="/" className="rounded-xl border border-slate-200 px-5 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50">
+              Back to store
             </Link>
           </div>
         </div>
@@ -197,432 +117,119 @@ export const AdminDashboard: React.FC = () => {
     );
   }
 
-  const handleCreateProductSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newProd.name || !newProd.description) {
-      addToast({ type: 'error', title: 'Incomplete Form', message: 'Name and description are required.' });
-      return;
-    }
-
-    createProductMutation.mutate({
-      name: newProd.name,
-      description: newProd.description,
-      price: Math.round(newProd.priceRupees * 100), // convert to paise
-      stock: newProd.stock,
-      category: newProd.category,
-      images: [newProd.imageUrl]
-    });
-  };
-
-  const getNextAllowedTransitions = (status: OrderStatus): OrderStatus[] => {
-    switch (status) {
-      case 'pending_payment':
-        return ['paid', 'cancelled'];
-      case 'paid':
-        return ['shipped', 'cancelled'];
-      case 'shipped':
-        return ['delivered', 'cancelled'];
-      default:
-        return [];
-    }
-  };
-
   return (
-    <div className="bg-[#FAF8FF] min-h-screen py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-        {/* Admin Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+    <div className="min-h-screen bg-surface py-8">
+      <div className="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
-            <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-full bg-indigo-600 text-white font-mono text-[10px] font-bold tracking-wider uppercase">
-                ADMIN CONSOLE
-              </span>
-              <span className="text-xs text-slate-500 font-mono">UniCart Control Center</span>
-            </div>
-            <h1 className="text-2xl font-black text-slate-900 mt-1">Store Administration</h1>
+            <p className="text-xs font-bold uppercase tracking-wider text-brand-600">Admin</p>
+            <h1 className="text-2xl font-extrabold text-slate-900 sm:text-3xl">Store Dashboard</h1>
           </div>
+          <Link to="/" className="self-start rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50 sm:self-auto">
+            View storefront
+          </Link>
+        </div>
 
-          <div className="flex items-center gap-3">
+        <div className="scrollbar-none flex gap-2 overflow-x-auto rounded-2xl bg-white p-1.5 ring-1 ring-slate-200/70">
+          {TABS.map((tab) => (
             <button
-              onClick={() => setIsCreateModalOpen(true)}
-              className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex shrink-0 items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold transition-colors ${
+                activeTab === tab.id ? 'bg-brand-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
+              }`}
             >
-              <span className="material-symbols-outlined text-base">add_box</span>
-              <span>Create Product</span>
+              <span className="material-symbols-outlined text-lg">{tab.icon}</span>
+              {tab.label}
             </button>
-            <Link
-              to="/"
-              className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-xs font-bold hover:bg-slate-50 transition-colors"
-            >
-              View Storefront
-            </Link>
-          </div>
+          ))}
         </div>
 
-        {/* Tab Switcher */}
-        <div className="flex items-center gap-2 border-b border-slate-200">
-          <button
-            onClick={() => setActiveTab('products')}
-            className={`px-5 py-3 text-xs font-bold border-b-2 transition-all cursor-pointer ${
-              activeTab === 'products'
-                ? 'border-indigo-600 text-indigo-600'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            Products Inventory ({productsData?.length || 0})
-          </button>
-          <button
-            onClick={() => setActiveTab('orders')}
-            className={`px-5 py-3 text-xs font-bold border-b-2 transition-all cursor-pointer ${
-              activeTab === 'orders'
-                ? 'border-indigo-600 text-indigo-600'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            Orders &amp; Fulfillment ({ordersData?.length || 0})
-          </button>
-          <button
-            onClick={() => setActiveTab('logs')}
-            className={`px-5 py-3 text-xs font-bold border-b-2 transition-all cursor-pointer ${
-              activeTab === 'logs'
-                ? 'border-indigo-600 text-indigo-600'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            Audit Trail ({auditLogsData?.length || 0})
-          </button>
-        </div>
+        {activeTab === 'products' && <ProductsPanel />}
+        {activeTab === 'coupons' && <CouponsPanel />}
 
-        {/* TAB 1: PRODUCTS INVENTORY */}
-        {activeTab === 'products' && (() => {
-          const productList = productsData || [];
-          const validProductIds = productList.map((p: Product) => p._id || p.id || '').filter(Boolean);
-          const isAllProductsSelected =
-            validProductIds.length > 0 && selectedProductIds.length === validProductIds.length;
-          const isSomeProductsSelected =
-            selectedProductIds.length > 0 && !isAllProductsSelected;
-
-          const handleToggleSelectAll = () => {
-            if (isAllProductsSelected) {
-              setSelectedProductIds([]);
-            } else {
-              setSelectedProductIds([...validProductIds]);
-            }
-          };
-
-          const handleToggleProduct = (id: string) => {
-            setSelectedProductIds((prev) =>
-              prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-            );
-          };
-
-          return (
-            <div className="space-y-4">
-              <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
-                <div className="p-4 sm:p-6 border-b border-slate-100 flex flex-wrap items-center justify-between gap-4">
-                  <div>
-                    <h3 className="text-base font-black text-slate-900">Catalogue Management</h3>
-                    <p className="text-xs text-slate-500">Live prices &amp; inventory stocks synced in Redis</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={handleToggleSelectAll}
-                      className="px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
-                    >
-                      <span className="material-symbols-outlined text-base text-indigo-600">
-                        {isAllProductsSelected ? 'deselect' : 'select_all'}
-                      </span>
-                      <span>{isAllProductsSelected ? 'Deselect All' : 'Select All'}</span>
-                    </button>
-
-                    {selectedProductIds.length > 0 ? (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setConfirmDeleteModal({
-                            open: true,
-                            mode: 'selected',
-                            count: selectedProductIds.length
-                          });
-                        }}
-                        disabled={bulkDeleteMutation.isPending}
-                        className="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-50"
-                      >
-                        <span className="material-symbols-outlined text-base">delete_sweep</span>
-                        <span>
-                          {bulkDeleteMutation.isPending
-                            ? 'Deactivating...'
-                            : `Delete Selected (${selectedProductIds.length})`}
-                        </span>
-                      </button>
-                    ) : (
-                      validProductIds.length > 0 && (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setConfirmDeleteModal({
-                              open: true,
-                              mode: 'all',
-                              count: validProductIds.length
-                            });
-                          }}
-                          disabled={bulkDeleteMutation.isPending}
-                          className="px-3.5 py-2 rounded-xl border border-rose-200 bg-rose-50/70 hover:bg-rose-100 text-rose-700 text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs disabled:opacity-50"
-                        >
-                          <span className="material-symbols-outlined text-base text-rose-600">delete_forever</span>
-                          <span>Delete All</span>
-                        </button>
-                      )
-                    )}
-                  </div>
-                </div>
-
-                {/* Bulk Selection Notification Bar */}
-                {selectedProductIds.length > 0 && (
-                  <div className="bg-indigo-50/90 border-b border-indigo-100 px-4 sm:px-6 py-2.5 flex items-center justify-between text-xs text-indigo-900 font-medium">
-                    <div className="flex items-center gap-2">
-                      <span className="w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px] font-bold">
-                        {selectedProductIds.length}
-                      </span>
-                      <span>
-                        <strong>{selectedProductIds.length}</strong> of <strong>{validProductIds.length}</strong> items selected
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setConfirmDeleteModal({
-                            open: true,
-                            mode: 'selected',
-                            count: selectedProductIds.length
-                          });
-                        }}
-                        className="text-xs font-bold text-rose-700 hover:text-rose-900 hover:underline cursor-pointer flex items-center gap-1"
-                      >
-                        <span className="material-symbols-outlined text-sm">delete</span>
-                        Delete selected
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleToggleSelectAll}
-                        className="text-xs font-bold text-indigo-700 hover:underline cursor-pointer"
-                      >
-                        {isAllProductsSelected ? 'Clear selection' : `Select all ${validProductIds.length} products`}
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {isProductsLoading ? (
-                  <div className="p-12 text-center text-xs text-slate-500 font-semibold">
-                    Loading catalogue...
-                  </div>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs">
-                      <thead className="bg-slate-50 border-b border-slate-100 text-slate-500 uppercase tracking-wider text-[10px]">
-                        <tr>
-                          <th className="p-4 w-12 text-center">
-                            <input
-                              type="checkbox"
-                              checked={isAllProductsSelected}
-                              ref={(el) => {
-                                if (el) el.indeterminate = isSomeProductsSelected;
-                              }}
-                              onChange={handleToggleSelectAll}
-                              className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
-                              title={isAllProductsSelected ? 'Deselect All' : 'Select All'}
-                            />
-                          </th>
-                          <th className="p-4">Product</th>
-                          <th className="p-4">Category</th>
-                          <th className="p-4">Price (₹)</th>
-                          <th className="p-4">Stock</th>
-                          <th className="p-4 text-right">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-100">
-                        {(productList || []).map((prod: Product) => {
-                          const pricePaise = prod.price || 0;
-                          const priceRupees = Math.round(pricePaise > 1000 ? pricePaise / 100 : pricePaise);
-                          const id = prod._id || prod.id || '';
-                          const isSelected = selectedProductIds.includes(id);
-
-                          return (
-                            <tr
-                              key={id}
-                              className={`transition-colors ${
-                                isSelected ? 'bg-indigo-50/50 hover:bg-indigo-50/70' : 'hover:bg-slate-50/50'
-                              }`}
-                            >
-                              <td className="p-4 w-12 text-center">
-                                <input
-                                  type="checkbox"
-                                  checked={isSelected}
-                                  onChange={() => handleToggleProduct(id)}
-                                  className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
-                                />
-                              </td>
-                              <td className="p-4 flex items-center gap-3">
-                                <img
-                                  src={prod.images?.[0] || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80'}
-                                  alt=""
-                                  className="w-10 h-10 rounded-lg object-cover bg-slate-100 shrink-0"
-                                />
-                                <div>
-                                  <span className="font-bold text-slate-900 block truncate max-w-xs">{prod.name}</span>
-                                  <span className="text-[11px] text-slate-400 font-mono">slug: {prod.slug}</span>
-                                </div>
-                              </td>
-                              <td className="p-4 font-semibold text-slate-700 capitalize">
-                                {typeof prod.category === 'object' ? prod.category.name : prod.category}
-                              </td>
-                              <td className="p-4 font-black text-slate-900">₹{priceRupees.toLocaleString('en-IN')}</td>
-                              <td className="p-4 font-semibold text-slate-700">
-                                <span
-                                  className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                                    prod.stock > 10
-                                      ? 'bg-emerald-50 text-emerald-700'
-                                      : prod.stock > 0
-                                      ? 'bg-amber-50 text-amber-700'
-                                      : 'bg-rose-50 text-rose-700'
-                                  }`}
-                                >
-                                  {prod.stock} units
-                                </span>
-                              </td>
-                              <td className="p-4 text-right">
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    deleteProductMutation.mutate(id);
-                                  }}
-                                  disabled={deleteProductMutation.isPending}
-                                  className="text-rose-600 hover:text-rose-800 font-bold text-xs cursor-pointer disabled:opacity-50"
-                                >
-                                  Delete
-                                </button>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </div>
-            </div>
-          );
-        })()}
-
-        {/* TAB 2: ORDERS MANAGEMENT & STATUS TRANSITIONS */}
         {activeTab === 'orders' && (
           <div className="space-y-4">
-            {/* Filter chips */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-1">
+            <div className="scrollbar-none flex gap-2 overflow-x-auto pb-1">
               {(['all', 'pending_payment', 'paid', 'shipped', 'delivered', 'cancelled'] as const).map((st) => (
                 <button
                   key={st}
                   onClick={() => setOrderStatusFilter(st)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold capitalize transition-colors cursor-pointer ${
-                    orderStatusFilter === st
-                      ? 'bg-slate-900 text-white'
-                      : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                  className={`shrink-0 rounded-xl px-3 py-1.5 text-xs font-bold capitalize ${
+                    orderStatusFilter === st ? 'bg-slate-900 text-white' : 'border border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
                   }`}
                 >
                   {st.replace('_', ' ')}
                 </button>
               ))}
             </div>
-
-            <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
+            <div className="overflow-hidden rounded-3xl bg-white ring-1 ring-slate-200/70">
               {isOrdersLoading ? (
-                <div className="p-12 text-center text-xs text-slate-500 font-semibold">Loading orders...</div>
+                <p className="p-12 text-center text-sm font-semibold text-slate-500">Loading orders…</p>
               ) : (ordersData || []).length === 0 ? (
-                <div className="p-12 text-center text-xs text-slate-500 font-semibold">No orders found.</div>
+                <p className="p-12 text-center text-sm font-semibold text-slate-500">No orders found.</p>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-50 border-b border-slate-100 text-slate-500 uppercase tracking-wider text-[10px]">
+                  <table className="w-full text-left text-sm">
+                    <thead className="border-b border-slate-100 bg-slate-50 text-[11px] uppercase tracking-wider text-slate-500">
                       <tr>
-                        <th className="p-4">Order ID</th>
-                        <th className="p-4">Customer</th>
-                        <th className="p-4">Items</th>
-                        <th className="p-4">Total (₹)</th>
-                        <th className="p-4">Current Status</th>
-                        <th className="p-4">Transition Status</th>
+                        <th className="p-3">Order</th>
+                        <th className="p-3">Customer</th>
+                        <th className="p-3">Items</th>
+                        <th className="p-3">Total</th>
+                        <th className="p-3">Status</th>
+                        <th className="p-3">Update</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                       {(ordersData || []).map((order) => {
                         const orderId = order._id || order.id || '';
-                        const totalRupees = Math.round(order.total > 1000 ? order.total / 100 : order.total);
-                        const nextAllowed = getNextAllowedTransitions(order.status);
-
+                        const customer = customerOf(order);
+                        const next = NEXT_STATUS[order.status] ?? [];
                         return (
-                          <tr key={orderId} className="hover:bg-slate-50/50 transition-colors">
-                            <td className="p-4 font-mono font-bold text-slate-900">
-                              #{orderId.slice(-8)}
+                          <tr key={orderId} className="hover:bg-slate-50/60">
+                            <td className="p-3">
+                              <span className="font-mono text-xs font-bold text-slate-900">#{orderId.slice(-8).toUpperCase()}</span>
+                              <p className="text-xs text-slate-400">{new Date(order.createdAt).toLocaleDateString('en-IN')}</p>
                             </td>
-                            <td className="p-4">
-                              <span className="font-semibold text-slate-800 block">
-                                {order.shippingAddress?.city || 'Customer'}
-                              </span>
-                              <span className="text-[11px] text-slate-400 font-mono">
-                                {order.userId?.slice(-6) || 'N/A'}
-                              </span>
+                            <td className="p-3">
+                              <p className="font-semibold text-slate-800">{customer.name}</p>
+                              {customer.email && <p className="text-xs text-slate-400">{customer.email}</p>}
                             </td>
-                            <td className="p-4 font-semibold text-slate-700">
-                              {order.items?.length || 0} items
+                            <td className="p-3 text-slate-600">{order.items?.length || 0}</td>
+                            <td className="p-3">
+                              <p className="font-extrabold text-slate-900">{formatRupees(order.total)}</p>
+                              {order.couponCode && <p className="font-mono text-[11px] text-emerald-600">{order.couponCode}</p>}
                             </td>
-                            <td className="p-4 font-black text-slate-900">
-                              ₹{totalRupees.toLocaleString('en-IN')}
-                            </td>
-                            <td className="p-4">
-                              <span
-                                className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
-                                  order.status === 'delivered'
-                                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                                    : order.status === 'shipped'
-                                    ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
-                                    : order.status === 'paid'
-                                    ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                                    : order.status === 'cancelled'
-                                    ? 'bg-rose-50 text-rose-700 border border-rose-200'
-                                    : 'bg-amber-50 text-amber-700 border border-amber-200'
-                                }`}
-                              >
-                                {order.status}
+                            <td className="p-3">
+                              <span className={`rounded-full px-2.5 py-1 text-xs font-bold capitalize ${STATUS_STYLE[order.status]}`}>
+                                {order.status.replace('_', ' ')}
                               </span>
                             </td>
-                            <td className="p-4">
-                              {nextAllowed.length > 0 ? (
+                            <td className="p-3">
+                              {next.length > 0 ? (
                                 <select
                                   defaultValue=""
+                                  aria-label={`Update status for order ${orderId.slice(-8)}`}
                                   onChange={(e) => {
                                     if (e.target.value) {
-                                      updateStatusMutation.mutate({
-                                        orderId,
-                                        status: e.target.value as OrderStatus
-                                      });
+                                      updateStatusMutation.mutate({ orderId, status: e.target.value as OrderStatus });
                                       e.target.value = '';
                                     }
                                   }}
-                                  className="px-2.5 py-1 rounded-lg border border-slate-300 text-xs font-semibold bg-white focus:outline-none focus:border-indigo-600 cursor-pointer shadow-xs"
+                                  className="cursor-pointer rounded-lg border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold focus:border-brand-500 focus:outline-none"
                                 >
                                   <option value="" disabled>
-                                    Update to...
+                                    Mark as…
                                   </option>
-                                  {nextAllowed.map((ns) => (
+                                  {next.map((ns) => (
                                     <option key={ns} value={ns}>
-                                      → {ns}
+                                      {ns.replace('_', ' ')}
                                     </option>
                                   ))}
                                 </select>
                               ) : (
-                                <span className="text-[11px] text-slate-400 font-mono">Terminal state</span>
+                                <span className="text-xs text-slate-400">—</span>
                               )}
                             </td>
                           </tr>
@@ -636,208 +243,38 @@ export const AdminDashboard: React.FC = () => {
           </div>
         )}
 
-        {/* TAB 3: AUDIT TRAIL */}
-        {activeTab === 'logs' && (
-          <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
-            <div className="p-4 sm:p-6 border-b border-slate-100">
-              <h3 className="text-base font-black text-slate-900">Security Audit Trail</h3>
-              <p className="text-xs text-slate-500">Immutable 90-day TTL event log of administrative actions</p>
+        {activeTab === 'activity' && (
+          <div className="overflow-hidden rounded-3xl bg-white ring-1 ring-slate-200/70">
+            <div className="border-b border-slate-100 p-4 sm:p-5">
+              <h3 className="text-base font-extrabold text-slate-900">Recent activity</h3>
+              <p className="text-sm text-slate-500">Changes made by admins to orders and coupons.</p>
             </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 border-b border-slate-100 text-slate-500 uppercase tracking-wider text-[10px]">
-                  <tr>
-                    <th className="p-4">Timestamp</th>
-                    <th className="p-4">Action</th>
-                    <th className="p-4">Target</th>
-                    <th className="p-4">Actor</th>
-                    <th className="p-4">IP Address</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 font-mono text-[11px]">
-                  {(auditLogsData || []).map((log) => (
-                    <tr key={log._id} className="hover:bg-slate-50/50">
-                      <td className="p-4 text-slate-500">
-                        {new Date(log.createdAt).toLocaleString('en-IN')}
-                      </td>
-                      <td className="p-4 font-bold text-indigo-700">{log.action}</td>
-                      <td className="p-4 text-slate-600">{log.target || 'N/A'}</td>
-                      <td className="p-4 text-slate-700">{log.actorId?.email || 'System'}</td>
-                      <td className="p-4 text-slate-500">{log.ip || '127.0.0.1'}</td>
+            {(activity || []).length === 0 ? (
+              <p className="p-12 text-center text-sm font-semibold text-slate-500">No activity yet.</p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm">
+                  <thead className="border-b border-slate-100 bg-slate-50 text-[11px] uppercase tracking-wider text-slate-500">
+                    <tr>
+                      <th className="p-3">When</th>
+                      <th className="p-3">What</th>
+                      <th className="p-3">Item</th>
+                      <th className="p-3">By</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* CREATE PRODUCT MODAL */}
-        {isCreateModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-fade-in">
-            <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full space-y-5 shadow-2xl border border-slate-200">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                <h3 className="font-black text-slate-900 text-base">Add New Product</h3>
-                <button
-                  onClick={() => setIsCreateModalOpen(false)}
-                  className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 cursor-pointer"
-                >
-                  ✕
-                </button>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {(activity || []).map((log) => (
+                      <tr key={log._id} className="hover:bg-slate-50/60">
+                        <td className="whitespace-nowrap p-3 text-slate-500">{new Date(log.createdAt).toLocaleString('en-IN')}</td>
+                        <td className="p-3 font-semibold text-slate-800">{ACTION_LABELS[log.action] ?? log.action}</td>
+                        <td className="p-3 font-mono text-xs text-slate-600">{log.target || '—'}</td>
+                        <td className="p-3 text-slate-600">{log.actorId?.name || log.actorId?.email || 'System'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-
-              <form onSubmit={handleCreateProductSubmit} className="space-y-4 text-xs">
-                <div>
-                  <label className="block text-slate-700 font-bold mb-1">Product Title</label>
-                  <input
-                    type="text"
-                    required
-                    value={newProd.name}
-                    onChange={(e) => setNewProd({ ...newProd, name: e.target.value })}
-                    placeholder="e.g. Sony WH-1000XM6 Wireless"
-                    className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:border-indigo-600"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-slate-700 font-bold mb-1">Category</label>
-                    <input
-                      type="text"
-                      required
-                      value={newProd.category}
-                      onChange={(e) => setNewProd({ ...newProd, category: e.target.value })}
-                      placeholder="e.g. electronics"
-                      className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:border-indigo-600"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-slate-700 font-bold mb-1">Stock Quantity</label>
-                    <input
-                      type="number"
-                      required
-                      min={0}
-                      value={newProd.stock}
-                      onChange={(e) => setNewProd({ ...newProd, stock: parseInt(e.target.value, 10) || 0 })}
-                      className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:border-indigo-600"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-slate-700 font-bold mb-1">Retail Price (₹ INR)</label>
-                    <input
-                      type="number"
-                      required
-                      min={1}
-                      value={newProd.priceRupees}
-                      onChange={(e) => setNewProd({ ...newProd, priceRupees: parseFloat(e.target.value) || 0 })}
-                      className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:border-indigo-600"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-slate-700 font-bold mb-1">Image URL</label>
-                    <input
-                      type="url"
-                      required
-                      value={newProd.imageUrl}
-                      onChange={(e) => setNewProd({ ...newProd, imageUrl: e.target.value })}
-                      placeholder="https://..."
-                      className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:border-indigo-600"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-slate-700 font-bold mb-1">Description</label>
-                  <textarea
-                    required
-                    rows={3}
-                    value={newProd.description}
-                    onChange={(e) => setNewProd({ ...newProd, description: e.target.value })}
-                    placeholder="Enter detailed technical specifications and features..."
-                    className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:border-indigo-600"
-                  />
-                </div>
-
-                <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
-                  <button
-                    type="button"
-                    onClick={() => setIsCreateModalOpen(false)}
-                    className="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-100 font-bold"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={createProductMutation.isPending}
-                    className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-xs cursor-pointer disabled:opacity-50"
-                  >
-                    {createProductMutation.isPending ? 'Publishing...' : 'Publish Product'}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {/* Bulk Delete In-App Confirmation Modal */}
-        {confirmDeleteModal?.open && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in">
-            <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-100 space-y-5">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
-                  <span className="material-symbols-outlined text-2xl">delete_sweep</span>
-                </div>
-                <div>
-                  <h3 className="text-base font-black text-slate-900">
-                    {confirmDeleteModal.mode === 'all'
-                      ? 'Deactivate All Products?'
-                      : `Deactivate ${confirmDeleteModal.count} Selected Product(s)?`}
-                  </h3>
-                  <p className="text-xs text-slate-500 mt-0.5">Admin Catalogue Operation</p>
-                </div>
-              </div>
-
-              <p className="text-xs text-slate-600 leading-relaxed bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
-                {confirmDeleteModal.mode === 'all'
-                  ? 'Are you sure you want to delete ALL active products in the store? This will immediately remove them from the customer marketplace and invalidate the Redis cache.'
-                  : `Are you sure you want to deactivate these ${confirmDeleteModal.count} selected product(s)? They will be hidden from the storefront and search queries.`}
-              </p>
-
-              <div className="flex justify-end items-center gap-2 pt-2 border-t border-slate-100">
-                <button
-                  type="button"
-                  onClick={() => setConfirmDeleteModal(null)}
-                  disabled={bulkDeleteMutation.isPending}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 cursor-pointer transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (confirmDeleteModal.mode === 'all') {
-                      bulkDeleteMutation.mutate({ all: true });
-                    } else {
-                      bulkDeleteMutation.mutate({ ids: selectedProductIds });
-                    }
-                  }}
-                  disabled={bulkDeleteMutation.isPending}
-                  className="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-xs cursor-pointer disabled:opacity-50 flex items-center gap-1.5 transition-colors"
-                >
-                  <span className="material-symbols-outlined text-sm">check_circle</span>
-                  <span>
-                    {bulkDeleteMutation.isPending
-                      ? 'Deactivating...'
-                      : confirmDeleteModal.mode === 'all'
-                      ? 'Yes, Delete All'
-                      : 'Yes, Delete Selected'}
-                  </span>
-                </button>
-              </div>
-            </div>
+            )}
           </div>
         )}
       </div>

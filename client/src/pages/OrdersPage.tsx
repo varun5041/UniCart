@@ -69,8 +69,8 @@ export const OrdersPage: React.FC = () => {
         );
       case 'shipped':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
-            <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></span>
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-brand-50 text-brand-700 border border-brand-200">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse"></span>
             Dispatched / In Transit
           </span>
         );
@@ -99,7 +99,7 @@ export const OrdersPage: React.FC = () => {
   };
 
   return (
-    <div className="bg-[#FAF8FF] min-h-screen py-8">
+    <div className="bg-surface min-h-screen py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         {/* Page Title & Stats Bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
@@ -112,7 +112,7 @@ export const OrdersPage: React.FC = () => {
 
           <Link
             to="/"
-            className="self-start sm:self-auto px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-colors shadow-xs inline-flex items-center gap-1.5"
+            className="self-start sm:self-auto px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs transition-colors shadow-xs inline-flex items-center gap-1.5"
           >
             <span className="material-symbols-outlined text-base">shopping_bag</span>
             <span>Continue Shopping</span>
@@ -160,7 +160,7 @@ export const OrdersPage: React.FC = () => {
         {/* Loading Spinner */}
         {isLoading && (
           <div className="py-12 text-center space-y-3">
-            <div className="w-8 h-8 border-3 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+            <div className="w-8 h-8 border-3 border-brand-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
             <p className="text-xs text-slate-500 font-semibold">Syncing orders with UniCart server...</p>
           </div>
         )}
@@ -168,7 +168,7 @@ export const OrdersPage: React.FC = () => {
         {/* Orders List */}
         {!isLoading && filteredOrders.length === 0 ? (
           <div className="bg-white rounded-3xl border border-slate-200/80 p-12 text-center space-y-4">
-            <div className="w-16 h-16 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto">
+            <div className="w-16 h-16 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center mx-auto">
               <span className="material-symbols-outlined text-3xl">inventory_2</span>
             </div>
             <div>
@@ -179,7 +179,7 @@ export const OrdersPage: React.FC = () => {
             </div>
             <Link
               to="/"
-              className="inline-block px-5 py-2.5 bg-indigo-600 text-white text-xs font-bold rounded-xl shadow-xs"
+              className="inline-block px-5 py-2.5 bg-brand-600 text-white text-xs font-bold rounded-xl shadow-xs"
             >
               Start Shopping
             </Link>
@@ -188,7 +188,7 @@ export const OrdersPage: React.FC = () => {
           <div className="space-y-6">
             {filteredOrders.map((order) => {
               const orderId = order._id || order.id || '';
-              const totalRupees = Math.round(order.total > 1000 ? order.total / 100 : order.total);
+              const totalRupees = Math.round(order.total / 100);
 
               return (
                 <div
@@ -217,7 +217,7 @@ export const OrdersPage: React.FC = () => {
                         <span className="text-slate-400 block uppercase tracking-wider text-[10px] font-bold">
                           Total Amount
                         </span>
-                        <span className="font-black text-indigo-700">₹{totalRupees.toLocaleString('en-IN')}</span>
+                        <span className="font-black text-brand-700">₹{totalRupees.toLocaleString('en-IN')}</span>
                       </div>
 
                       <div>
@@ -243,7 +243,7 @@ export const OrdersPage: React.FC = () => {
                   {/* Order Items List */}
                   <div className="p-6 divide-y divide-slate-100">
                     {order.items.map((item, idx) => {
-                      const itemPriceRupees = Math.round(item.price > 1000 ? item.price / 100 : item.price);
+                      const itemPriceRupees = Math.round(item.price / 100);
 
                       return (
                         <div
@@ -252,12 +252,12 @@ export const OrdersPage: React.FC = () => {
                         >
                           <div className="flex items-center gap-4">
                             <div className="w-14 h-14 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 shrink-0">
-                              <span className="material-symbols-outlined text-2xl text-indigo-400">devices</span>
+                              <span className="material-symbols-outlined text-2xl text-brand-400">devices</span>
                             </div>
                             <div>
                               <Link
                                 to={`/product/${item.productId}`}
-                                className="font-bold text-slate-900 hover:text-indigo-600 transition-colors"
+                                className="font-bold text-slate-900 hover:text-brand-600 transition-colors"
                               >
                                 {item.name}
                               </Link>
@@ -295,7 +295,7 @@ export const OrdersPage: React.FC = () => {
 
                       <button
                         onClick={() => setSelectedOrderForTracking(order)}
-                        className="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold border border-indigo-200 transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+                        className="px-3 py-1.5 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-700 font-bold border border-brand-200 transition-colors inline-flex items-center gap-1.5 cursor-pointer"
                       >
                         <span className="material-symbols-outlined text-base">local_shipping</span>
                         <span>Live Tracking</span>
@@ -343,18 +343,18 @@ export const OrdersPage: React.FC = () => {
                     ✓
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-slate-900">Order Confirmed &amp; Stock Locked</h4>
-                    <p className="text-[11px] text-slate-500">Atomic inventory decrement committed in MongoDB</p>
+                    <h4 className="text-xs font-bold text-slate-900">Order confirmed</h4>
+                    <p className="text-[11px] text-slate-500">Your items are reserved for you</p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center shrink-0">
                     <span className="material-symbols-outlined text-sm">mark_email_read</span>
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-slate-900">BullMQ Confirmation Job Processed</h4>
-                    <p className="text-[11px] text-slate-500">Worker dispatched confirmation email via Nodemailer</p>
+                    <h4 className="text-xs font-bold text-slate-900">Confirmation email sent</h4>
+                    <p className="text-[11px] text-slate-500">Check your inbox for the order summary</p>
                   </div>
                 </div>
 

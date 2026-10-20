@@ -1,11 +1,12 @@
 import { api } from './client';
-import type { ApiResponse, Product, Order, OrderStatus } from '../types';
+import type { ApiResponse, Product, Order, OrderStatus, Coupon } from '../types';
 
 export interface AdminCreateProductInput {
   name: string;
   slug?: string;
   description: string;
-  price: number; // in paise
+  mrp: number; // in paise; selling price is computed by the server
+  discountPercent?: number;
   stock: number;
   category: string;
   images?: string[];
@@ -16,7 +17,8 @@ export interface AdminUpdateProductInput {
   name?: string;
   slug?: string;
   description?: string;
-  price?: number;
+  mrp?: number;
+  discountPercent?: number;
   stock?: number;
   category?: string;
   images?: string[];
@@ -46,7 +48,48 @@ export interface AdminAuditLog {
   createdAt: string;
 }
 
+export interface AdminCouponInput {
+  code: string;
+  description?: string;
+  discountPercent: number;
+  maxDiscount?: number | null; // paise
+  minOrderValue?: number; // paise
+  usageLimit?: number | null;
+  expiresAt?: string | null;
+  isActive?: boolean;
+}
+
 export const adminApi = {
+  async listProducts(params?: {
+    page?: number;
+    limit?: number;
+    q?: string;
+    status?: 'all' | 'listed' | 'unlisted';
+  }): Promise<ApiResponse<Product[]>> {
+    const res = await api.get<ApiResponse<Product[]>>('/admin/products', { params });
+    return res.data;
+  },
+
+  async listCoupons(params?: { page?: number; limit?: number }): Promise<ApiResponse<Coupon[]>> {
+    const res = await api.get<ApiResponse<Coupon[]>>('/admin/coupons', { params });
+    return res.data;
+  },
+
+  async createCoupon(data: AdminCouponInput): Promise<ApiResponse<Coupon>> {
+    const res = await api.post<ApiResponse<Coupon>>('/admin/coupons', data);
+    return res.data;
+  },
+
+  async updateCoupon(id: string, data: Partial<AdminCouponInput>): Promise<ApiResponse<Coupon>> {
+    const res = await api.patch<ApiResponse<Coupon>>(`/admin/coupons/${id}`, data);
+    return res.data;
+  },
+
+  async deleteCoupon(id: string): Promise<ApiResponse<{ id: string }>> {
+    const res = await api.delete<ApiResponse<{ id: string }>>(`/admin/coupons/${id}`);
+    return res.data;
+  },
+
   async listOrders(params?: {
     page?: number;
     limit?: number;

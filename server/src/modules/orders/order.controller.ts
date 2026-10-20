@@ -6,9 +6,14 @@ export class OrderController {
   async createOrder(req: Request, res: Response): Promise<void> {
     const userId = req.user!._id.toString();
     const idempotencyKey = req.headers['idempotency-key'] as string | undefined;
-    const { shippingAddress } = req.body;
+    const { shippingAddress, couponCode } = req.body;
 
-    const order = await orderService.createOrder(userId, idempotencyKey, shippingAddress);
+    const order = await orderService.createOrder(
+      userId,
+      idempotencyKey,
+      shippingAddress,
+      couponCode
+    );
 
     res.status(201).json({
       success: true,

@@ -1,18 +1,34 @@
 import { z } from 'zod';
+import { couponCodeSchema } from '../coupons/coupon.schema.js';
+
+/** Indian PIN code: exactly 6 digits, first digit 1–9. */
+export const pincodeSchema = z
+  .string()
+  .trim()
+  .regex(/^[1-9][0-9]{5}$/, 'Pincode must be a valid 6-digit Indian PIN code');
+
+const placeNameSchema = (field: string) =>
+  z
+    .string()
+    .trim()
+    .min(2, `${field} must be at least 2 characters`)
+    .max(60)
+    .regex(/^[A-Za-z][A-Za-z .'-]*$/, `${field} may contain only letters, spaces, . ' and -`);
 
 export const shippingAddressSchema = z
   .object({
     line1: z.string().trim().min(3, 'Address line 1 must be at least 3 characters').max(120),
-    city: z.string().trim().min(2, 'City must be at least 2 characters').max(60),
-    state: z.string().trim().min(2, 'State must be at least 2 characters').max(60),
-    pincode: z.string().trim().min(4, 'Pincode must be at least 4 characters').max(10),
-    country: z.string().trim().default('India')
+    city: placeNameSchema('City'),
+    state: placeNameSchema('State'),
+    pincode: pincodeSchema,
+    country: z.string().trim().max(60).default('India')
   })
   .strict();
 
 export const createOrderSchema = z
   .object({
-    shippingAddress: shippingAddressSchema
+    shippingAddress: shippingAddressSchema,
+    couponCode: couponCodeSchema.optional()
   })
   .strict();
 

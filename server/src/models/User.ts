@@ -1,4 +1,4 @@
-import mongoose, { Document, Model, Schema } from 'mongoose';
+import mongoose, { Document, Model, Schema, Types } from 'mongoose';
 import argon2 from 'argon2';
 
 export interface IAddress {
@@ -7,7 +7,11 @@ export interface IAddress {
   state: string;
   pincode: string;
   country: string;
+  isDefault?: boolean;
 }
+
+export const MAX_ADDRESSES = 5;
+export const MAX_WISHLIST_ITEMS = 100;
 
 export interface IUser extends Document {
   name: string;
@@ -20,6 +24,7 @@ export interface IUser extends Document {
   failedLogins: number;
   lockUntil?: Date | null;
   addresses: IAddress[];
+  wishlist: Types.ObjectId[];
   createdAt: Date;
   updatedAt: Date;
   verifyPassword(candidatePassword: string): Promise<boolean>;
@@ -32,9 +37,10 @@ const addressSchema = new Schema<IAddress>(
     city: { type: String, required: true, trim: true },
     state: { type: String, required: true, trim: true },
     pincode: { type: String, required: true, trim: true },
-    country: { type: String, required: true, default: 'India', trim: true }
+    country: { type: String, required: true, default: 'India', trim: true },
+    isDefault: { type: Boolean, default: false }
   },
-  { _id: false }
+  { _id: true }
 );
 
 const userSchema = new Schema<IUser>(
@@ -93,8 +99,16 @@ const userSchema = new Schema<IUser>(
       type: [addressSchema],
       default: [],
       validate: [
-        (val: IAddress[]) => val.length <= 5,
-        'Cannot exceed maximum of 5 addresses'
+        (val: IAddress[]) => val.length <= MAX_ADDRESSES,
+        `Cannot exceed maximum of ${MAX_ADDRESSES} addresses`
+      ]
+    },
+    wishlist: {
+      type: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
+      default: [],
+      validate: [
+        (val: Types.ObjectId[]) => val.length <= MAX_WISHLIST_ITEMS,
+        `Cannot exceed maximum of ${MAX_WISHLIST_ITEMS} wishlist items`
       ]
     }
   },

@@ -10,7 +10,7 @@ export const Footer: React.FC = () => {
         {/* Value Proposition Highlights */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pb-12 border-b border-slate-800">
           <div className="flex items-start gap-4">
-            <div className="w-12 h-12 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center shrink-0 border border-indigo-500/20">
+            <div className="w-12 h-12 rounded-xl bg-brand-500/10 text-brand-400 flex items-center justify-center shrink-0 border border-brand-500/20">
               <span className="material-symbols-outlined text-2xl">local_shipping</span>
             </div>
             <div>
@@ -38,9 +38,9 @@ export const Footer: React.FC = () => {
               <span className="material-symbols-outlined text-2xl">verified_user</span>
             </div>
             <div>
-              <h4 className="text-white font-semibold text-sm">100% Secure Checkout</h4>
+              <h4 className="text-white font-semibold text-sm">Easy Payments</h4>
               <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                256-bit bank-grade encryption with UPI, RuPay, Visa, and Mastercard support.
+                Pay with UPI, RuPay, Visa, Mastercard or cash on delivery.
               </p>
             </div>
           </div>
@@ -118,11 +118,6 @@ export const Footer: React.FC = () => {
                   Help Center & FAQs
                 </Link>
               </li>
-              <li>
-                <Link to="/" className="hover:text-white transition-colors">
-                  Report a Security Issue
-                </Link>
-              </li>
             </ul>
           </div>
 
@@ -161,29 +156,37 @@ export const Footer: React.FC = () => {
 
           <div>
             <h5 className="text-white font-semibold mb-4 text-xs tracking-wider uppercase">
-              Trust & Architecture
+              Shop
             </h5>
-            <p className="text-xs text-slate-400 mb-3 leading-relaxed">
-              UniCart is engineered with stateless micro-service APIs, Redis caching, Mongo transactional checkout, and OWASP-hardened security protocols.
-            </p>
-            <div className="flex flex-wrap gap-2 pt-1">
-              <span className="px-2 py-1 bg-slate-800 text-slate-300 rounded text-[11px] font-mono border border-slate-700">
-                Argon2id Auth
-              </span>
-              <span className="px-2 py-1 bg-slate-800 text-slate-300 rounded text-[11px] font-mono border border-slate-700">
-                Idempotent Pay
-              </span>
-              <span className="px-2 py-1 bg-slate-800 text-slate-300 rounded text-[11px] font-mono border border-slate-700">
-                OWASP Top 10
-              </span>
-            </div>
+            <ul className="space-y-2.5 text-xs">
+              <li>
+                <Link to="/deals" className="hover:text-white transition-colors">
+                  Today&apos;s Deals
+                </Link>
+              </li>
+              <li>
+                <Link to="/search?sort=popular" className="hover:text-white transition-colors">
+                  Bestsellers
+                </Link>
+              </li>
+              <li>
+                <Link to="/search?sort=newest" className="hover:text-white transition-colors">
+                  New Arrivals
+                </Link>
+              </li>
+              <li>
+                <Link to="/wishlist" className="hover:text-white transition-colors">
+                  My Wishlist
+                </Link>
+              </li>
+            </ul>
           </div>
         </div>
 
         {/* Bottom Bar & Payment Icons */}
         <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-sm">
+            <div className="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center text-white font-bold text-sm">
               <span className="material-symbols-outlined text-lg">shopping_bag</span>
             </div>
             <div>

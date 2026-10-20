@@ -4,10 +4,12 @@ import { Product, IProduct } from '../../models/Product.js';
 import { Category } from '../../models/Category.js';
 import { ApiError } from '../../utils/ApiError.js';
 import { cacheAside, incrementCacheVersion } from '../../utils/cache.js';
+import { computeSalePrice, escapeRegex } from '../../utils/pricing.js';
 import {
   ListProductsQuery,
   AdminCreateProductInput,
-  AdminUpdateProductInput
+  AdminUpdateProductInput,
+  AdminListProductsQuery
 } from './product.schema.js';
 
 export interface PaginatedProducts {
@@ -64,13 +66,23 @@ export class ProductService {
           }
         }
 
-        // 2. Search Query (Text search or regex fallback)
+        // 2. Search Query (user input escaped so it is matched literally)
         if (query.q && query.q.trim()) {
-          const sanitizedQ = query.q.trim();
+          const sanitizedQ = escapeRegex(query.q.trim());
           filter.$or = [
             { name: { $regex: sanitizedQ, $options: 'i' } },
             { description: { $regex: sanitizedQ, $options: 'i' } }
           ];
+        }
+
+        // 2b. Deal / availability filters
+        if (query.minDiscount !== undefined) {
+          filter.discountPercent = { $gte: query.minDiscount };
+        } else if (query.onSale) {
+          filter.discountPercent = { $gt: 0 };
+        }
+        if (query.inStock) {
+          filter.stock = { $gt: 0 };
         }
 
         // 3. Price Filter (in paise)
@@ -86,6 +98,8 @@ export class ProductService {
         if (query.sort === 'price_asc') sortOption = { price: 1 };
         else if (query.sort === 'price_desc') sortOption = { price: -1 };
         else if (query.sort === 'newest') sortOption = { createdAt: -1 };
+        else if (query.sort === 'popular') sortOption = { soldCount: -1, createdAt: -1 };
+        else if (query.sort === 'discount') sortOption = { discountPercent: -1, createdAt: -1 };
 
         // 5. Pagination
         const skip = (query.page - 1) * query.limit;
@@ -176,11 +190,16 @@ export class ProductService {
       slug = `${slug}-${Date.now().toString(36)}`;
     }
 
+    const mrp = input.mrp ?? input.price ?? 0;
+    const discountPercent = input.discountPercent ?? 0;
+
     const product = new Product({
       name: input.name,
       slug,
       description: input.description,
-      price: input.price,
+      mrp,
+      discountPercent,
+      price: computeSalePrice(mrp, discountPercent),
       stock: input.stock,
       category: categoryId,
       images: input.images || [],
@@ -207,7 +226,14 @@ export class ProductService {
     if (input.name !== undefined) product.name = input.name;
     if (input.slug !== undefined) product.slug = this.generateSlug(input.slug);
     if (input.description !== undefined) product.description = input.description;
-    if (input.price !== undefined) product.price = input.price;
+    if (input.mrp !== undefined || input.price !== undefined || input.discountPercent !== undefined) {
+      // A bare `price` update is treated as a new MRP; the selling price is always derived server-side
+      const mrp = input.mrp ?? input.price ?? product.mrp ?? product.price;
+      const discountPercent = input.discountPercent ?? product.discountPercent ?? 0;
+      product.mrp = mrp;
+      product.discountPercent = discountPercent;
+      product.price = computeSalePrice(mrp, discountPercent);
+    }
     if (input.stock !== undefined) product.stock = input.stock;
     if (input.images !== undefined) product.images = input.images;
     if (input.isActive !== undefined) product.isActive = input.isActive;
@@ -238,7 +264,7 @@ export class ProductService {
   async deleteProduct(id: string): Promise<{ message: string }> {
     const product = await Product.findByIdAndUpdate(
       id,
-      { isActive: false },
+      { isActive: false, isDeleted: true },
       { new: true }
     );
 
@@ -259,7 +285,7 @@ export class ProductService {
     let query: Record<string, unknown> = {};
 
     if (input.all) {
-      query = { isActive: true };
+      query = { isDeleted: { $ne: true } };
     } else if (input.ids && input.ids.length > 0) {
       const validObjectIds = input.ids
         .filter((id) => mongoose.isValidObjectId(id))
@@ -275,7 +301,7 @@ export class ProductService {
 
     const result = await Product.updateMany(
       query,
-      { $set: { isActive: false } }
+      { $set: { isActive: false, isDeleted: true } }
     );
 
     // Cache invalidation
@@ -284,6 +310,37 @@ export class ProductService {
     return {
       count: result.modifiedCount,
       message: `Successfully deactivated ${result.modifiedCount} product(s)`
+    };
+  }
+
+  /**
+   * Admin: Paginated catalogue including unlisted products (excludes deleted ones). Never cached.
+   */
+  async adminListProducts(query: AdminListProductsQuery): Promise<PaginatedProducts> {
+    const filter: Record<string, unknown> = { isDeleted: { $ne: true } };
+    if (query.status === 'listed') filter.isActive = true;
+    if (query.status === 'unlisted') filter.isActive = false;
+    if (query.q) {
+      filter.name = { $regex: escapeRegex(query.q), $options: 'i' };
+    }
+
+    const skip = (query.page - 1) * query.limit;
+    const total = await Product.countDocuments(filter);
+    const items = await Product.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(query.limit)
+      .populate('category', 'name slug')
+      .lean();
+
+    return {
+      items,
+      meta: {
+        page: query.page,
+        limit: query.limit,
+        total,
+        pages: Math.ceil(total / query.limit) || 1
+      }
     };
   }
 

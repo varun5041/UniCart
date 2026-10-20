@@ -41,19 +41,19 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="bg-[#FAF8FF] min-h-[85vh] flex items-center justify-center py-12 px-4">
+    <div className="bg-surface min-h-[85vh] flex items-center justify-center py-12 px-4">
       <div className="bg-white rounded-3xl border border-slate-200/80 p-8 sm:p-10 max-w-md w-full shadow-lg space-y-6">
         {/* Header */}
         <div className="text-center space-y-2">
           <Link to="/" className="inline-flex items-center gap-2">
-            <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-md">
+            <div className="w-10 h-10 rounded-xl bg-brand-600 text-white flex items-center justify-center shadow-md">
               <span className="material-symbols-outlined text-2xl">shopping_bag</span>
             </div>
             <span className="font-extrabold text-2xl tracking-tight text-slate-900">UniCart</span>
           </Link>
           <h1 className="text-xl font-black text-slate-900">Sign in to your account</h1>
           <p className="text-xs text-slate-500">
-            Protected by Argon2id password hashing &amp; rotating refresh tokens
+            Welcome back! Sign in to continue shopping.
           </p>
         </div>
 
@@ -75,14 +75,14 @@ export const LoginPage: React.FC = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@domain.com"
-              className="w-full px-4 py-3 text-xs rounded-xl border border-slate-300 focus:outline-none focus:border-indigo-600 transition-colors shadow-xs"
+              className="w-full px-4 py-3 text-xs rounded-xl border border-slate-300 focus:outline-none focus:border-brand-600 transition-colors shadow-xs"
             />
           </div>
 
           <div>
             <div className="flex justify-between items-center mb-1">
               <label className="block text-xs font-bold text-slate-700">Password</label>
-              <span className="text-[11px] text-indigo-600 hover:underline cursor-pointer">
+              <span className="text-[11px] text-brand-600 hover:underline cursor-pointer">
                 Forgot password?
               </span>
             </div>
@@ -93,7 +93,7 @@ export const LoginPage: React.FC = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full px-4 py-3 text-xs rounded-xl border border-slate-300 focus:outline-none focus:border-indigo-600 transition-colors pr-10 shadow-xs"
+                className="w-full px-4 py-3 text-xs rounded-xl border border-slate-300 focus:outline-none focus:border-brand-600 transition-colors pr-10 shadow-xs"
               />
               <button
                 type="button"
@@ -111,7 +111,7 @@ export const LoginPage: React.FC = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs shadow-md shadow-indigo-600/20 transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+            className="w-full py-3.5 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-extrabold text-xs shadow-md shadow-brand-600/20 transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
           >
             {isLoading ? (
               <>
@@ -143,7 +143,7 @@ export const LoginPage: React.FC = () => {
         <div className="text-center pt-2 border-t border-slate-100">
           <p className="text-xs text-slate-500">
             Don&apos;t have an account?{' '}
-            <Link to="/register" className="font-bold text-indigo-600 hover:text-indigo-800">
+            <Link to="/register" className="font-bold text-brand-600 hover:text-brand-800">
               Create account
             </Link>
           </p>

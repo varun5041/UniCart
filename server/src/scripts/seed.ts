@@ -2,7 +2,17 @@ import { faker } from '@faker-js/faker';
 import { connectDB, disconnectDB } from '../config/db.js';
 import { env } from '../config/env.js';
 import { logger } from '../config/logger.js';
-import { User, Category, Product, Cart, Order, RefreshToken, AuditLog } from '../models/index.js';
+import {
+  User,
+  Category,
+  Product,
+  Cart,
+  Order,
+  RefreshToken,
+  AuditLog,
+  Coupon
+} from '../models/index.js';
+import { computeSalePrice } from '../utils/pricing.js';
 
 const CATEGORIES_DATA = [
   {
@@ -64,7 +74,8 @@ export async function seedDatabase(): Promise<void> {
       Cart.syncIndexes(),
       Order.syncIndexes(),
       RefreshToken.syncIndexes(),
-      AuditLog.syncIndexes()
+      AuditLog.syncIndexes(),
+      Coupon.syncIndexes()
     ]);
     logger.info('[Seed] Indexes successfully verified on MongoDB.');
 
@@ -124,7 +135,9 @@ export async function seedDatabase(): Promise<void> {
         const title = `${faker.commerce.productAdjective()} ${faker.commerce.productMaterial()} ${faker.commerce.productName()} ${i}`;
         const slug = faker.helpers.slugify(title).toLowerCase() + `-${i}`;
         const rupeePrice = faker.number.int({ min: 199, max: 24999 }); // ₹199 to ₹24,999
-        const paisePrice = rupeePrice * 100; // Converted to paise
+        const mrpPaise = rupeePrice * 100; // Converted to paise
+        // ~60% of the catalogue carries a 5–70% discount so the Deals page has content
+        const discountPercent = i % 5 < 3 ? faker.number.int({ min: 1, max: 14 }) * 5 : 0;
 
         const categoryId = categoryIds[i % categoryIds.length];
         const selectedImages = [
@@ -136,7 +149,10 @@ export async function seedDatabase(): Promise<void> {
           name: title,
           slug,
           description: faker.commerce.productDescription() + ' Guaranteed authentic with manufacturer warranty.',
-          price: paisePrice,
+          mrp: mrpPaise,
+          discountPercent,
+          price: computeSalePrice(mrpPaise, discountPercent),
+          soldCount: faker.number.int({ min: 0, max: 2500 }),
           stock: faker.number.int({ min: 10, max: 350 }),
           category: categoryId,
           images: selectedImages,
@@ -147,6 +163,14 @@ export async function seedDatabase(): Promise<void> {
       await Product.deleteMany({}); // Reset product catalog for clean seed
       await Product.insertMany(productsToCreate);
       logger.info({ msg: '[Seed] Successfully seeded 200 products into catalog', count: 200 });
+    }
+
+    // 5. Backfill pricing fields on catalogues seeded before discounts existed
+    const backfill = await Product.updateMany({ mrp: { $exists: false } }, [
+      { $set: { mrp: '$price', discountPercent: 0, soldCount: 0, isDeleted: false } }
+    ]);
+    if (backfill.modifiedCount > 0) {
+      logger.info({ msg: '[Seed] Backfilled MRP on existing products', count: backfill.modifiedCount });
     }
 
     logger.info('[Seed] Database seeding completed successfully! ✨');

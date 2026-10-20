@@ -14,6 +14,8 @@ export interface IOrder extends Document {
   userId: Types.ObjectId;
   items: IOrderItem[];
   subtotal: number; // Server-computed integer paise
+  discount: number; // Server-computed coupon discount in integer paise
+  couponCode?: string | null;
   shipping: number; // Server-computed integer paise
   total: number;    // Server-computed integer paise
   shippingAddress: IAddress;
@@ -93,6 +95,16 @@ const orderSchema = new Schema<IOrder>(
         validator: Number.isInteger,
         message: 'Subtotal must be an integer in paise'
       }
+    },
+    discount: {
+      type: Number,
+      default: 0,
+      min: 0
+    },
+    couponCode: {
+      type: String,
+      default: null,
+      trim: true
     },
     shipping: {
       type: Number,

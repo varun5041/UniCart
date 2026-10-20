@@ -22,6 +22,8 @@ import { categoryRouter } from './modules/products/category.routes.js';
 import { adminRouter } from './modules/admin/admin.routes.js';
 import { cartRouter } from './modules/cart/cart.routes.js';
 import { orderRouter } from './modules/orders/order.routes.js';
+import { userRouter } from './modules/users/user.routes.js';
+import { couponRouter } from './modules/coupons/coupon.routes.js';
 import { authenticate } from './middleware/auth.js';
 import { authorize } from './middleware/rbac.js';
 import { metricsMiddleware, metricsHandler } from './config/metrics.js';
@@ -191,21 +193,8 @@ app.use('/api/v1/categories', categoryRouter);
 app.use('/api/v1/cart', cartRouter);
 app.use('/api/v1/orders', orderRouter);
 app.use('/api/v1/admin', adminRouter);
-
-app.get('/api/v1/users/me', authenticate, (req: Request, res: Response) => {
-  res.status(200).json({
-    success: true,
-    data: {
-      user: {
-        id: req.user!._id,
-        name: req.user!.name,
-        email: req.user!.email,
-        role: req.user!.role,
-        addresses: req.user!.addresses
-      }
-    }
-  });
-});
+app.use('/api/v1/users', userRouter);
+app.use('/api/v1/coupons', couponRouter);
 
 app.get('/api/v1/admin/test', authenticate, authorize('admin'), (req: Request, res: Response) => {
   res.status(200).json({

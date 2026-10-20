@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import { cartApi } from '../api/cart';
+import { couponsApi } from '../api/coupons';
+import { computeShipping } from '../lib/validation';
 import { useAuthStore } from './useAuthStore';
 import type { CartItem, Product } from '../types';
 
@@ -15,7 +17,7 @@ interface CartStore {
   updateQuantity: (productId: string, qty: number) => Promise<boolean>;
   removeFromCart: (productId: string) => Promise<boolean>;
   clearCart: () => Promise<boolean>;
-  applyCoupon: (code: string) => { success: boolean; message: string };
+  applyCoupon: (code: string) => Promise<{ success: boolean; message: string }>;
   removeCoupon: () => void;
 
   getItemCount: () => number;
@@ -193,20 +195,29 @@ export const useCartStore = create<CartStore>((set, get) => ({
     return true;
   },
 
-  applyCoupon: (code: string) => {
-    const upper = code.trim().toUpperCase();
-    if (upper === 'UNICART10') {
-      const sub = get().subtotal;
-      const discount = Math.round(sub * 0.1);
-      set({ couponCode: upper, discountPaise: discount });
-      return { success: true, message: '10% discount applied!' };
+  applyCoupon: async (code: string) => {
+    if (!useAuthStore.getState().isAuthenticated) {
+      return { success: false, message: 'Please sign in to apply a coupon.' };
     }
-    if (upper === 'SAVE500') {
-      const discount = 50000; // ₹500 in paise
-      set({ couponCode: upper, discountPaise: discount });
-      return { success: true, message: '₹500 flat discount applied!' };
+    try {
+      // The server prices the coupon against the saved cart; nothing here is trusted at checkout
+      const res = await couponsApi.validate(code.trim());
+      if (res.success && res.data) {
+        set({ couponCode: res.data.code, discountPaise: res.data.discount });
+        return {
+          success: true,
+          message: `${res.data.discountPercent}% off — you save ₹${Math.round(res.data.discount / 100).toLocaleString('en-IN')}`
+        };
+      }
+      return { success: false, message: res.error?.message || 'Invalid coupon code' };
+    } catch (err: any) {
+      const details = err.response?.data?.error?.details;
+      const message =
+        (Array.isArray(details) && details[0]?.message) ||
+        err.response?.data?.error?.message ||
+        'Invalid coupon code';
+      return { success: false, message };
     }
-    return { success: false, message: 'Invalid coupon code. Try UNICART10 or SAVE500' };
   },
 
   removeCoupon: () => set({ couponCode: null, discountPaise: 0 }),
@@ -215,11 +226,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
     return get().items.reduce((acc, item) => acc + (item.qty || item.quantity || 0), 0);
   },
 
-  getShippingFee: () => {
-    const sub = get().subtotal;
-    if (sub === 0 || sub >= 99900) return 0; // Free delivery over ₹999
-    return 9900; // ₹99 in paise
-  },
+  getShippingFee: () => computeShipping(get().subtotal - get().discountPaise),
 
   getGrandTotal: () => {
     const sub = get().subtotal;
@@ -228,3 +235,16 @@ export const useCartStore = create<CartStore>((set, get) => ({
     return Math.max(0, sub - discount + shipping);
   }
 }));
+
+// Re-quote an applied coupon whenever the cart subtotal changes so the displayed discount stays accurate
+useCartStore.subscribe((state, prev) => {
+  if (!state.couponCode || state.subtotal === prev.subtotal) return;
+  const code = state.couponCode;
+  if (state.subtotal === 0) {
+    useCartStore.setState({ couponCode: null, discountPaise: 0 });
+    return;
+  }
+  void state.applyCoupon(code).then((res) => {
+    if (!res.success) useCartStore.setState({ couponCode: null, discountPaise: 0 });
+  });
+});

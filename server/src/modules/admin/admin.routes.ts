@@ -6,8 +6,16 @@ import { validate } from '../../middleware/validate.js';
 import {
   adminCreateProductSchema,
   adminUpdateProductSchema,
+  adminListProductsQuerySchema,
   productIdParamSchema
 } from '../products/product.schema.js';
+import {
+  adminCreateCouponSchema,
+  adminUpdateCouponSchema,
+  adminListCouponsQuerySchema,
+  couponIdParamSchema
+} from '../coupons/coupon.schema.js';
+import { couponController } from '../coupons/coupon.controller.js';
 import { orderIdParamSchema } from '../orders/order.schema.js';
 import {
   adminListOrdersQuerySchema,
@@ -23,6 +31,12 @@ export const adminRouter = Router();
 adminRouter.use(authenticate, authorize('admin'));
 
 // Admin product CRUD
+adminRouter.get(
+  '/products',
+  validate({ query: adminListProductsQuerySchema }),
+  asyncHandler((req, res) => adminController.listProducts(req, res))
+);
+
 adminRouter.post(
   '/products',
   validate({ body: adminCreateProductSchema }),
@@ -64,6 +78,31 @@ adminRouter.patch(
   '/orders/:id/status',
   validate({ params: orderIdParamSchema, body: adminUpdateOrderStatusSchema }),
   asyncHandler((req, res) => adminController.updateOrderStatus(req, res))
+);
+
+// Admin coupon CRUD
+adminRouter.get(
+  '/coupons',
+  validate({ query: adminListCouponsQuerySchema }),
+  asyncHandler((req, res) => couponController.list(req, res))
+);
+
+adminRouter.post(
+  '/coupons',
+  validate({ body: adminCreateCouponSchema }),
+  asyncHandler((req, res) => couponController.create(req, res))
+);
+
+adminRouter.patch(
+  '/coupons/:id',
+  validate({ params: couponIdParamSchema, body: adminUpdateCouponSchema }),
+  asyncHandler((req, res) => couponController.update(req, res))
+);
+
+adminRouter.delete(
+  '/coupons/:id',
+  validate({ params: couponIdParamSchema }),
+  asyncHandler((req, res) => couponController.remove(req, res))
 );
 
 // Admin audit logs inspection

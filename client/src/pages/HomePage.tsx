@@ -1,308 +1,171 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ProductCard } from '../components/ProductCard';
-import { FilterSidebar } from '../components/FilterSidebar';
-import { useFilterStore, type SortOption } from '../store/useFilterStore';
-import { MOCK_CATEGORIES } from '../api/mockData';
-import { productsApi } from '../api/products';
-import type { Product } from '../types';
+import { CategoryTiles } from '../components/CategoryTiles';
+import { ProductRail } from '../components/ProductRail';
+import { getCategoryStyle, useCategories } from '../lib/categories';
+import { usersApi } from '../api/users';
+import { useAuthStore } from '../store/useAuthStore';
+import { useWishlistStore } from '../store/useWishlistStore';
+import type { Category } from '../types';
+
+const RAIL_ACCENTS = [
+  'bg-sky-100 text-sky-700',
+  'bg-pink-100 text-pink-700',
+  'bg-amber-100 text-amber-700',
+  'bg-emerald-100 text-emerald-700',
+  'bg-lime-100 text-lime-700'
+];
+
+const HeroBanner: React.FC = () => (
+  <section className="mx-auto grid max-w-7xl gap-4 px-4 pt-6 sm:px-6 lg:grid-cols-3 lg:px-8">
+    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-700 via-brand-600 to-fuchsia-500 p-7 text-white shadow-xl shadow-brand-900/20 sm:p-10 lg:col-span-2">
+      <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white/10" />
+      <div className="absolute -bottom-24 right-24 h-56 w-56 rounded-full bg-fuchsia-300/20" />
+      <img
+        src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=900&q=80"
+        alt=""
+        aria-hidden="true"
+        className="absolute bottom-0 right-0 hidden h-full w-1/2 object-cover opacity-90 [mask-image:linear-gradient(to_right,transparent,black_40%)] md:block"
+      />
+      <div className="relative max-w-md space-y-4">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-bold backdrop-blur">
+          <span className="material-symbols-outlined text-sm">celebration</span>
+          Festive Sale is live
+        </span>
+        <h1 className="text-3xl font-extrabold leading-[1.1] sm:text-5xl">
+          Everything you love, <span className="text-amber-300">for less.</span>
+        </h1>
+        <p className="text-sm text-white/85 sm:text-base">
+          Top brands across electronics, fashion, home and more — with fresh deals every day.
+        </p>
+        <div className="flex flex-wrap gap-3 pt-2">
+          <Link
+            to="/deals"
+            className="inline-flex items-center gap-2 rounded-2xl bg-white px-6 py-3 text-sm font-extrabold text-brand-700 shadow-lg transition-transform hover:-translate-y-0.5"
+          >
+            View Deals
+            <span className="material-symbols-outlined text-lg">arrow_forward</span>
+          </Link>
+          <Link
+            to="/search?sort=popular"
+            className="inline-flex items-center gap-2 rounded-2xl bg-white/15 px-6 py-3 text-sm font-bold text-white ring-1 ring-white/30 backdrop-blur transition-colors hover:bg-white/25"
+          >
+            Shop Bestsellers
+          </Link>
+        </div>
+      </div>
+    </div>
+
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+      <Link
+        to="/deals?minDiscount=50"
+        className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-orange-400 to-rose-500 p-6 text-white shadow-lg shadow-rose-900/10"
+      >
+        <span className="material-symbols-outlined absolute -bottom-3 -right-2 text-[110px] text-white/20 transition-transform group-hover:scale-110">
+          local_offer
+        </span>
+        <p className="text-xs font-bold uppercase tracking-wider text-white/80">Clearance</p>
+        <p className="mt-1 text-2xl font-extrabold">50% off & more</p>
+        <p className="mt-3 inline-flex items-center gap-1 text-sm font-bold">
+          Grab now <span className="material-symbols-outlined text-base">arrow_forward</span>
+        </p>
+      </Link>
+      <Link
+        to="/search?sort=newest"
+        className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-400 to-teal-600 p-6 text-white shadow-lg shadow-teal-900/10"
+      >
+        <span className="material-symbols-outlined absolute -bottom-3 -right-2 text-[110px] text-white/20 transition-transform group-hover:scale-110">
+          local_shipping
+        </span>
+        <p className="text-xs font-bold uppercase tracking-wider text-white/80">Free delivery</p>
+        <p className="mt-1 text-2xl font-extrabold">On orders over ₹500</p>
+        <p className="mt-3 inline-flex items-center gap-1 text-sm font-bold">
+          New arrivals <span className="material-symbols-outlined text-base">arrow_forward</span>
+        </p>
+      </Link>
+    </div>
+  </section>
+);
+
+/** Recommendations are drawn from the category of the shopper's most recent wishlist item. */
+function useRecommendationCategory(): Category | null {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const hasWishlist = useWishlistStore((s) => s.ids.length > 0);
+  const { data } = useQuery({
+    queryKey: ['wishlist'],
+    queryFn: async () => (await usersApi.getWishlist()).data ?? [],
+    enabled: isAuthenticated && hasWishlist
+  });
+  const first = data?.[0]?.category;
+  return first && typeof first === 'object' ? first : null;
+}
 
 export const HomePage: React.FC = () => {
-  const {
-    searchQuery,
-    selectedCategory,
-    minPrice,
-    maxPrice,
-    sortBy,
-    setSortBy,
-    currentPage,
-    setPage,
-    itemsPerPage,
-    resetFilters,
-    setCategory
-  } = useFilterStore();
-
-  // TanStack Query for server state caching & live API integration
-  const { data: serverData, isLoading: isServerLoading } = useQuery({
-    queryKey: ['products', selectedCategory, searchQuery, sortBy, minPrice, maxPrice, currentPage],
-    queryFn: async () => {
-      try {
-        const res = await productsApi.getProducts({
-          page: currentPage,
-          limit: itemsPerPage,
-          category: selectedCategory !== 'all' ? selectedCategory : undefined,
-          q: searchQuery || undefined,
-          sort: sortBy === 'price_asc' || sortBy === 'price_desc' || sortBy === 'newest' ? sortBy : undefined,
-          minPrice: minPrice > 0 ? minPrice * 100 : undefined,
-          maxPrice: maxPrice < 150000 ? maxPrice * 100 : undefined
-        });
-        if (res.success && Array.isArray(res.data)) {
-          return {
-            items: res.data,
-            total: res.meta?.total ?? res.data.length,
-            pages: res.meta?.pages ?? 1
-          };
-        }
-      } catch (err) {
-        console.error('Failed to load products from API:', err);
-      }
-      return {
-        items: [],
-        total: 0,
-        pages: 1
-      };
-    }
-  });
-
-  const totalProducts = serverData?.total ?? 0;
-  const totalPages = serverData?.pages ?? 1;
-  const displayProducts: Product[] = serverData?.items ?? [];
-
-  const activeCategoryObj = MOCK_CATEGORIES.find((c) => c.id === selectedCategory);
+  const { data: categories = [] } = useCategories();
+  const recoCategory = useRecommendationCategory();
 
   return (
-    <div className="bg-[#FAF8FF] min-h-screen pb-16">
-      {/* Hero Banner Section */}
-      <section className="bg-gradient-to-r from-indigo-900 via-indigo-800 to-slate-900 text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(#4F46E5_1px,transparent_1px)] [background-size:16px_16px] opacity-25"></div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            <div className="lg:col-span-7 space-y-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-emerald-300 text-xs font-semibold border border-white/10">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span>Diwali Super Saver Festival • Up to 70% Off</span>
-              </div>
-              <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
-                India&apos;s Fastest E-Commerce Platform.
-              </h1>
-              <p className="text-sm sm:text-base text-slate-300 max-w-xl font-normal leading-relaxed">
-                Guaranteed genuine electronics, verified flash deals, sub-100ms API speeds, and same-day dispatch nationwide.
-              </p>
-              <div className="flex flex-wrap items-center gap-3 pt-2">
-                <a
-                  href="#catalog"
-                  className="px-6 py-3 rounded-2xl bg-indigo-500 hover:bg-indigo-600 text-white font-bold text-xs shadow-lg shadow-indigo-500/30 transition-all hover:scale-105"
-                >
-                  Shop Now
-                </a>
-                <button
-                  onClick={() => setCategory('all')}
-                  className="px-5 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs backdrop-blur-sm border border-white/15 transition-all"
-                >
-                  View All Deals
-                </button>
-              </div>
-            </div>
+    <div className="min-h-screen bg-surface pb-16">
+      <HeroBanner />
 
-            {/* Quick Stats Badges */}
-            <div className="lg:col-span-5 grid grid-cols-2 gap-3">
-              <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-4">
-                <div className="text-2xl font-black text-indigo-300">200+</div>
-                <div className="text-xs text-slate-300 mt-0.5">Top-Rated Products</div>
-              </div>
-              <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-4">
-                <div className="text-2xl font-black text-emerald-300">100%</div>
-                <div className="text-xs text-slate-300 mt-0.5">ACID Inventory Guarantee</div>
-              </div>
-              <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-4">
-                <div className="text-2xl font-black text-amber-300">&lt;50ms</div>
-                <div className="text-xs text-slate-300 mt-0.5">Redis Cached Responses</div>
-              </div>
-              <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-4">
-                <div className="text-2xl font-black text-rose-300">Zero</div>
-                <div className="text-xs text-slate-300 mt-0.5">Overselling Risk</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <div className="mx-auto max-w-7xl space-y-6 px-4 pt-6 sm:px-6 lg:px-8">
+        <CategoryTiles />
 
-      {/* Category Horizontal Quick Bar */}
-      <section className="border-b border-slate-200/80 bg-white shadow-xs sticky top-16 z-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2 overflow-x-auto py-3 scrollbar-none">
-            <button
-              onClick={() => setCategory('all')}
-              className={`shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-                selectedCategory === 'all'
-                  ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30'
-                  : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200/60'
-              }`}
-            >
-              <span className="material-symbols-outlined text-base">apps</span>
-              <span>All Categories</span>
-            </button>
-            {MOCK_CATEGORIES.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setCategory(cat.id)}
-                className={`shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-                  selectedCategory === cat.id
-                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30'
-                    : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200/60'
-                }`}
-              >
-                <span className="material-symbols-outlined text-base">{cat.icon}</span>
-                <span>{cat.name}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
+        <ProductRail
+          title="Recommended for you"
+          subtitle={recoCategory ? `Because you liked ${getCategoryStyle(recoCategory).short}` : 'Handpicked premium picks'}
+          icon="auto_awesome"
+          accent="bg-brand-100 text-brand-700"
+          query={
+            recoCategory
+              ? { category: recoCategory.slug, sort: 'popular', inStock: true }
+              : { sort: 'price_desc', inStock: true }
+          }
+          seeAllHref={recoCategory ? `/category/${recoCategory.slug}` : '/search?sort=price_desc'}
+        />
 
-      {/* Main Catalog Section */}
-      <main id="catalog" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-        {/* Layout Grid: Sidebar Filters + Products Area */}
-        <div className="flex flex-col lg:flex-row gap-8 items-start">
-          {/* Left Sticky Filters */}
-          <FilterSidebar />
+        <ProductRail
+          title="Top Deals"
+          subtitle="Biggest discounts right now"
+          icon="local_fire_department"
+          accent="bg-orange-100 text-orange-600"
+          query={{ onSale: true, sort: 'discount' }}
+          seeAllHref="/deals"
+        />
 
-          {/* Right Product Grid Area */}
-          <div className="flex-1 w-full space-y-6">
-            {/* Header Toolbar: Results Count, Active Tags, Sort By */}
-            <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div>
-                <h2 className="text-base font-extrabold text-slate-900">
-                  {activeCategoryObj?.name || 'All Products'}
-                </h2>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Showing <span className="font-semibold text-slate-800">{totalProducts}</span> items found
-                  {searchQuery && (
-                    <span> for &quot;<strong className="text-indigo-600">{searchQuery}</strong>&quot;</span>
-                  )}
-                </p>
-              </div>
+        <ProductRail
+          title="Most Selling"
+          subtitle="What everyone is buying"
+          icon="trending_up"
+          accent="bg-rose-100 text-rose-600"
+          query={{ sort: 'popular' }}
+          seeAllHref="/search?sort=popular"
+        />
 
-              {/* Sort Dropdown */}
-              <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
-                <label htmlFor="sort-selector" className="text-xs font-semibold text-slate-600 whitespace-nowrap">
-                  Sort By:
-                </label>
-                <select
-                  id="sort-selector"
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as SortOption)}
-                  className="px-3 py-1.5 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 bg-white focus:outline-none focus:border-indigo-600 cursor-pointer shadow-xs"
-                >
-                  <option value="featured">Featured / Best Match</option>
-                  <option value="price_asc">Price: Low to High</option>
-                  <option value="price_desc">Price: High to Low</option>
-                  <option value="rating">Customer Rating</option>
-                  <option value="newest">Newest Arrivals</option>
-                </select>
-              </div>
-            </div>
+        {categories.map((cat, i) => {
+          const style = getCategoryStyle(cat);
+          return (
+            <ProductRail
+              key={cat.slug}
+              title={`Best in ${style.short}`}
+              icon={style.icon}
+              accent={RAIL_ACCENTS[i % RAIL_ACCENTS.length]}
+              query={{ category: cat.slug, sort: 'popular' }}
+              seeAllHref={`/category/${cat.slug}`}
+            />
+          );
+        })}
 
-            {/* LOADING SKELETON */}
-            {isServerLoading && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 animate-pulse">
-                {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
-                  <div key={n} className="bg-white rounded-2xl border border-slate-200/80 p-4 space-y-4">
-                    <div className="w-full h-44 bg-slate-200 rounded-xl"></div>
-                    <div className="h-4 bg-slate-200 rounded-md w-3/4"></div>
-                    <div className="h-3 bg-slate-100 rounded-md w-1/2"></div>
-                    <div className="flex justify-between items-center pt-2">
-                      <div className="h-6 bg-slate-200 rounded-md w-1/3"></div>
-                      <div className="h-8 bg-slate-200 rounded-xl w-1/2"></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* EMPTY STATE */}
-            {!isServerLoading && displayProducts.length === 0 && (
-              <div className="bg-white rounded-2xl border border-slate-200/80 p-12 text-center space-y-4 shadow-xs">
-                <div className="w-16 h-16 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto">
-                  <span className="material-symbols-outlined text-3xl">inventory_2</span>
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold text-slate-900">
-                    {searchQuery || selectedCategory !== 'all' || minPrice > 0 || maxPrice < 150000
-                      ? 'No products found matching your filters'
-                      : 'No products available in the store'}
-                  </h3>
-                  <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1 leading-relaxed">
-                    {searchQuery || selectedCategory !== 'all' || minPrice > 0 || maxPrice < 150000
-                      ? 'Try clearing some filters, expanding your price range, or searching for a different keyword.'
-                      : 'The product catalogue is currently empty. Visit the Admin Dashboard to add and publish new products.'}
-                  </p>
-                </div>
-                {searchQuery || selectedCategory !== 'all' || minPrice > 0 || maxPrice < 150000 ? (
-                  <button
-                    onClick={resetFilters}
-                    className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-colors shadow-sm inline-flex items-center gap-2 cursor-pointer"
-                  >
-                    <span className="material-symbols-outlined text-base">refresh</span>
-                    <span>Reset All Filters</span>
-                  </button>
-                ) : (
-                  <a
-                    href="/admin"
-                    className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-colors shadow-sm inline-flex items-center gap-2"
-                  >
-                    <span className="material-symbols-outlined text-base">add_circle</span>
-                    <span>Go to Admin Dashboard</span>
-                  </a>
-                )}
-              </div>
-            )}
-
-            {/* LIVE PRODUCTS GRID */}
-            {!isServerLoading && displayProducts.length > 0 && (
-              <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {displayProducts.map((product) => (
-                    <ProductCard key={product._id || product.id || product.slug} product={product} />
-                  ))}
-                </div>
-
-                {/* Numbered Pagination */}
-                {totalPages > 1 && (
-                  <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <span className="text-xs text-slate-500">
-                      Showing {(currentPage - 1) * itemsPerPage + 1}–
-                      {Math.min(currentPage * itemsPerPage, totalProducts)} of {totalProducts} products
-                    </span>
-
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      onClick={() => setPage(Math.max(1, currentPage - 1))}
-                      disabled={currentPage === 1}
-                      className="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                    >
-                      Previous
-                    </button>
-
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                      <button
-                        key={page}
-                        onClick={() => setPage(page)}
-                        className={`w-8 h-8 rounded-lg text-xs font-bold transition-colors ${
-                          currentPage === page
-                            ? 'bg-indigo-600 text-white shadow-xs'
-                            : 'text-slate-600 hover:bg-slate-100 border border-slate-200'
-                        }`}
-                      >
-                        {page}
-                      </button>
-                    ))}
-
-                    <button
-                      onClick={() => setPage(Math.min(totalPages, currentPage + 1))}
-                      disabled={currentPage === totalPages}
-                      className="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                    >
-                      Next
-                    </button>
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-          </div>
-        </div>
-      </main>
+        <ProductRail
+          title="New Arrivals"
+          subtitle="Fresh in the store"
+          icon="new_releases"
+          accent="bg-teal-100 text-teal-700"
+          query={{ sort: 'newest' }}
+          seeAllHref="/search?sort=newest"
+        />
+      </div>
     </div>
   );
 };

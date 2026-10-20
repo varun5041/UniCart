@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { productService } from '../products/product.service.js';
 import { adminService } from './admin.service.js';
+import { AdminListProductsQuery } from '../products/product.schema.js';
 import {
   AdminListOrdersQuery,
   AdminUpdateOrderStatusInput,
@@ -8,6 +9,17 @@ import {
 } from './admin.schema.js';
 
 export class AdminController {
+  async listProducts(req: Request, res: Response): Promise<void> {
+    const result = await productService.adminListProducts(
+      req.query as unknown as AdminListProductsQuery
+    );
+    res.status(200).json({
+      success: true,
+      data: result.items,
+      meta: result.meta
+    });
+  }
+
   async createProduct(req: Request, res: Response): Promise<void> {
     const product = await productService.createProduct(req.body);
     res.status(201).json({

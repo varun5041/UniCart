@@ -1,17 +1,65 @@
 @import "tailwindcss";
 
+@theme {
+  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Brand: vivid indigo-violet */
+  --color-brand-50: #f2f0ff;
+  --color-brand-100: #e7e3ff;
+  --color-brand-200: #d2cbff;
+  --color-brand-300: #b3a6ff;
+  --color-brand-400: #8f7bff;
+  --color-brand-500: #6f52ff;
+  --color-brand-600: #5b35f5;
+  --color-brand-700: #4c27d9;
+  --color-brand-800: #3f22af;
+  --color-brand-900: #35208a;
+  --color-brand-950: #1f1252;
+
+  /* App surfaces */
+  --color-surface: #f6f7fb;
+  --color-ink: #12131a;
+}
+
 @layer base {
-  :root {
-    --font-inter: 'Inter', system-ui, -apple-system, sans-serif;
+  html {
+    -webkit-text-size-adjust: 100%;
   }
 
   body {
-    font-family: var(--font-inter);
-    background-color: #faf8ff;
-    color: #131b2e;
+    font-family: var(--font-sans);
+    background-color: var(--color-surface);
+    color: var(--color-ink);
     min-height: 100vh;
     margin: 0;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    letter-spacing: -0.015em;
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    font-family: inherit;
+  }
+}
+
+@layer utilities {
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  .font-variation-fill {
+    font-variation-settings: 'FILL' 1;
   }
 }
 

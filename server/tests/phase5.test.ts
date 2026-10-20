@@ -272,7 +272,7 @@ describe('Phase 5 Acceptance: Products Catalogue & Caching', () => {
       expect(res.body.success).toBe(true);
       expect(Product.findByIdAndUpdate).toHaveBeenCalledWith(
         mockProduct._id.toString(),
-        { isActive: false },
+        { isActive: false, isDeleted: true },
         { new: true }
       );
       expect(mockRedisClient.incr).toHaveBeenCalledWith('unicart:version:products');

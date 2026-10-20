@@ -1,7 +1,10 @@
 import { create } from 'zustand';
 import { authApi } from '../api/auth';
-import { usersApi } from '../api/users';
+import { usersApi, type AddressInput } from '../api/users';
+import { useWishlistStore } from './useWishlistStore';
 import type { User, Address } from '../types';
+
+type MutationResult = { success: boolean; error?: string };
 
 interface AuthStore {
   user: User | null;
@@ -18,8 +21,31 @@ interface AuthStore {
   logoutAll: () => Promise<void>;
   setUser: (user: User | null) => void;
   setSelectedAddress: (addr: Address | null) => void;
-  addAddress: (addr: Omit<Address, '_id' | 'id'>) => Promise<boolean>;
-  deleteAddress: (addressLine: string) => Promise<boolean>;
+  updateName: (name: string) => Promise<MutationResult>;
+  addAddress: (addr: AddressInput) => Promise<MutationResult>;
+  deleteAddress: (index: number) => Promise<MutationResult>;
+  setDefaultAddress: (index: number) => Promise<MutationResult>;
+}
+
+function toAddressInput(a: Address): AddressInput {
+  return {
+    line1: a.line1,
+    city: a.city,
+    state: a.state,
+    pincode: a.pincode,
+    country: a.country || 'India',
+    isDefault: Boolean(a.isDefault)
+  };
+}
+
+function errorMessage(err: any, fallback: string): string {
+  const details = err.response?.data?.error?.details;
+  if (Array.isArray(details) && details[0]?.message) return details[0].message;
+  return err.response?.data?.error?.message || fallback;
+}
+
+function pickDefault(user: User | null): Address | null {
+  return user?.addresses?.find((a) => a.isDefault) || user?.addresses?.[0] || null;
 }
 
 function extractUser(data: any): User | null {
@@ -48,7 +74,8 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         if (userRes.success && userRes.data) {
           const user = extractUser(userRes.data);
           if (user) {
-            const defaultAddr = user.addresses?.find((a) => a.isDefault) || user.addresses?.[0] || null;
+            const defaultAddr = pickDefault(user);
+            useWishlistStore.getState().setIds(user.wishlist ?? []);
             set({
               user,
               isAuthenticated: true,
@@ -79,7 +106,8 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
           // Fall back to login response payload
         }
         user = user || extractUser(res.data) || null;
-        const defaultAddr = user?.addresses?.find((a) => a.isDefault) || user?.addresses?.[0] || null;
+        const defaultAddr = pickDefault(user);
+        useWishlistStore.getState().setIds(user?.wishlist ?? []);
         set({
           user,
           isAuthenticated: true,
@@ -110,7 +138,8 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
           // Fall back to login response payload
         }
         user = user || extractUser(res.data) || null;
-        const defaultAddr = user?.addresses?.find((a) => a.isDefault) || user?.addresses?.[0] || null;
+        const defaultAddr = pickDefault(user);
+        useWishlistStore.getState().setIds(user?.wishlist ?? []);
         set({
           user,
           isAuthenticated: true,
@@ -141,7 +170,8 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
           // Fall back to register response payload
         }
         user = user || extractUser(res.data) || null;
-        const defaultAddr = user?.addresses?.find((a) => a.isDefault) || user?.addresses?.[0] || null;
+        const defaultAddr = pickDefault(user);
+        useWishlistStore.getState().setIds(user?.wishlist ?? []);
         set({
           user,
           isAuthenticated: true,
@@ -166,6 +196,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     } catch {
       // Ignore network errors on logout
     } finally {
+      useWishlistStore.getState().reset();
       set({
         user: null,
         isAuthenticated: false,
@@ -182,6 +213,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     } catch {
       // Ignore
     } finally {
+      useWishlistStore.getState().reset();
       set({
         user: null,
         isAuthenticated: false,
@@ -195,39 +227,65 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
   setSelectedAddress: (addr) => set({ selectedAddress: addr }),
 
-  addAddress: async (addr) => {
-    const { user } = get();
-    if (!user) return false;
-    const currentAddresses = user.addresses || [];
-    const newAddresses: Address[] = [...currentAddresses, { ...addr, isDefault: currentAddresses.length === 0 }];
+  updateName: async (name) => {
     try {
-      const res = await usersApi.updateMe({ addresses: newAddresses });
+      const res = await usersApi.updateMe({ name });
       if (res.success) {
-        set({
-          user: extractUser(res.data) || get().user,
-          selectedAddress: get().selectedAddress || newAddresses[0]
-        });
-        return true;
+        set({ user: extractUser(res.data) || get().user });
+        return { success: true };
       }
-      return false;
-    } catch {
-      return false;
+      return { success: false, error: res.error?.message || 'Could not update profile' };
+    } catch (err: any) {
+      return { success: false, error: errorMessage(err, 'Could not update profile') };
     }
   },
 
-  deleteAddress: async (line1) => {
+  addAddress: async (addr) => {
     const { user } = get();
-    if (!user) return false;
-    const filtered = (user.addresses || []).filter((a) => a.line1 !== line1);
-    try {
-      const res = await usersApi.updateMe({ addresses: filtered });
-      if (res.success) {
-        set({ user: extractUser(res.data) || get().user });
-        return true;
-      }
-      return false;
-    } catch {
-      return false;
-    }
+    if (!user) return { success: false, error: 'Please sign in first' };
+    const current = (user.addresses || []).map(toAddressInput);
+    const isFirst = current.length === 0;
+    const next = addr.isDefault
+      ? [...current.map((a) => ({ ...a, isDefault: false })), { ...addr, isDefault: true }]
+      : [...current, { ...addr, isDefault: isFirst }];
+    return saveAddresses(next, set, get, addr.isDefault || isFirst ? next.length - 1 : undefined);
+  },
+
+  deleteAddress: async (index) => {
+    const { user } = get();
+    if (!user) return { success: false, error: 'Please sign in first' };
+    const next = (user.addresses || []).map(toAddressInput).filter((_, i) => i !== index);
+    return saveAddresses(next, set, get);
+  },
+
+  setDefaultAddress: async (index) => {
+    const { user } = get();
+    if (!user) return { success: false, error: 'Please sign in first' };
+    const next = (user.addresses || []).map((a, i) => ({ ...toAddressInput(a), isDefault: i === index }));
+    return saveAddresses(next, set, get, index);
   }
 }));
+
+async function saveAddresses(
+  addresses: AddressInput[],
+  set: (partial: Partial<AuthStore>) => void,
+  get: () => AuthStore,
+  selectIndex?: number
+): Promise<MutationResult> {
+  try {
+    const res = await usersApi.replaceAddresses(addresses);
+    if (!res.success) return { success: false, error: res.error?.message || 'Could not save address' };
+    const user = extractUser(res.data) || get().user;
+    const saved = user?.addresses || [];
+    const prev = get().selectedAddress;
+    // Keep the checkout selection pointing at a saved address
+    const selected =
+      (selectIndex !== undefined ? saved[selectIndex] : undefined) ||
+      saved.find((a) => prev && a.line1 === prev.line1 && a.pincode === prev.pincode) ||
+      pickDefault(user);
+    set({ user, selectedAddress: selected || null });
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: errorMessage(err, 'Could not save address') };
+  }
+}

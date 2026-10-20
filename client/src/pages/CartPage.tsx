@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCartStore } from '../store/useCartStore';
 import { useToastStore } from '../store/useToastStore';
+import { FREE_SHIPPING_THRESHOLD } from '../lib/validation';
 
 export const CartPage: React.FC = () => {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ export const CartPage: React.FC = () => {
 
   const { addToast } = useToastStore();
   const [couponInput, setCouponInput] = useState('');
+  const [isApplying, setIsApplying] = useState(false);
 
   const itemCount = getItemCount();
 
@@ -31,16 +33,22 @@ export const CartPage: React.FC = () => {
   const shippingRupees = Math.round(getShippingFee() / 100);
   const grandTotalRupees = Math.round(getGrandTotal() / 100);
 
-  // Free delivery threshold is ₹999
-  const freeShippingThreshold = 999;
-  const progressPercent = Math.min(100, Math.round((subtotalRupees / freeShippingThreshold) * 100));
-  const amountNeeded = Math.max(0, freeShippingThreshold - subtotalRupees);
+  const freeShippingThreshold = FREE_SHIPPING_THRESHOLD / 100;
+  const amountAfterDiscount = subtotalRupees - discountRupees;
+  const progressPercent = Math.min(100, Math.round((amountAfterDiscount / freeShippingThreshold) * 100));
+  const amountNeeded = Math.max(0, freeShippingThreshold - amountAfterDiscount);
 
-  const handleApplyCoupon = (codeToApply?: string) => {
-    const code = codeToApply || couponInput;
+  const handleApplyCoupon = async () => {
+    const code = couponInput.trim();
     if (!code) return;
+    if (!/^[A-Za-z0-9_-]{3,20}$/.test(code)) {
+      addToast({ type: 'error', title: 'Coupon Error', message: 'Coupon codes are 3–20 letters or numbers.' });
+      return;
+    }
 
-    const res = applyCoupon(code);
+    setIsApplying(true);
+    const res = await applyCoupon(code);
+    setIsApplying(false);
     if (res.success) {
       addToast({ type: 'success', title: 'Coupon Applied', message: res.message });
       setCouponInput('');
@@ -56,22 +64,22 @@ export const CartPage: React.FC = () => {
 
   if (items.length === 0) {
     return (
-      <div className="bg-[#FAF8FF] min-h-[75vh] flex items-center justify-center py-12 px-4">
+      <div className="bg-surface min-h-[75vh] flex items-center justify-center py-12 px-4">
         <div className="bg-white rounded-3xl border border-slate-200/80 p-8 sm:p-12 max-w-md w-full text-center space-y-5 shadow-sm">
-          <div className="w-20 h-20 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto shadow-inner">
+          <div className="w-20 h-20 rounded-full bg-brand-50 text-brand-600 flex items-center justify-center mx-auto shadow-inner">
             <span className="material-symbols-outlined text-4xl">shopping_cart</span>
           </div>
           <div>
             <h2 className="text-xl font-black text-slate-900">Your Cart is Empty</h2>
             <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-              Looks like you haven&apos;t added any tech items or accessories yet. Explore our deals to get started!
+              Looks like you haven&apos;t added anything yet. Explore today&apos;s deals to get started!
             </p>
           </div>
           <Link
             to="/"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-500/25 transition-all"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-md shadow-brand-500/25 transition-all"
           >
-            <span>Explore Electronics</span>
+            <span>Start Shopping</span>
             <span className="material-symbols-outlined text-sm">arrow_forward</span>
           </Link>
         </div>
@@ -80,21 +88,21 @@ export const CartPage: React.FC = () => {
   }
 
   return (
-    <div className="bg-[#FAF8FF] min-h-screen py-8">
+    <div className="bg-surface min-h-screen py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         {/* Progress Bar for Free Shipping */}
         <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs">
           <div className="flex items-center justify-between text-xs font-bold mb-2">
             <span className="text-slate-700 flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-base text-indigo-600">local_shipping</span>
+              <span className="material-symbols-outlined text-base text-brand-600">local_shipping</span>
               {amountNeeded > 0 ? (
                 <span>
-                  Add <strong className="text-indigo-600">₹{amountNeeded}</strong> more to unlock{' '}
-                  <strong className="text-emerald-600">FREE Express Delivery</strong>
+                  Add <strong className="text-brand-600">₹{amountNeeded}</strong> more to unlock{' '}
+                  <strong className="text-emerald-600">FREE Delivery</strong>
                 </span>
               ) : (
                 <span className="text-emerald-600 flex items-center gap-1">
-                  🎉 Congratulations! You unlocked FREE Express Delivery
+                  🎉 You&apos;ve unlocked FREE Delivery
                 </span>
               )}
             </span>
@@ -103,7 +111,7 @@ export const CartPage: React.FC = () => {
           <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
             <div
               className={`h-full rounded-full transition-all duration-500 ${
-                progressPercent >= 100 ? 'bg-emerald-500' : 'bg-indigo-600'
+                progressPercent >= 100 ? 'bg-emerald-500' : 'bg-brand-600'
               }`}
               style={{ width: `${progressPercent}%` }}
             ></div>
@@ -133,12 +141,13 @@ export const CartPage: React.FC = () => {
                   const prodId = item.productId || item.product?._id || item.product?.id || '';
                   const name = item.name || item.product?.name || 'UniCart Item';
                   const pricePaise = item.price || item.product?.price || 0;
-                  const itemPriceRupees = Math.round(pricePaise > 1000 ? pricePaise / 100 : pricePaise);
+                  const itemPriceRupees = Math.round(pricePaise / 100);
                   const imageUrl =
                     item.images?.[0] ||
                     item.product?.images?.[0] ||
                     'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80';
                   const qty = item.qty || item.quantity || 1;
+                  const productHref = `/product/${item.slug || item.product?.slug || prodId}`;
 
                   return (
                     <div
@@ -147,7 +156,7 @@ export const CartPage: React.FC = () => {
                     >
                       {/* Thumbnail */}
                       <Link
-                        to={`/product/${prodId}`}
+                        to={productHref}
                         className="w-24 h-24 rounded-2xl bg-slate-50 border border-slate-100 overflow-hidden shrink-0"
                       >
                         <img src={imageUrl} alt={name} className="w-full h-full object-cover" />
@@ -155,8 +164,8 @@ export const CartPage: React.FC = () => {
 
                       {/* Details */}
                       <div className="flex-1 space-y-1">
-                        <Link to={`/product/${prodId}`}>
-                          <h3 className="text-sm font-bold text-slate-900 hover:text-indigo-600 transition-colors leading-snug">
+                        <Link to={productHref}>
+                          <h3 className="text-sm font-bold text-slate-900 hover:text-brand-600 transition-colors leading-snug">
                             {name}
                           </h3>
                         </Link>
@@ -251,7 +260,7 @@ export const CartPage: React.FC = () => {
 
                 <div className="pt-3 border-t border-slate-100 flex justify-between items-baseline">
                   <span className="text-sm font-black text-slate-900">Total Payable</span>
-                  <span className="text-2xl font-black text-indigo-700">₹{grandTotalRupees.toLocaleString('en-IN')}</span>
+                  <span className="text-2xl font-black text-brand-700">₹{grandTotalRupees.toLocaleString('en-IN')}</span>
                 </div>
               </div>
 
@@ -280,55 +289,36 @@ export const CartPage: React.FC = () => {
                     <input
                       id="coupon-code-input"
                       type="text"
-                      placeholder="e.g. UNICART10"
+                      placeholder="Enter coupon code"
+                      maxLength={20}
                       value={couponInput}
-                      onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
-                      className="flex-1 px-3 py-2 text-xs rounded-xl border border-slate-300 font-mono uppercase focus:outline-none focus:border-indigo-600"
+                      onChange={(e) => setCouponInput(e.target.value.toUpperCase().replace(/[^A-Z0-9_-]/g, ''))}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') void handleApplyCoupon();
+                      }}
+                      className="flex-1 px-3 py-2 text-xs rounded-xl border border-slate-300 font-mono uppercase focus:outline-none focus:border-brand-600"
                     />
                     <button
-                      onClick={() => handleApplyCoupon()}
-                      className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-colors"
+                      onClick={() => void handleApplyCoupon()}
+                      disabled={isApplying || !couponInput}
+                      className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-colors disabled:opacity-50"
                     >
-                      Apply
+                      {isApplying ? 'Checking…' : 'Apply'}
                     </button>
                   </div>
                 )}
 
-                {/* Available Coupon Chips */}
-                {!activeCoupon && (
-                  <div className="flex flex-wrap gap-1.5 pt-1">
-                    <button
-                      onClick={() => handleApplyCoupon('UNICART10')}
-                      className="text-[10px] px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 font-mono font-bold"
-                    >
-                      UNICART10 (10% off)
-                    </button>
-                    <button
-                      onClick={() => handleApplyCoupon('SAVE500')}
-                      className="text-[10px] px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 font-mono font-bold"
-                    >
-                      SAVE500 (₹500 off)
-                    </button>
-                  </div>
-                )}
               </div>
 
               {/* Checkout CTA Button */}
               <button
                 onClick={() => navigate('/checkout')}
-                className="w-full py-3.5 px-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/30 transition-all hover:-translate-y-0.5"
+                className="w-full py-3.5 px-4 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg shadow-brand-600/30 transition-all hover:-translate-y-0.5"
               >
-                <span>Proceed to Secure Checkout</span>
+                <span>Proceed to Checkout</span>
                 <span className="material-symbols-outlined text-base">arrow_forward</span>
               </button>
 
-              {/* Trust Logos */}
-              <div className="pt-2 text-center space-y-2">
-                <div className="flex items-center justify-center gap-2 text-slate-400 text-[11px]">
-                  <span className="material-symbols-outlined text-sm">lock</span>
-                  <span>256-bit Encrypted Transaction</span>
-                </div>
-              </div>
             </div>
           </div>
         </div>

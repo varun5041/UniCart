@@ -207,7 +207,7 @@ export const GoogleSignInButton: React.FC = () => {
                   required
                   value={demoName}
                   onChange={(e) => setDemoName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:border-indigo-600"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:border-brand-600"
                 />
               </div>
 
@@ -218,7 +218,7 @@ export const GoogleSignInButton: React.FC = () => {
                   required
                   value={demoEmail}
                   onChange={(e) => setDemoEmail(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:border-indigo-600"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:border-brand-600"
                 />
               </div>
 
@@ -233,7 +233,7 @@ export const GoogleSignInButton: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold transition-all shadow-xs cursor-pointer disabled:opacity-50"
+                  className="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold transition-all shadow-xs cursor-pointer disabled:opacity-50"
                 >
                   {isLoading ? 'Connecting...' : 'Authorize with Google'}
                 </button>

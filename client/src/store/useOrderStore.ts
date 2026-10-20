@@ -12,7 +12,8 @@ interface OrderStore {
   createOrder: (
     address: Address,
     idempotencyKey: string,
-    autoPay?: boolean
+    autoPay?: boolean,
+    couponCode?: string | null
   ) => Promise<{ success: boolean; order?: Order; error?: string }>;
   payOrder: (orderId: string, ref?: string) => Promise<{ success: boolean; error?: string }>;
   cancelOrder: (orderId: string) => Promise<{ success: boolean; message?: string; error?: string }>;
@@ -39,7 +40,7 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
     }
   },
 
-  createOrder: async (address, idempotencyKey, autoPay = true) => {
+  createOrder: async (address, idempotencyKey, autoPay = true, couponCode = null) => {
     const { isAuthenticated } = useAuthStore.getState();
     if (!isAuthenticated) {
       return { success: false, error: 'Please sign in to place an order.' };
@@ -47,7 +48,7 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
 
     try {
       set({ isLoading: true });
-      const res = await ordersApi.createOrder(address, idempotencyKey);
+      const res = await ordersApi.createOrder(address, idempotencyKey, couponCode);
       if (res.success && res.data) {
         let placedOrder = res.data;
 

@@ -9,6 +9,7 @@ import { getCache, setCache, incrementCacheVersion } from '../../utils/cache.js'
 import { enqueueOrderEmail } from '../../jobs/email.job.js';
 import { logger } from '../../config/logger.js';
 import { ListOrdersQuery } from './order.schema.js';
+import { couponService, computeShipping } from '../coupons/coupon.service.js';
 
 export interface PaginatedOrders {
   items: unknown[];
@@ -27,7 +28,8 @@ export class OrderService {
   async createOrder(
     userId: string,
     idempotencyKey: string | undefined,
-    shippingAddress: IAddress
+    shippingAddress: IAddress,
+    couponCode?: string
   ): Promise<IOrder> {
     if (!idempotencyKey || !idempotencyKey.trim()) {
       throw ApiError.badRequest(
@@ -81,7 +83,7 @@ export class OrderService {
             stock: { $gte: item.qty },
             isActive: true
           },
-          { $inc: { stock: -item.qty } },
+          { $inc: { stock: -item.qty, soldCount: item.qty } },
           { session, new: true }
         );
 
@@ -102,10 +104,12 @@ export class OrderService {
         subtotal += updatedProduct.price * item.qty;
       }
 
+      // Coupon discount is recomputed and redeemed server-side within the same transaction
+      const discount = couponCode ? await couponService.redeem(couponCode, subtotal, session) : 0;
+
       // Recompute shipping & grand total (paise)
-      // Free shipping for orders >= ₹500 (50,000 paise), else ₹50 (5,000 paise)
-      const shipping = subtotal >= 50000 ? 0 : 5000;
-      const total = subtotal + shipping;
+      const shipping = computeShipping(subtotal - discount);
+      const total = subtotal - discount + shipping;
 
       const [order] = await Order.create(
         [
@@ -113,6 +117,8 @@ export class OrderService {
             userId: new Types.ObjectId(userId),
             items: orderItems,
             subtotal,
+            discount,
+            couponCode: couponCode ?? null,
             shipping,
             total,
             shippingAddress,

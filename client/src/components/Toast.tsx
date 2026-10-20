@@ -9,7 +9,7 @@ export const ToastContainer: React.FC = () => {
   return (
     <div className="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none">
       {toasts.map((toast) => {
-        let borderClass = 'border-indigo-500';
+        let borderClass = 'border-brand-500';
         let iconName = 'info';
         let bgClass = 'bg-white text-slate-800';
 
@@ -30,7 +30,7 @@ export const ToastContainer: React.FC = () => {
             className={`pointer-events-auto flex items-start gap-3 p-4 rounded-xl shadow-xl border-l-4 ${borderClass} ${bgClass} transition-all duration-300 animate-slide-in`}
             role="alert"
           >
-            <span className="material-symbols-outlined text-xl text-indigo-600 select-none">
+            <span className="material-symbols-outlined text-xl text-brand-600 select-none">
               {iconName}
             </span>
             <div className="flex-1">

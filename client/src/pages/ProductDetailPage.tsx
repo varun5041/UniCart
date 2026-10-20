@@ -4,8 +4,11 @@ import { useQuery } from '@tanstack/react-query';
 import { productsApi } from '../api/products';
 import { useCartStore } from '../store/useCartStore';
 import { useToastStore } from '../store/useToastStore';
-import { ProductCard } from '../components/ProductCard';
-import type { Product } from '../types';
+import { ProductRail } from '../components/ProductRail';
+import { WishlistButton } from '../components/WishlistButton';
+import { PLACEHOLDER_IMAGE } from '../components/ProductCard';
+import { FREE_SHIPPING_THRESHOLD } from '../lib/validation';
+import { formatRupees, getPricing, getProductId } from '../types';
 
 export const ProductDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -35,9 +38,9 @@ export const ProductDetailPage: React.FC = () => {
 
   if (isServerLoading) {
     return (
-      <div className="bg-[#FAF8FF] min-h-[60vh] flex items-center justify-center">
+      <div className="bg-surface min-h-[60vh] flex items-center justify-center">
         <div className="text-center space-y-3">
-          <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <div className="w-10 h-10 border-4 border-brand-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
           <p className="text-xs text-slate-500 font-medium">Loading product details...</p>
         </div>
       </div>
@@ -46,7 +49,7 @@ export const ProductDetailPage: React.FC = () => {
 
   if (!serverProduct) {
     return (
-      <div className="bg-[#FAF8FF] min-h-[60vh] flex items-center justify-center p-4">
+      <div className="bg-surface min-h-[60vh] flex items-center justify-center p-4">
         <div className="bg-white rounded-3xl border border-slate-200 p-8 max-w-md w-full text-center space-y-4 shadow-sm">
           <div className="w-16 h-16 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto">
             <span className="material-symbols-outlined text-3xl">sentiment_dissatisfied</span>
@@ -58,7 +61,7 @@ export const ProductDetailPage: React.FC = () => {
           <div className="pt-2">
             <Link
               to="/"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-xs transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-xs transition-colors"
             >
               <span className="material-symbols-outlined text-sm">storefront</span>
               <span>Back to Store</span>
@@ -70,19 +73,10 @@ export const ProductDetailPage: React.FC = () => {
   }
 
   const product = serverProduct;
-  const displayPrice = product._id ? Math.round(product.price / 100) : product.price;
-  const brandName =
-    product.brand || (typeof product.category === 'object' ? product.category.name : 'UniCart');
-  const ratingValue = product.rating || 4.5;
-  const reviewCountValue = product.reviewCount || 128;
-  const originalPriceValue = product.originalPrice || Math.round(displayPrice * 1.25);
-  const discountPct =
-    product.discountPercentage ||
-    Math.max(5, Math.round(((originalPriceValue - displayPrice) / originalPriceValue) * 100));
-  const productImages =
-    product.images && product.images.length > 0
-      ? product.images
-      : ['https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80'];
+  const productId = getProductId(product);
+  const { price, mrp, discount } = getPricing(product);
+  const category = typeof product.category === 'object' ? product.category : null;
+  const productImages = product.images && product.images.length > 0 ? product.images : [PLACEHOLDER_IMAGE];
 
   const handleAddToCart = () => {
     if (product.stock <= 0) return;
@@ -102,20 +96,21 @@ export const ProductDetailPage: React.FC = () => {
     navigate('/checkout');
   };
 
-  const relatedProducts: Product[] = [];
 
   return (
-    <div className="bg-[#FAF8FF] min-h-screen py-8">
+    <div className="bg-surface min-h-screen py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         {/* Breadcrumb Navigation */}
         <nav className="flex items-center gap-2 text-xs text-slate-500 overflow-x-auto scrollbar-none py-1">
-          <Link to="/" className="hover:text-indigo-600 font-medium">
+          <Link to="/" className="hover:text-brand-600 font-medium">
             Home
           </Link>
           <span>/</span>
-          <Link to="/" className="hover:text-indigo-600 font-medium capitalize">
-            {typeof product.category === 'object' ? product.category.name : product.category}
-          </Link>
+          {category && (
+            <Link to={`/category/${category.slug}`} className="hover:text-brand-600 font-medium">
+              {category.name}
+            </Link>
+          )}
           <span>/</span>
           <span className="text-slate-800 font-semibold truncate max-w-xs">{product.name}</span>
         </nav>
@@ -132,9 +127,9 @@ export const ProductDetailPage: React.FC = () => {
                   alt={product.name}
                   className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                 />
-                {discountPct > 0 && (
-                  <div className="absolute top-4 left-4 px-3 py-1 rounded-full bg-emerald-600 text-white text-xs font-black shadow-md tracking-wider">
-                    {discountPct}% OFF
+                {discount > 0 && (
+                  <div className="absolute top-4 left-4 px-3 py-1 rounded-lg bg-gradient-to-r from-orange-500 to-rose-500 text-white text-xs font-extrabold shadow-md tracking-wide">
+                    {discount}% OFF
                   </div>
                 )}
               </div>
@@ -148,7 +143,7 @@ export const ProductDetailPage: React.FC = () => {
                       onClick={() => setSelectedImage(idx)}
                       className={`w-18 h-18 rounded-xl overflow-hidden border-2 transition-all shrink-0 bg-slate-50 ${
                         selectedImage === idx
-                          ? 'border-indigo-600 ring-2 ring-indigo-600/20 scale-95'
+                          ? 'border-brand-600 ring-2 ring-brand-600/20 scale-95'
                           : 'border-slate-200 hover:border-slate-300 opacity-75 hover:opacity-100'
                       }`}
                     >
@@ -168,13 +163,20 @@ export const ProductDetailPage: React.FC = () => {
               {/* Header: Title, Brand, Ratings */}
               <div>
                 <div className="flex items-center justify-between gap-2 mb-2">
-                  <span className="text-xs font-extrabold text-indigo-600 uppercase tracking-wider bg-indigo-50 px-2.5 py-1 rounded-md">
-                    {brandName}
-                  </span>
+                  {category ? (
+                    <Link
+                      to={`/category/${category.slug}`}
+                      className="text-xs font-extrabold text-brand-600 uppercase tracking-wider bg-brand-50 px-2.5 py-1 rounded-md hover:bg-brand-100"
+                    >
+                      {category.name}
+                    </Link>
+                  ) : (
+                    <span />
+                  )}
                   {product.stock > 0 ? (
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                       <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                      In Stock ({product.stock} units available)
+                      {product.stock <= 5 ? `Only ${product.stock} left` : 'In stock'}
                     </span>
                   ) : (
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
@@ -188,45 +190,28 @@ export const ProductDetailPage: React.FC = () => {
                   {product.name}
                 </h1>
 
-                {/* Rating & Review Counter */}
-                <div className="flex items-center gap-3 mt-3">
-                  <div className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-xs font-extrabold">
-                    <span>★</span>
-                    <span>{ratingValue.toFixed(1)}</span>
-                  </div>
-                  <span className="text-xs text-slate-500">
-                    {reviewCountValue.toLocaleString('en-IN')} customer ratings
-                  </span>
-                  <span className="text-slate-300">|</span>
-                  <span className="text-xs text-emerald-600 font-semibold flex items-center gap-1">
-                    <span className="material-symbols-outlined text-sm">thumb_up</span>
-                    94% recommend this item
-                  </span>
-                </div>
               </div>
 
               {/* Pricing Block */}
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
-                <div className="flex items-baseline gap-3">
-                  <span className="text-3xl font-black text-slate-900">
-                    ₹{displayPrice.toLocaleString('en-IN')}
-                  </span>
-                  {originalPriceValue > displayPrice && (
-                    <span className="text-base text-slate-400 line-through">
-                      MRP: ₹{originalPriceValue.toLocaleString('en-IN')}
-                    </span>
-                  )}
-                  {discountPct > 0 && (
-                    <span className="text-xs font-extrabold text-emerald-600">
-                      Save ₹{(originalPriceValue - displayPrice).toLocaleString('en-IN')} ({discountPct}%)
-                    </span>
-                  )}
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
+                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                  {discount > 0 && <span className="text-2xl font-extrabold text-rose-600">-{discount}%</span>}
+                  <span className="text-3xl font-extrabold text-slate-900">{formatRupees(price)}</span>
                 </div>
-                <p className="text-[11px] text-slate-500">Inclusive of all taxes. Free shipping on this item.</p>
+                {discount > 0 && (
+                  <p className="text-sm text-slate-500">
+                    M.R.P.: <span className="line-through">{formatRupees(mrp)}</span>
+                    <span className="ml-2 font-bold text-emerald-600">You save {formatRupees(mrp - price)}</span>
+                  </p>
+                )}
+                <p className="text-xs text-slate-500">
+                  Inclusive of all taxes ·{' '}
+                  {price >= FREE_SHIPPING_THRESHOLD ? 'FREE delivery' : 'FREE delivery on orders over ₹500'}
+                </p>
               </div>
 
               {/* Description summary */}
-              <div className="text-xs text-slate-600 leading-relaxed space-y-2">
+              <div className="text-sm text-slate-600 leading-relaxed space-y-2">
                 <p>{product.description}</p>
               </div>
 
@@ -256,7 +241,7 @@ export const ProductDetailPage: React.FC = () => {
                 </div>
 
                 {/* Primary Action Buttons */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_auto] gap-3">
                   <button
                     onClick={handleAddToCart}
                     disabled={product.stock <= 0}
@@ -265,7 +250,7 @@ export const ProductDetailPage: React.FC = () => {
                         ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
                         : isAdded
                         ? 'bg-emerald-600 text-white'
-                        : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/25 active:scale-98'
+                        : 'bg-brand-600 hover:bg-brand-700 text-white shadow-brand-500/25 active:scale-98'
                     }`}
                   >
                     <span className="material-symbols-outlined text-lg">
@@ -286,22 +271,22 @@ export const ProductDetailPage: React.FC = () => {
                     <span className="material-symbols-outlined text-lg">bolt</span>
                     <span>Buy Now</span>
                   </button>
+
+                  <WishlistButton productId={productId} productName={product.name} variant="full" />
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Related Products Showcase */}
-        {relatedProducts.length > 0 && (
-          <div className="space-y-4 pt-4">
-            <h2 className="text-lg font-black text-slate-900">Customers Also Viewed</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {relatedProducts.map((p) => (
-                <ProductCard key={p._id || p.id} product={p} />
-              ))}
-            </div>
-          </div>
+        {category && (
+          <ProductRail
+            title={`More in ${category.name}`}
+            icon="storefront"
+            query={{ category: category.slug, sort: 'popular' }}
+            seeAllHref={`/category/${category.slug}`}
+            excludeId={productId}
+          />
         )}
       </div>
     </div>
