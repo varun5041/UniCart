@@ -55,5 +55,13 @@ export const authApi = {
     } finally {
       setAccessToken(null);
     }
+  },
+
+  async changePassword(data: { currentPassword: string; newPassword: string }): Promise<ApiResponse<{ message: string; accessToken: string }>> {
+    const res = await api.post<ApiResponse<{ message: string; accessToken: string }>>('/auth/change-password', data);
+    if (res.data.success && res.data.data?.accessToken) {
+      setAccessToken(res.data.data.accessToken);
+    }
+    return res.data;
   }
 };

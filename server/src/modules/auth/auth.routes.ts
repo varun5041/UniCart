@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { authController } from './auth.controller.js';
 import { validate } from '../../middleware/validate.js';
-import { registerSchema, loginSchema, googleAuthSchema } from './auth.schema.js';
+import { registerSchema, loginSchema, googleAuthSchema, changePasswordSchema } from './auth.schema.js';
 import { authRateLimiter } from '../../middleware/rateLimit.js';
 import { authenticate } from '../../middleware/auth.js';
 import { asyncHandler } from '../../utils/asyncHandler.js';
@@ -44,6 +44,13 @@ authRouter.post(
   '/logout-all',
   authenticate,
   asyncHandler((req, res) => authController.logoutAll(req, res))
+);
+
+authRouter.post(
+  '/change-password',
+  authenticate,
+  validate({ body: changePasswordSchema }),
+  asyncHandler((req, res) => authController.changePassword(req, res))
 );
 
 export default authRouter;

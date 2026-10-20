@@ -102,6 +102,26 @@ export class AuthController {
       data: result
     });
   }
+
+  async changePassword(req: Request, res: Response): Promise<void> {
+    if (!req.user) {
+      throw ApiError.unauthorized('Authentication required', 'UNAUTHENTICATED');
+    }
+
+    const userId = req.user._id.toString();
+    const ip = req.ip || req.socket.remoteAddress;
+    const result = await authService.changePassword(userId, req.body, ip);
+
+    res.cookie('rt', result.rawRefreshToken, getRefreshTokenCookieOptions());
+
+    res.status(200).json({
+      success: true,
+      data: {
+        message: result.message,
+        accessToken: result.accessToken
+      }
+    });
+  }
 }
 
 export const authController = new AuthController();

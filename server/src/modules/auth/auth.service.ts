@@ -9,7 +9,7 @@ import {
   generateRefreshToken,
   hashToken
 } from '../../utils/token.js';
-import { RegisterInput, LoginInput } from './auth.schema.js';
+import { RegisterInput, LoginInput, ChangePasswordInput } from './auth.schema.js';
 
 const googleClient = new OAuth2Client(env.GOOGLE_CLIENT_ID);
 
@@ -441,6 +441,68 @@ export class AuthService {
         email: user.email,
         role: user.role
       },
+      accessToken,
+      rawRefreshToken: rawToken
+    };
+  }
+
+  /**
+   * Verifies current password, updates to new password with Argon2id, revokes old sessions, and issues fresh tokens
+   */
+  async changePassword(
+    userId: string,
+    input: ChangePasswordInput,
+    ip?: string
+  ): Promise<{ message: string; accessToken: string; rawRefreshToken: string }> {
+    const user = await User.findById(userId).select('+password +failedLogins +tokenVersion');
+    if (!user) {
+      throw ApiError.notFound('User not found', 'USER_NOT_FOUND');
+    }
+
+    if (user.password) {
+      const isValid = await user.verifyPassword(input.currentPassword);
+      if (!isValid) {
+        throw ApiError.badRequest('Current password is incorrect', 'INVALID_CURRENT_PASSWORD');
+      }
+    }
+
+    user.password = input.newPassword;
+    user.tokenVersion = (user.tokenVersion || 0) + 1;
+    user.failedLogins = 0;
+    user.lockUntil = null;
+    await user.save();
+
+    // Revoke old refresh tokens
+    await RefreshToken.deleteMany({ userId: user._id });
+
+    // Issue fresh tokens
+    const accessToken = signAccessToken({
+      sub: user._id.toString(),
+      role: user.role,
+      tokenVersion: user.tokenVersion
+    });
+
+    const { rawToken, tokenHash } = generateRefreshToken();
+    const familyId = uuidv4();
+    const expiresAt = new Date(Date.now() + env.REFRESH_TOKEN_TTL_DAYS * 24 * 60 * 60 * 1000);
+
+    await RefreshToken.create({
+      tokenHash,
+      userId: user._id,
+      familyId,
+      expiresAt
+    });
+
+    await AuditLog.create({
+      actorId: user._id,
+      action: 'auth.password.changed',
+      target: user._id.toString(),
+      ip,
+      meta: { email: user.email }
+    });
+
+    return {
+      message: 'Password changed successfully',
       accessToken,
       rawRefreshToken: rawToken
     };

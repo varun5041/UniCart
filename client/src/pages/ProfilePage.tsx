@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import { useToastStore } from '../store/useToastStore';
+import { authApi } from '../api/auth';
 
 export const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
@@ -35,6 +36,7 @@ export const ProfilePage: React.FC = () => {
 
   // Password form
   const [passForm, setPassForm] = useState({ current: '', next: '', confirm: '' });
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
 
   const handleUpdateProfile = (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,13 +59,21 @@ export const ProfilePage: React.FC = () => {
     addToast({ type: 'success', title: 'Address Saved' });
   };
 
-  const handleChangePassword = (e: React.FormEvent) => {
+  const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!passForm.current) {
+      addToast({
+        type: 'error',
+        title: 'Current Password Required',
+        message: 'Please enter your current password.'
+      });
+      return;
+    }
     if (passForm.next.length < 8) {
       addToast({
         type: 'error',
         title: 'Weak Password',
-        message: 'Password must be at least 8 characters long.'
+        message: 'New password must be at least 8 characters long.'
       });
       return;
     }
@@ -75,12 +85,30 @@ export const ProfilePage: React.FC = () => {
       });
       return;
     }
-    addToast({
-      type: 'success',
-      title: 'Password Changed',
-      message: 'Password updated successfully with Argon2id hash.'
-    });
-    setPassForm({ current: '', next: '', confirm: '' });
+
+    try {
+      setIsChangingPassword(true);
+      const res = await authApi.changePassword({
+        currentPassword: passForm.current,
+        newPassword: passForm.next
+      });
+      if (res.success) {
+        addToast({
+          type: 'success',
+          title: 'Password Changed',
+          message: 'Password updated successfully with Argon2id hash.'
+        });
+        setPassForm({ current: '', next: '', confirm: '' });
+      }
+    } catch (err: any) {
+      addToast({
+        type: 'error',
+        title: 'Change Password Failed',
+        message: err.response?.data?.error?.message || err.message || 'Failed to update password'
+      });
+    } finally {
+      setIsChangingPassword(false);
+    }
   };
 
   const handleLogoutAll = async () => {
@@ -388,9 +416,10 @@ export const ProfilePage: React.FC = () => {
                 </div>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl transition-colors"
+                  disabled={isChangingPassword}
+                  className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white font-bold rounded-xl transition-colors cursor-pointer"
                 >
-                  Update Password
+                  {isChangingPassword ? 'Updating Password...' : 'Update Password'}
                 </button>
               </form>
             </div>
