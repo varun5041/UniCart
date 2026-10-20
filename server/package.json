@@ -11,6 +11,7 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "seed": "tsx src/scripts/seed.ts",
+    "seed:catalogue": "tsx src/scripts/seedAdminCatalogue.ts",
     "create-admin": "tsx src/scripts/createAdmin.ts",
     "purge": "tsx src/scripts/purgeCatalogue.ts",
     "worker": "tsx src/jobs/worker.ts"
