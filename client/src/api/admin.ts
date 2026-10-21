@@ -8,7 +8,8 @@ export interface AdminCreateProductInput {
   mrp: number; // in paise; selling price is computed by the server
   discountPercent?: number;
   stock: number;
-  category: string;
+  category?: string;
+  categories?: string[];
   images?: string[];
   isActive?: boolean;
 }
@@ -21,8 +22,16 @@ export interface AdminUpdateProductInput {
   discountPercent?: number;
   stock?: number;
   category?: string;
+  categories?: string[];
   images?: string[];
   isActive?: boolean;
+}
+
+export interface AdminCategoryInput {
+  name: string;
+  slug?: string;
+  description?: string;
+  image?: string;
 }
 
 export interface AdminUploadSignature {
@@ -137,6 +146,26 @@ export const adminApi = {
     actorId?: string;
   }): Promise<ApiResponse<AdminAuditLog[]>> {
     const res = await api.get<ApiResponse<AdminAuditLog[]>>('/admin/audit-logs', { params });
+    return res.data;
+  },
+
+  async createCategory(data: AdminCategoryInput): Promise<ApiResponse<import('../types').Category>> {
+    const res = await api.post<ApiResponse<import('../types').Category>>('/admin/categories', data);
+    return res.data;
+  },
+
+  async updateCategory(id: string, data: Partial<AdminCategoryInput>): Promise<ApiResponse<import('../types').Category>> {
+    const res = await api.patch<ApiResponse<import('../types').Category>>(`/admin/categories/${id}`, data);
+    return res.data;
+  },
+
+  async deleteCategory(id: string): Promise<ApiResponse<{ message: string }>> {
+    const res = await api.delete<ApiResponse<{ message: string }>>(`/admin/categories/${id}`);
+    return res.data;
+  },
+
+  async seedDefaultCategories(): Promise<ApiResponse<{ created: number; skipped: number; total: number }>> {
+    const res = await api.post<ApiResponse<{ created: number; skipped: number; total: number }>>('/admin/categories/seed-defaults');
     return res.data;
   }
 };

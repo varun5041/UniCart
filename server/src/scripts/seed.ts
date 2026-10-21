@@ -13,34 +13,8 @@ import {
   Coupon
 } from '../models/index.js';
 import { computeSalePrice } from '../utils/pricing.js';
+import { DEFAULT_CATEGORIES } from '../utils/defaultCategories.js';
 
-const CATEGORIES_DATA = [
-  {
-    name: 'Electronics & Gadgets',
-    slug: 'electronics-gadgets',
-    description: 'High performance smartphones, laptops, audio gear, and smart home devices.'
-  },
-  {
-    name: 'Fashion & Apparel',
-    slug: 'fashion-apparel',
-    description: 'Curated modern streetwear, formal clothing, and luxury footwear.'
-  },
-  {
-    name: 'Home & Kitchen',
-    slug: 'home-kitchen',
-    description: 'Premium cookware, ergonomic furniture, and modern interior aesthetics.'
-  },
-  {
-    name: 'Books & Stationery',
-    slug: 'books-stationery',
-    description: 'Best-selling literature, tech manuals, art supplies, and notebooks.'
-  },
-  {
-    name: 'Sports & Fitness',
-    slug: 'sports-fitness',
-    description: 'Workout accessories, gym machinery, athletic apparel, and camping gear.'
-  }
-];
 
 const CURATED_IMAGES = [
   'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80',
@@ -108,7 +82,7 @@ export async function seedDatabase(): Promise<void> {
 
     // 3. Seed Standard Categories
     const categoriesMap: Record<string, string> = {};
-    for (const catData of CATEGORIES_DATA) {
+    for (const catData of DEFAULT_CATEGORIES) {
       const category = await Category.findOneAndUpdate(
         { slug: catData.slug },
         { $set: catData },
@@ -116,7 +90,7 @@ export async function seedDatabase(): Promise<void> {
       );
       categoriesMap[catData.slug] = category._id.toString();
     }
-    logger.info({ msg: '[Seed] Seeded 5 core categories', count: Object.keys(categoriesMap).length });
+    logger.info({ msg: '[Seed] Seeded core categories with icons', count: Object.keys(categoriesMap).length });
 
     // 4. Seed 200 Products
     const categoryIds = Object.values(categoriesMap);
@@ -140,6 +114,7 @@ export async function seedDatabase(): Promise<void> {
         const discountPercent = i % 5 < 3 ? faker.number.int({ min: 1, max: 14 }) * 5 : 0;
 
         const categoryId = categoryIds[i % categoryIds.length];
+        const secondaryCategoryId = categoryIds[(i + 1) % categoryIds.length];
         const selectedImages = [
           CURATED_IMAGES[i % CURATED_IMAGES.length],
           CURATED_IMAGES[(i + 1) % CURATED_IMAGES.length]
@@ -155,6 +130,7 @@ export async function seedDatabase(): Promise<void> {
           soldCount: faker.number.int({ min: 0, max: 2500 }),
           stock: faker.number.int({ min: 10, max: 350 }),
           category: categoryId,
+          categories: [categoryId, secondaryCategoryId],
           images: selectedImages,
           isActive: true
         });

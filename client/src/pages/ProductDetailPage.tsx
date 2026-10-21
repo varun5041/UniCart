@@ -166,16 +166,32 @@ export const ProductDetailPage: React.FC = () => {
               {/* Header: Title, Brand, Ratings */}
               <div>
                 <div className="flex items-center justify-between gap-2 mb-2">
-                  {category ? (
-                    <Link
-                      to={`/category/${category.slug}`}
-                      className="text-xs font-extrabold text-brand-600 uppercase tracking-wider bg-brand-50 px-2.5 py-1 rounded-md hover:bg-brand-100"
-                    >
-                      {category.name}
-                    </Link>
-                  ) : (
-                    <span />
-                  )}
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {Array.isArray(product.categories) && product.categories.length > 0 ? (
+                      product.categories.map((c) => {
+                        const catObj = typeof c === 'object' && c ? c : null;
+                        if (!catObj) return null;
+                        return (
+                          <Link
+                            key={catObj.slug}
+                            to={`/category/${catObj.slug}`}
+                            className="text-xs font-extrabold text-brand-600 uppercase tracking-wider bg-brand-50 px-2.5 py-1 rounded-md hover:bg-brand-100"
+                          >
+                            {catObj.name}
+                          </Link>
+                        );
+                      })
+                    ) : category ? (
+                      <Link
+                        to={`/category/${category.slug}`}
+                        className="text-xs font-extrabold text-brand-600 uppercase tracking-wider bg-brand-50 px-2.5 py-1 rounded-md hover:bg-brand-100"
+                      >
+                        {category.name}
+                      </Link>
+                    ) : (
+                      <span />
+                    )}
+                  </div>
                   {product.stock > 0 ? (
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                       <span className="w-2 h-2 rounded-full bg-emerald-500"></span>

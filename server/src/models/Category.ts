@@ -4,6 +4,7 @@ export interface ICategory extends Document {
   name: string;
   slug: string;
   description?: string;
+  image?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -25,6 +26,10 @@ const categorySchema = new Schema<ICategory>(
       index: true
     },
     description: {
+      type: String,
+      trim: true
+    },
+    image: {
       type: String,
       trim: true
     }

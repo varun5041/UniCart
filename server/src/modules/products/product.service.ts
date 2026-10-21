@@ -1,15 +1,18 @@
 import crypto from 'node:crypto';
 import mongoose, { Types } from 'mongoose';
 import { Product, IProduct } from '../../models/Product.js';
-import { Category } from '../../models/Category.js';
+import { Category, ICategory } from '../../models/Category.js';
 import { ApiError } from '../../utils/ApiError.js';
 import { cacheAside, incrementCacheVersion } from '../../utils/cache.js';
 import { computeSalePrice, escapeRegex } from '../../utils/pricing.js';
+import { DEFAULT_CATEGORIES } from '../../utils/defaultCategories.js';
 import {
   ListProductsQuery,
   AdminCreateProductInput,
   AdminUpdateProductInput,
-  AdminListProductsQuery
+  AdminListProductsQuery,
+  AdminCreateCategoryInput,
+  AdminUpdateCategoryInput
 } from './product.schema.js';
 
 export interface PaginatedProducts {
@@ -48,14 +51,18 @@ export class ProductService {
       async () => {
         const filter: Record<string, unknown> = { isActive: true };
 
+        let categoryCondition: Record<string, unknown> | null = null;
+        let searchCondition: { $or: Record<string, unknown>[] } | null = null;
+
         // 1. Category Filter (by ObjectId or Slug)
         if (query.category) {
+          let catId: Types.ObjectId | null = null;
           if (mongoose.isValidObjectId(query.category)) {
-            filter.category = new Types.ObjectId(query.category);
+            catId = new Types.ObjectId(query.category);
           } else {
             const cat = await Category.findOne({ slug: query.category }).lean();
             if (cat) {
-              filter.category = cat._id;
+              catId = cat._id as Types.ObjectId;
             } else {
               // Non-existent category yields empty result
               return {
@@ -64,15 +71,28 @@ export class ProductService {
               };
             }
           }
+          if (catId) {
+            categoryCondition = { $or: [{ category: catId }, { categories: catId }] };
+          }
         }
 
         // 2. Search Query (user input escaped so it is matched literally)
         if (query.q && query.q.trim()) {
           const sanitizedQ = escapeRegex(query.q.trim());
-          filter.$or = [
-            { name: { $regex: sanitizedQ, $options: 'i' } },
-            { description: { $regex: sanitizedQ, $options: 'i' } }
-          ];
+          searchCondition = {
+            $or: [
+              { name: { $regex: sanitizedQ, $options: 'i' } },
+              { description: { $regex: sanitizedQ, $options: 'i' } }
+            ]
+          };
+        }
+
+        if (categoryCondition && searchCondition) {
+          filter.$and = [categoryCondition, searchCondition];
+        } else if (searchCondition) {
+          filter.$or = searchCondition.$or;
+        } else if (categoryCondition) {
+          filter.$or = (categoryCondition as any).$or;
         }
 
         // 2b. Deal / availability filters
@@ -108,7 +128,8 @@ export class ProductService {
           .sort(sortOption)
           .skip(skip)
           .limit(query.limit)
-          .populate('category', 'name slug')
+          .populate('category', 'name slug image')
+          .populate('categories', 'name slug image')
           .lean();
 
         const pages = Math.ceil(total / query.limit) || 1;
@@ -138,7 +159,8 @@ export class ProductService {
       300, // 5 minutes TTL
       async () => {
         const product = await Product.findOne({ slug, isActive: true })
-          .populate('category', 'name slug')
+          .populate('category', 'name slug image')
+          .populate('categories', 'name slug image')
           .lean();
 
         if (!product) {
@@ -172,17 +194,31 @@ export class ProductService {
    * Admin: Create a product and invalidate cache
    */
   async createProduct(input: AdminCreateProductInput): Promise<IProduct> {
-    let categoryId: Types.ObjectId;
-
-    if (mongoose.isValidObjectId(input.category)) {
-      categoryId = new Types.ObjectId(input.category);
-    } else {
-      const cat = await Category.findOne({ slug: input.category });
-      if (!cat) {
-        throw ApiError.badRequest(`Category '${input.category}' does not exist`, 'CATEGORY_NOT_FOUND');
-      }
-      categoryId = cat._id as Types.ObjectId;
+    const rawCategories: string[] = [];
+    if (Array.isArray(input.categories) && input.categories.length > 0) {
+      rawCategories.push(...input.categories);
+    } else if (input.category) {
+      rawCategories.push(input.category);
     }
+
+    const resolvedCategoryIds: Types.ObjectId[] = [];
+    for (const catItem of rawCategories) {
+      if (mongoose.isValidObjectId(catItem)) {
+        resolvedCategoryIds.push(new Types.ObjectId(catItem));
+      } else {
+        const cat = await Category.findOne({ slug: catItem });
+        if (!cat) {
+          throw ApiError.badRequest(`Category '${catItem}' does not exist`, 'CATEGORY_NOT_FOUND');
+        }
+        resolvedCategoryIds.push(cat._id as Types.ObjectId);
+      }
+    }
+
+    if (resolvedCategoryIds.length === 0) {
+      throw ApiError.badRequest('At least one valid category is required', 'CATEGORY_REQUIRED');
+    }
+
+    const primaryCategoryId = resolvedCategoryIds[0];
 
     let slug = input.slug ? this.generateSlug(input.slug) : this.generateSlug(input.name);
     const existing = await Product.findOne({ slug }).lean();
@@ -201,7 +237,8 @@ export class ProductService {
       discountPercent,
       price: computeSalePrice(mrp, discountPercent),
       stock: input.stock,
-      category: categoryId,
+      category: primaryCategoryId,
+      categories: resolvedCategoryIds,
       images: input.images || [],
       isActive: input.isActive !== undefined ? input.isActive : true
     });
@@ -238,15 +275,33 @@ export class ProductService {
     if (input.images !== undefined) product.images = input.images;
     if (input.isActive !== undefined) product.isActive = input.isActive;
 
-    if (input.category) {
+    if (input.categories && input.categories.length > 0) {
+      const resolvedCategoryIds: Types.ObjectId[] = [];
+      for (const catItem of input.categories) {
+        if (mongoose.isValidObjectId(catItem)) {
+          resolvedCategoryIds.push(new Types.ObjectId(catItem));
+        } else {
+          const cat = await Category.findOne({ slug: catItem });
+          if (!cat) {
+            throw ApiError.badRequest(`Category '${catItem}' not found`, 'CATEGORY_NOT_FOUND');
+          }
+          resolvedCategoryIds.push(cat._id as Types.ObjectId);
+        }
+      }
+      product.categories = resolvedCategoryIds;
+      product.category = resolvedCategoryIds[0];
+    } else if (input.category) {
       if (mongoose.isValidObjectId(input.category)) {
-        product.category = new Types.ObjectId(input.category);
+        const catId = new Types.ObjectId(input.category);
+        product.category = catId;
+        product.categories = [catId];
       } else {
         const cat = await Category.findOne({ slug: input.category });
         if (!cat) {
           throw ApiError.badRequest(`Category '${input.category}' not found`, 'CATEGORY_NOT_FOUND');
         }
         product.category = cat._id as Types.ObjectId;
+        product.categories = [cat._id as Types.ObjectId];
       }
     }
 
@@ -330,7 +385,8 @@ export class ProductService {
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(query.limit)
-      .populate('category', 'name slug')
+      .populate('category', 'name slug image')
+      .populate('categories', 'name slug image')
       .lean();
 
     return {
@@ -341,6 +397,146 @@ export class ProductService {
         total,
         pages: Math.ceil(total / query.limit) || 1
       }
+    };
+  }
+
+  /**
+   * Admin: Create a new category
+   */
+  async createCategory(input: AdminCreateCategoryInput): Promise<ICategory> {
+    const slug = input.slug ? this.generateSlug(input.slug) : this.generateSlug(input.name);
+
+    const existing = await Category.findOne({
+      $or: [
+        { name: { $regex: new RegExp(`^${escapeRegex(input.name)}$`, 'i') } },
+        { slug }
+      ]
+    }).lean();
+
+    if (existing) {
+      throw ApiError.conflict('Category with this name or slug already exists', 'CATEGORY_EXISTS');
+    }
+
+    const category = new Category({
+      name: input.name,
+      slug,
+      description: input.description,
+      image: input.image
+    });
+
+    await category.save();
+
+    await incrementCacheVersion('categories');
+    return category;
+  }
+
+  /**
+   * Admin: Update an existing category
+   */
+  async updateCategory(id: string, input: AdminUpdateCategoryInput): Promise<ICategory> {
+    const category = await Category.findById(id);
+    if (!category) {
+      throw ApiError.notFound('Category not found', 'CATEGORY_NOT_FOUND');
+    }
+
+    const newSlug = input.slug ? this.generateSlug(input.slug) : input.name ? this.generateSlug(input.name) : category.slug;
+
+    if (input.name || input.slug) {
+      const existing = await Category.findOne({
+        _id: { $ne: category._id },
+        $or: [
+          ...(input.name ? [{ name: { $regex: new RegExp(`^${escapeRegex(input.name)}$`, 'i') } }] : []),
+          { slug: newSlug }
+        ]
+      }).lean();
+
+      if (existing) {
+        throw ApiError.conflict('Category with this name or slug already exists', 'CATEGORY_EXISTS');
+      }
+    }
+
+    if (input.name) category.name = input.name;
+    if (input.slug || input.name) category.slug = newSlug;
+    if (input.description !== undefined) category.description = input.description;
+    if (input.image !== undefined) category.image = input.image;
+
+    await category.save();
+
+    await incrementCacheVersion('categories');
+    await incrementCacheVersion('products');
+    return category;
+  }
+
+  /**
+   * Admin: Delete category with product safety check
+   */
+  async deleteCategory(id: string): Promise<{ message: string }> {
+    const category = await Category.findById(id);
+    if (!category) {
+      throw ApiError.notFound('Category not found', 'CATEGORY_NOT_FOUND');
+    }
+
+    const inUseCount = await Product.countDocuments({
+      category: category._id,
+      isDeleted: { $ne: true }
+    });
+
+    if (inUseCount > 0) {
+      throw ApiError.badRequest(
+        `Cannot delete '${category.name}' because ${inUseCount} product(s) are assigned to it as their primary category. Please reassign or update those products first.`,
+        'CATEGORY_IN_USE'
+      );
+    }
+
+    await Category.findByIdAndDelete(id);
+    await Product.updateMany({ categories: category._id }, { $pull: { categories: category._id } });
+
+    await incrementCacheVersion('categories');
+    await incrementCacheVersion('products');
+    return { message: `Category '${category.name}' deleted successfully` };
+  }
+
+  /**
+   * Admin: Seed default categories (if already exist, skip)
+   */
+  async seedDefaultCategories(): Promise<{ created: number; skipped: number; total: number }> {
+    let created = 0;
+    let skipped = 0;
+
+    for (const def of DEFAULT_CATEGORIES) {
+      const existing = await Category.findOne({
+        $or: [
+          { slug: def.slug },
+          { name: { $regex: new RegExp(`^${escapeRegex(def.name)}$`, 'i') } }
+        ]
+      });
+
+      if (existing) {
+        // If existing category lacks an image, attach matching icon
+        if (!existing.image && def.image) {
+          existing.image = def.image;
+          await existing.save();
+        }
+        skipped++;
+      } else {
+        await Category.create({
+          name: def.name,
+          slug: def.slug,
+          description: def.description,
+          image: def.image
+        });
+        created++;
+      }
+    }
+
+    if (created > 0) {
+      await incrementCacheVersion('categories');
+    }
+
+    return {
+      created,
+      skipped,
+      total: DEFAULT_CATEGORIES.length
     };
   }
 

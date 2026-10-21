@@ -20,6 +20,7 @@ export interface Product {
   soldCount?: number;
   stock: number;
   category: string | Category;
+  categories?: (string | Category)[];
   images: string[];
   isActive?: boolean;
   createdAt?: string;
@@ -172,6 +173,19 @@ export function getPricing(product: Product): { price: number; mrp: number; disc
   return { price: product.price, mrp, discount };
 }
 
+export function getCategoryNames(product: Product): string[] {
+  if (Array.isArray(product.categories) && product.categories.length > 0) {
+    return product.categories
+      .map((c) => (typeof c === 'object' && c ? c.name : String(c)))
+      .filter(Boolean);
+  }
+  if (typeof product.category === 'object' && product.category) {
+    return [product.category.name];
+  }
+  return product.category ? [String(product.category)] : [];
+}
+
 export function getCategoryName(product: Product): string {
-  return typeof product.category === 'object' && product.category ? product.category.name : '';
+  const names = getCategoryNames(product);
+  return names.join(', ');
 }

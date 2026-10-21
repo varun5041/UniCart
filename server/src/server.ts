@@ -3,6 +3,7 @@ import { logger } from './config/logger.js';
 import { app } from './app.js';
 import { connectDB, disconnectDB } from './config/db.js';
 import { connectRedis, disconnectRedis } from './config/redis.js';
+import { productService } from './modules/products/product.service.js';
 
 // 1. Strict Env Validation at Boot
 if (process.env.NODE_ENV !== 'test') {
@@ -60,7 +61,11 @@ export function createShutdownHandler(server: { close: (cb: (err?: Error) => voi
 // 2. Connect external dependencies and listen
 async function startServer() {
   try {
-    await connectDB().catch((err) => {
+    await connectDB().then(async () => {
+      await productService.seedDefaultCategories().catch((err) => {
+        logger.warn({ msg: '[Boot] Could not seed default categories', err: err.message });
+      });
+    }).catch((err) => {
       logger.warn({ msg: '[Boot] MongoDB not yet reachable (readiness will report degraded)', err: err.message });
     });
 

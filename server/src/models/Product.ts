@@ -10,6 +10,7 @@ export interface IProduct extends Document {
   soldCount: number; // Units sold, incremented atomically at checkout
   stock: number;
   category: Types.ObjectId;
+  categories?: Types.ObjectId[];
   images: string[];
   isActive: boolean; // false = unlisted (hidden from storefront)
   isDeleted: boolean; // true = removed by admin (hidden everywhere)
@@ -83,6 +84,10 @@ const productSchema = new Schema<IProduct>(
       ref: 'Category',
       required: true
     },
+    categories: {
+      type: [{ type: Schema.Types.ObjectId, ref: 'Category' }],
+      default: []
+    },
     images: {
       type: [String],
       default: []
@@ -104,6 +109,7 @@ const productSchema = new Schema<IProduct>(
 // Indexes mandated in docs/DATABASE.md
 productSchema.index({ name: 'text', description: 'text' });
 productSchema.index({ category: 1, price: 1 });
+productSchema.index({ categories: 1 });
 productSchema.index({ isActive: 1, createdAt: -1 });
 productSchema.index({ slug: 1 }, { unique: true });
 productSchema.index({ isActive: 1, discountPercent: -1 });

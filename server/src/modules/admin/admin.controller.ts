@@ -93,6 +93,38 @@ export class AdminController {
       meta: result.meta
     });
   }
+
+  async createCategory(req: Request, res: Response): Promise<void> {
+    const category = await productService.createCategory(req.body);
+    res.status(201).json({
+      success: true,
+      data: category
+    });
+  }
+
+  async updateCategory(req: Request, res: Response): Promise<void> {
+    const category = await productService.updateCategory(req.params.id, req.body);
+    res.status(200).json({
+      success: true,
+      data: category
+    });
+  }
+
+  async deleteCategory(req: Request, res: Response): Promise<void> {
+    const result = await productService.deleteCategory(req.params.id);
+    res.status(200).json({
+      success: true,
+      data: result
+    });
+  }
+
+  async seedDefaultCategories(req: Request, res: Response): Promise<void> {
+    const result = await productService.seedDefaultCategories();
+    res.status(200).json({
+      success: true,
+      data: result
+    });
+  }
 }
 
 export const adminController = new AdminController();

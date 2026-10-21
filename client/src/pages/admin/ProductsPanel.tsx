@@ -7,12 +7,13 @@ import { formatRupees, getPricing, getProductId, type Product } from '../../type
 import { PLACEHOLDER_IMAGE } from '../../components/ProductCard';
 import { ConfirmDialog, Modal, Pager } from './shared';
 import { apiErrorMessage, inputClass } from './adminUtils';
+import { ImageUploadInput } from '../../components/ImageUploadInput';
 
 type StatusFilter = 'all' | 'listed' | 'unlisted';
 
 interface ProductForm {
   name: string;
-  category: string;
+  categories: string[];
   mrpRupees: string;
   discountPercent: string;
   stock: string;
@@ -23,7 +24,7 @@ interface ProductForm {
 
 const EMPTY_FORM: ProductForm = {
   name: '',
-  category: '',
+  categories: [],
   mrpRupees: '',
   discountPercent: '0',
   stock: '0',
@@ -34,9 +35,16 @@ const EMPTY_FORM: ProductForm = {
 
 function toForm(p: Product): ProductForm {
   const { mrp, discount } = getPricing(p);
+  let cats: string[] = [];
+  if (Array.isArray(p.categories) && p.categories.length > 0) {
+    cats = p.categories.map((c) => (typeof c === 'object' && c ? c.slug : String(c)));
+  } else if (p.category) {
+    cats = [typeof p.category === 'object' ? p.category.slug : String(p.category)];
+  }
+
   return {
     name: p.name,
-    category: typeof p.category === 'object' ? p.category.slug : String(p.category),
+    categories: cats,
     mrpRupees: String(mrp / 100),
     discountPercent: String(discount),
     stock: String(p.stock),
@@ -48,14 +56,16 @@ function toForm(p: Product): ProductForm {
 
 function validateForm(f: ProductForm): string | null {
   if (f.name.trim().length < 2) return 'Name must be at least 2 characters';
-  if (!f.category) return 'Choose a category';
+  if (!f.categories || f.categories.length === 0) return 'Choose at least one category';
   const mrp = Number(f.mrpRupees);
   if (!Number.isFinite(mrp) || mrp <= 0) return 'MRP must be greater than 0';
   const d = Number(f.discountPercent);
   if (!Number.isInteger(d) || d < 0 || d > 90) return 'Discount must be a whole number from 0 to 90';
   const stock = Number(f.stock);
   if (!Number.isInteger(stock) || stock < 0) return 'Stock must be a whole number, 0 or more';
-  if (f.imageUrl && !/^https?:\/\/\S+$/i.test(f.imageUrl.trim())) return 'Image must be a valid http(s) URL';
+  if (f.imageUrl && !/^https?:\/\/\S+$/i.test(f.imageUrl.trim()) && !f.imageUrl.startsWith('data:image/')) {
+    return 'Image must be a valid URL or uploaded image';
+  }
   if (f.description.trim().length < 10) return 'Description must be at least 10 characters';
   return null;
 }
@@ -92,7 +102,8 @@ export const ProductsPanel: React.FC = () => {
     mutationFn: async ({ id, form }: { id: string | null; form: ProductForm }) => {
       const payload: AdminCreateProductInput = {
         name: form.name.trim(),
-        category: form.category,
+        categories: form.categories,
+        category: form.categories[0],
         mrp: Math.round(Number(form.mrpRupees) * 100),
         discountPercent: Number(form.discountPercent),
         stock: Number(form.stock),
@@ -147,7 +158,7 @@ export const ProductsPanel: React.FC = () => {
     setFormError('');
     setEditing({
       id: product ? getProductId(product) : null,
-      form: product ? toForm(product) : { ...EMPTY_FORM, category: categories[0]?.slug ?? '' }
+      form: product ? toForm(product) : { ...EMPTY_FORM, categories: categories[0] ? [categories[0].slug] : [] }
     });
   };
 
@@ -331,45 +342,73 @@ export const ProductsPanel: React.FC = () => {
               <span className="mb-1 block text-xs font-bold text-slate-700">Product name</span>
               <input className={inputClass} maxLength={200} value={f.name} onChange={(e) => setEditing({ ...editing, form: { ...f, name: e.target.value } })} />
             </label>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <label className="block">
-                <span className="mb-1 block text-xs font-bold text-slate-700">Category</span>
-                <select className={inputClass} value={f.category} onChange={(e) => setEditing({ ...editing, form: { ...f, category: e.target.value } })}>
-                  <option value="" disabled>
-                    Choose…
-                  </option>
-                  {categories.map((c) => (
-                    <option key={c.slug} value={c.slug}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className="block">
-                <span className="mb-1 block text-xs font-bold text-slate-700">Stock</span>
-                <input type="number" min={0} step={1} className={inputClass} value={f.stock} onChange={(e) => setEditing({ ...editing, form: { ...f, stock: e.target.value } })} />
-              </label>
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-700">Categories (Choose 1 or more) *</span>
+                <span className="text-[11px] text-brand-600 font-semibold">
+                  {f.categories.length} selected
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-2 rounded-2xl border border-slate-200 bg-slate-50/70 p-3 max-h-40 overflow-y-auto">
+                {categories.map((c) => {
+                  const isChecked = f.categories.includes(c.slug);
+                  return (
+                    <button
+                      type="button"
+                      key={c.slug}
+                      onClick={() => {
+                        const next = isChecked
+                          ? f.categories.filter((slug) => slug !== c.slug)
+                          : [...f.categories, c.slug];
+                        setEditing({ ...editing, form: { ...f, categories: next } });
+                      }}
+                      className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition-all cursor-pointer ${
+                        isChecked
+                          ? 'bg-brand-600 text-white shadow-xs'
+                          : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300'
+                      }`}
+                    >
+                      <span className="material-symbols-outlined text-sm">
+                        {isChecked ? 'check_box' : 'check_box_outline_blank'}
+                      </span>
+                      <span>{c.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              {categories.length === 0 && (
+                <p className="text-[11px] text-slate-400">No categories found in system.</p>
+              )}
             </div>
+
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               <label className="block">
-                <span className="mb-1 block text-xs font-bold text-slate-700">MRP (₹)</span>
+                <span className="mb-1 block text-xs font-bold text-slate-700">Stock *</span>
+                <input type="number" min={0} step={1} className={inputClass} value={f.stock} onChange={(e) => setEditing({ ...editing, form: { ...f, stock: e.target.value } })} />
+              </label>
+              <label className="block">
+                <span className="mb-1 block text-xs font-bold text-slate-700">MRP (₹) *</span>
                 <input type="number" min={1} step="0.01" className={inputClass} value={f.mrpRupees} onChange={(e) => setEditing({ ...editing, form: { ...f, mrpRupees: e.target.value } })} />
               </label>
               <label className="block">
                 <span className="mb-1 block text-xs font-bold text-slate-700">Discount (%)</span>
                 <input type="number" min={0} max={90} step={1} className={inputClass} value={f.discountPercent} onChange={(e) => setEditing({ ...editing, form: { ...f, discountPercent: e.target.value } })} />
               </label>
-              <div>
-                <span className="mb-1 block text-xs font-bold text-slate-700">Selling price</span>
-                <p className="rounded-xl bg-emerald-50 px-3 py-2 font-extrabold text-emerald-700">
-                  ₹{previewPrice.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
-                </p>
-              </div>
             </div>
-            <label className="block">
-              <span className="mb-1 block text-xs font-bold text-slate-700">Image URL</span>
-              <input type="url" placeholder="https://…" className={inputClass} value={f.imageUrl} onChange={(e) => setEditing({ ...editing, form: { ...f, imageUrl: e.target.value } })} />
-            </label>
+
+            <div>
+              <span className="mb-1 block text-xs font-bold text-slate-700">Selling price preview</span>
+              <p className="rounded-xl bg-emerald-50 px-3 py-2 font-extrabold text-emerald-700 text-sm">
+                ₹{previewPrice.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
+              </p>
+            </div>
+
+            <ImageUploadInput
+              label="Product Image"
+              value={f.imageUrl}
+              onChange={(img) => setEditing({ ...editing, form: { ...f, imageUrl: img } })}
+              helpText="Upload a product photo from your device, or enter an external image URL."
+            />
             <label className="block">
               <span className="mb-1 block text-xs font-bold text-slate-700">Description</span>
               <textarea rows={3} maxLength={5000} className={inputClass} value={f.description} onChange={(e) => setEditing({ ...editing, form: { ...f, description: e.target.value } })} />

@@ -9,14 +9,19 @@ export interface CategoryStyle {
 }
 
 const STYLES: Array<{ match: RegExp; style: Omit<CategoryStyle, 'short'> }> = [
-  { match: /electronic|gadget|tech|mobile|phone/i, style: { icon: 'devices', gradient: 'from-sky-500 to-blue-600' } },
+  { match: /electronic|gadget|tech|laptop/i, style: { icon: 'devices', gradient: 'from-sky-500 to-blue-600' } },
+  { match: /mobile|phone/i, style: { icon: 'smartphone', gradient: 'from-blue-500 to-indigo-600' } },
   { match: /fashion|apparel|cloth|wear/i, style: { icon: 'apparel', gradient: 'from-pink-500 to-rose-600' } },
-  { match: /home|kitchen|furniture|decor/i, style: { icon: 'chair', gradient: 'from-amber-400 to-orange-500' } },
+  { match: /appliance|tv|television/i, style: { icon: 'tv', gradient: 'from-indigo-500 to-violet-600' } },
+  { match: /home|kitchen|lamp|decor/i, style: { icon: 'chair', gradient: 'from-amber-400 to-orange-500' } },
+  { match: /furniture|sofa/i, style: { icon: 'chair', gradient: 'from-amber-500 to-amber-700' } },
   { match: /book|stationery|read/i, style: { icon: 'menu_book', gradient: 'from-emerald-500 to-teal-600' } },
-  { match: /sport|fitness|gym|outdoor/i, style: { icon: 'fitness_center', gradient: 'from-lime-500 to-green-600' } },
+  { match: /sport|fitness|gym|outdoor/i, style: { icon: 'sports_cricket', gradient: 'from-lime-500 to-green-600' } },
   { match: /beauty|personal|care|cosmetic/i, style: { icon: 'spa', gradient: 'from-fuchsia-500 to-purple-600' } },
   { match: /toy|kid|baby/i, style: { icon: 'toys', gradient: 'from-yellow-400 to-amber-500' } },
-  { match: /grocery|food/i, style: { icon: 'local_grocery_store', gradient: 'from-green-500 to-emerald-600' } }
+  { match: /food|health|nutrition|supplement/i, style: { icon: 'medication', gradient: 'from-green-500 to-emerald-600' } },
+  { match: /auto|helmet|vehicle|car/i, style: { icon: 'sports_motorsports', gradient: 'from-amber-500 to-orange-600' } },
+  { match: /wheeler|scooter|motorcycle|bike/i, style: { icon: 'two_wheeler', gradient: 'from-teal-500 to-cyan-600' } }
 ];
 
 const FALLBACK: Omit<CategoryStyle, 'short'> = {

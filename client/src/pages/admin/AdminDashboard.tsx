@@ -6,13 +6,15 @@ import { useAuthStore } from '../../store/useAuthStore';
 import { useToastStore } from '../../store/useToastStore';
 import { formatRupees, type Order, type OrderStatus } from '../../types';
 import { ProductsPanel } from './ProductsPanel';
+import { CategoriesPanel } from './CategoriesPanel';
 import { CouponsPanel } from './CouponsPanel';
 import { apiErrorMessage } from './adminUtils';
 
-type Tab = 'products' | 'orders' | 'coupons' | 'activity';
+type Tab = 'products' | 'categories' | 'orders' | 'coupons' | 'activity';
 
 const TABS: Array<{ id: Tab; icon: string; label: string }> = [
   { id: 'products', icon: 'inventory_2', label: 'Products' },
+  { id: 'categories', icon: 'category', label: 'Categories' },
   { id: 'orders', icon: 'receipt_long', label: 'Orders' },
   { id: 'coupons', icon: 'sell', label: 'Coupons' },
   { id: 'activity', icon: 'history', label: 'Activity' }
@@ -146,6 +148,7 @@ export const AdminDashboard: React.FC = () => {
         </div>
 
         {activeTab === 'products' && <ProductsPanel />}
+        {activeTab === 'categories' && <CategoriesPanel />}
         {activeTab === 'coupons' && <CouponsPanel />}
 
         {activeTab === 'orders' && (

@@ -7,7 +7,10 @@ import {
   adminCreateProductSchema,
   adminUpdateProductSchema,
   adminListProductsQuerySchema,
-  productIdParamSchema
+  productIdParamSchema,
+  adminCreateCategorySchema,
+  adminUpdateCategorySchema,
+  categoryIdParamSchema
 } from '../products/product.schema.js';
 import {
   adminCreateCouponSchema,
@@ -110,6 +113,30 @@ adminRouter.get(
   '/audit-logs',
   validate({ query: adminListAuditLogsQuerySchema }),
   asyncHandler((req, res) => adminController.listAuditLogs(req, res))
+);
+
+// Admin category CRUD & seed
+adminRouter.post(
+  '/categories',
+  validate({ body: adminCreateCategorySchema }),
+  asyncHandler((req, res) => adminController.createCategory(req, res))
+);
+
+adminRouter.post(
+  '/categories/seed-defaults',
+  asyncHandler((req, res) => adminController.seedDefaultCategories(req, res))
+);
+
+adminRouter.patch(
+  '/categories/:id',
+  validate({ params: categoryIdParamSchema, body: adminUpdateCategorySchema }),
+  asyncHandler((req, res) => adminController.updateCategory(req, res))
+);
+
+adminRouter.delete(
+  '/categories/:id',
+  validate({ params: categoryIdParamSchema }),
+  asyncHandler((req, res) => adminController.deleteCategory(req, res))
 );
 
 export default adminRouter;
