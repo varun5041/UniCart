@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { orderController } from './order.controller.js';
 import { authenticate } from '../../middleware/auth.js';
+import { authorize } from '../../middleware/rbac.js';
 import { validate } from '../../middleware/validate.js';
 import {
   createOrderSchema,
@@ -15,9 +16,10 @@ export const orderRouter = Router();
 // All order endpoints require user authentication
 orderRouter.use(authenticate);
 
-// POST /api/v1/orders — Idempotent transactional checkout
+// POST /api/v1/orders — Idempotent transactional checkout (customer accounts only)
 orderRouter.post(
   '/',
+  authorize('customer'),
   validate({ body: createOrderSchema }),
   asyncHandler((req, res) => orderController.createOrder(req, res))
 );

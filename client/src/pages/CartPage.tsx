@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCartStore } from '../store/useCartStore';
+import { useAuthStore } from '../store/useAuthStore';
 import { useToastStore } from '../store/useToastStore';
 import { FREE_SHIPPING_THRESHOLD } from '../lib/validation';
 
@@ -61,6 +62,34 @@ export const CartPage: React.FC = () => {
     removeCoupon();
     addToast({ type: 'info', title: 'Coupon Removed' });
   };
+
+  const { user, isAuthenticated } = useAuthStore();
+  const isAdmin = Boolean(isAuthenticated && user?.role === 'admin');
+
+  if (isAdmin) {
+    return (
+      <div className="bg-surface min-h-[75vh] flex items-center justify-center py-12 px-4">
+        <div className="bg-white rounded-3xl border border-slate-200/80 p-8 sm:p-12 max-w-md w-full text-center space-y-5 shadow-sm">
+          <div className="w-20 h-20 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center mx-auto shadow-inner">
+            <span className="material-symbols-outlined text-4xl">admin_panel_settings</span>
+          </div>
+          <div>
+            <h2 className="text-xl font-black text-slate-900">Administrator Account</h2>
+            <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+              Shopping cart and checkout actions are disabled for administrator accounts. Head to the Admin Dashboard to manage products, inventory, and customer orders.
+            </p>
+          </div>
+          <Link
+            to="/admin"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-md shadow-brand-500/25 transition-all"
+          >
+            <span className="material-symbols-outlined text-sm">dashboard</span>
+            <span>Go to Admin Dashboard</span>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (items.length === 0) {
     return (

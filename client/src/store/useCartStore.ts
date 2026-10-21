@@ -52,7 +52,8 @@ export const useCartStore = create<CartStore>((set, get) => ({
   },
 
   addToCart: async (product: Product, qty = 1) => {
-    const { isAuthenticated } = useAuthStore.getState();
+    const { isAuthenticated, user } = useAuthStore.getState();
+    if (user?.role === 'admin') return false;
     const prodId = product._id || product.id || '';
 
     if (isAuthenticated) {

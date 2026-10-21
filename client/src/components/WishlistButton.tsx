@@ -20,11 +20,16 @@ export const WishlistButton: React.FC<WishlistButtonProps> = ({
 }) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const user = useAuthStore((s) => s.user);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const saved = useWishlistStore((s) => s.ids.includes(productId));
   const pending = useWishlistStore((s) => s.pending.includes(productId));
   const toggle = useWishlistStore((s) => s.toggle);
   const addToast = useToastStore((s) => s.addToast);
+
+  if (user?.role === 'admin') {
+    return null;
+  }
 
   const handleClick = async (e: React.MouseEvent) => {
     e.preventDefault();

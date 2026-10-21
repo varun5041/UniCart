@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { formatRupees, getCategoryName, getPricing, getProductId, type Product } from '../types';
 import { useCartStore } from '../store/useCartStore';
 import { useToastStore } from '../store/useToastStore';
+import { useAuthStore } from '../store/useAuthStore';
 import { WishlistButton } from './WishlistButton';
 
 export const PLACEHOLDER_IMAGE =
@@ -17,6 +18,8 @@ interface ProductCardProps {
 export const ProductCard: React.FC<ProductCardProps> = ({ product, compact = false }) => {
   const addToCart = useCartStore((s) => s.addToCart);
   const addToast = useToastStore((s) => s.addToast);
+  const user = useAuthStore((s) => s.user);
+  const isAdmin = user?.role === 'admin';
   const [isAdded, setIsAdded] = useState(false);
 
   const productId = getProductId(product);
@@ -65,7 +68,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, compact = fal
         )}
       </Link>
 
-      <WishlistButton productId={productId} productName={product.name} className="absolute right-3 top-3" />
+      {!isAdmin && (
+        <WishlistButton productId={productId} productName={product.name} className="absolute right-3 top-3" />
+      )}
 
       <div className="flex flex-1 flex-col p-3.5 sm:p-4">
         {categoryName && (
@@ -93,23 +98,33 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, compact = fal
           {!outOfStock && product.stock <= 5 ? `Only ${product.stock} left` : ''}
         </p>
 
-        <button
-          type="button"
-          onClick={handleAddToCart}
-          disabled={outOfStock}
-          className={`mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl py-2.5 text-xs font-bold transition-all active:scale-[0.97] disabled:cursor-not-allowed ${
-            outOfStock
-              ? 'bg-slate-100 text-slate-400'
-              : isAdded
-                ? 'bg-emerald-600 text-white'
-                : 'bg-brand-600 text-white hover:bg-brand-700'
-          }`}
-        >
-          <span className="material-symbols-outlined text-base">
-            {outOfStock ? 'block' : isAdded ? 'check' : 'add_shopping_cart'}
-          </span>
-          <span>{outOfStock ? 'Unavailable' : isAdded ? 'Added' : 'Add to Cart'}</span>
-        </button>
+        {isAdmin ? (
+          <Link
+            to="/admin"
+            className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl bg-slate-900 py-2.5 text-xs font-bold text-white transition-all hover:bg-black active:scale-[0.97]"
+          >
+            <span className="material-symbols-outlined text-base">admin_panel_settings</span>
+            <span>Manage in Admin</span>
+          </Link>
+        ) : (
+          <button
+            type="button"
+            onClick={handleAddToCart}
+            disabled={outOfStock}
+            className={`mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl py-2.5 text-xs font-bold transition-all active:scale-[0.97] disabled:cursor-not-allowed ${
+              outOfStock
+                ? 'bg-slate-100 text-slate-400'
+                : isAdded
+                  ? 'bg-emerald-600 text-white'
+                  : 'bg-brand-600 text-white hover:bg-brand-700'
+            }`}
+          >
+            <span className="material-symbols-outlined text-base">
+              {outOfStock ? 'block' : isAdded ? 'check' : 'add_shopping_cart'}
+            </span>
+            <span>{outOfStock ? 'Unavailable' : isAdded ? 'Added' : 'Add to Cart'}</span>
+          </button>
+        )}
       </div>
     </article>
   );

@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { productsApi } from '../api/products';
 import { useCartStore } from '../store/useCartStore';
+import { useAuthStore } from '../store/useAuthStore';
 import { useToastStore } from '../store/useToastStore';
 import { ProductRail } from '../components/ProductRail';
 import { WishlistButton } from '../components/WishlistButton';
@@ -14,6 +15,8 @@ export const ProductDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { addToCart } = useCartStore();
+  const { user } = useAuthStore();
+  const isAdmin = user?.role === 'admin';
   const { addToast } = useToastStore();
 
   const [selectedImage, setSelectedImage] = useState(0);
@@ -216,65 +219,92 @@ export const ProductDetailPage: React.FC = () => {
               </div>
 
               {/* Quantity Selector & CTAs */}
-              <div className="space-y-4 pt-2">
-                <div className="flex items-center gap-4">
-                  <span className="text-xs font-bold text-slate-700 uppercase tracking-wide">Quantity:</span>
-                  <div className="flex items-center border border-slate-300 rounded-xl bg-white shadow-xs">
-                    <button
-                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      disabled={quantity <= 1 || product.stock <= 0}
-                      className="w-9 h-9 flex items-center justify-center text-slate-600 hover:bg-slate-100 disabled:opacity-40 rounded-l-xl transition-colors"
-                      aria-label="Decrease quantity"
-                    >
-                      <span className="material-symbols-outlined text-base">remove</span>
-                    </button>
-                    <span className="w-10 text-center text-xs font-black text-slate-900">{quantity}</span>
-                    <button
-                      onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
-                      disabled={quantity >= product.stock}
-                      className="w-9 h-9 flex items-center justify-center text-slate-600 hover:bg-slate-100 disabled:opacity-40 rounded-r-xl transition-colors"
-                      aria-label="Increase quantity"
-                    >
-                      <span className="material-symbols-outlined text-base">add</span>
-                    </button>
+              {isAdmin ? (
+                <div className="rounded-2xl border border-amber-200 bg-amber-50/80 p-5">
+                  <div className="flex items-start gap-3.5">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-700 shadow-xs">
+                      <span className="material-symbols-outlined text-2xl">admin_panel_settings</span>
+                    </div>
+                    <div className="space-y-1.5">
+                      <h3 className="text-xs font-extrabold uppercase tracking-wide text-amber-900">
+                        Administrator Preview Mode
+                      </h3>
+                      <p className="text-xs text-amber-800 leading-relaxed">
+                        Shopping cart, wishlist, and checkout actions are disabled for store administrators. You can edit this item, modify pricing, or adjust inventory directly in the admin dashboard.
+                      </p>
+                      <div className="pt-2">
+                        <Link
+                          to="/admin"
+                          className="inline-flex items-center gap-1.5 rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-bold text-white shadow-xs transition-all hover:bg-black active:scale-95"
+                        >
+                          <span className="material-symbols-outlined text-base">dashboard</span>
+                          <span>Manage in Admin Panel</span>
+                        </Link>
+                      </div>
+                    </div>
                   </div>
                 </div>
+              ) : (
+                <div className="space-y-4 pt-2">
+                  <div className="flex items-center gap-4">
+                    <span className="text-xs font-bold text-slate-700 uppercase tracking-wide">Quantity:</span>
+                    <div className="flex items-center border border-slate-300 rounded-xl bg-white shadow-xs">
+                      <button
+                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                        disabled={quantity <= 1 || product.stock <= 0}
+                        className="w-9 h-9 flex items-center justify-center text-slate-600 hover:bg-slate-100 disabled:opacity-40 rounded-l-xl transition-colors"
+                        aria-label="Decrease quantity"
+                      >
+                        <span className="material-symbols-outlined text-base">remove</span>
+                      </button>
+                      <span className="w-10 text-center text-xs font-black text-slate-900">{quantity}</span>
+                      <button
+                        onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
+                        disabled={quantity >= product.stock}
+                        className="w-9 h-9 flex items-center justify-center text-slate-600 hover:bg-slate-100 disabled:opacity-40 rounded-r-xl transition-colors"
+                        aria-label="Increase quantity"
+                      >
+                        <span className="material-symbols-outlined text-base">add</span>
+                      </button>
+                    </div>
+                  </div>
 
-                {/* Primary Action Buttons */}
-                <div className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_auto] gap-3">
-                  <button
-                    onClick={handleAddToCart}
-                    disabled={product.stock <= 0}
-                    className={`py-3.5 px-6 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-md ${
-                      product.stock <= 0
-                        ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                        : isAdded
-                        ? 'bg-emerald-600 text-white'
-                        : 'bg-brand-600 hover:bg-brand-700 text-white shadow-brand-500/25 active:scale-98'
-                    }`}
-                  >
-                    <span className="material-symbols-outlined text-lg">
-                      {isAdded ? 'check' : 'shopping_bag'}
-                    </span>
-                    <span>{isAdded ? 'Added to Cart' : 'Add to Cart'}</span>
-                  </button>
+                  {/* Primary Action Buttons */}
+                  <div className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_auto] gap-3">
+                    <button
+                      onClick={handleAddToCart}
+                      disabled={product.stock <= 0}
+                      className={`py-3.5 px-6 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-md ${
+                        product.stock <= 0
+                          ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                          : isAdded
+                          ? 'bg-emerald-600 text-white'
+                          : 'bg-brand-600 hover:bg-brand-700 text-white shadow-brand-500/25 active:scale-98'
+                      }`}
+                    >
+                      <span className="material-symbols-outlined text-lg">
+                        {isAdded ? 'check' : 'shopping_bag'}
+                      </span>
+                      <span>{isAdded ? 'Added to Cart' : 'Add to Cart'}</span>
+                    </button>
 
-                  <button
-                    onClick={handleBuyNow}
-                    disabled={product.stock <= 0}
-                    className={`py-3.5 px-6 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-md ${
-                      product.stock <= 0
-                        ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                        : 'bg-slate-900 hover:bg-black text-white shadow-slate-900/20 active:scale-98'
-                    }`}
-                  >
-                    <span className="material-symbols-outlined text-lg">bolt</span>
-                    <span>Buy Now</span>
-                  </button>
+                    <button
+                      onClick={handleBuyNow}
+                      disabled={product.stock <= 0}
+                      className={`py-3.5 px-6 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-md ${
+                        product.stock <= 0
+                          ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                          : 'bg-slate-900 hover:bg-black text-white shadow-slate-900/20 active:scale-98'
+                      }`}
+                    >
+                      <span className="material-symbols-outlined text-lg">bolt</span>
+                      <span>Buy Now</span>
+                    </button>
 
-                  <WishlistButton productId={productId} productName={product.name} variant="full" />
+                    <WishlistButton productId={productId} productName={product.name} variant="full" />
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>

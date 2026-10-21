@@ -11,6 +11,7 @@ export const Navbar: React.FC = () => {
   const location = useLocation();
   const itemCount = useCartStore((s) => s.getItemCount());
   const { user, isAuthenticated, logout } = useAuthStore();
+  const isAdmin = Boolean(isAuthenticated && user?.role === 'admin');
   const wishlistCount = useWishlistStore((s) => s.ids.length);
   const { data: categories = [] } = useCategories();
 
@@ -83,43 +84,59 @@ export const Navbar: React.FC = () => {
               Deals
             </NavLink>
 
-            <NavLink
-              to="/wishlist"
-              className={({ isActive }) =>
-                `flex items-center gap-1.5 rounded-xl px-2.5 py-2 text-sm font-bold transition-colors sm:px-3 ${
-                  isActive ? 'bg-rose-50 text-rose-600' : 'text-slate-700 hover:bg-slate-100'
-                }`
-              }
-            >
-              <span className="relative">
-                <span className="material-symbols-outlined text-2xl">favorite</span>
-                {wishlistCount > 0 && (
-                  <span className="absolute -right-2 -top-1.5 min-w-[18px] rounded-full bg-rose-500 px-1 text-center text-[10px] font-bold leading-[18px] text-white">
-                    {wishlistCount}
+            {isAdmin ? (
+              <NavLink
+                to="/admin"
+                className={({ isActive }) =>
+                  `flex items-center gap-1.5 rounded-xl px-2.5 py-2 text-sm font-bold transition-colors sm:px-3 ${
+                    isActive ? 'bg-purple-100 text-purple-800' : 'bg-purple-50 text-purple-700 hover:bg-purple-100'
+                  }`
+                }
+              >
+                <span className="material-symbols-outlined text-xl">admin_panel_settings</span>
+                <span className="hidden sm:inline">Admin Panel</span>
+              </NavLink>
+            ) : (
+              <>
+                <NavLink
+                  to="/wishlist"
+                  className={({ isActive }) =>
+                    `flex items-center gap-1.5 rounded-xl px-2.5 py-2 text-sm font-bold transition-colors sm:px-3 ${
+                      isActive ? 'bg-rose-50 text-rose-600' : 'text-slate-700 hover:bg-slate-100'
+                    }`
+                  }
+                >
+                  <span className="relative">
+                    <span className="material-symbols-outlined text-2xl">favorite</span>
+                    {wishlistCount > 0 && (
+                      <span className="absolute -right-2 -top-1.5 min-w-[18px] rounded-full bg-rose-500 px-1 text-center text-[10px] font-bold leading-[18px] text-white">
+                        {wishlistCount}
+                      </span>
+                    )}
                   </span>
-                )}
-              </span>
-              <span className="hidden sm:inline">Wishlist</span>
-            </NavLink>
+                  <span className="hidden sm:inline">Wishlist</span>
+                </NavLink>
 
-            <NavLink
-              to="/cart"
-              className={({ isActive }) =>
-                `flex items-center gap-1.5 rounded-xl px-2.5 py-2 text-sm font-bold transition-colors sm:px-3 ${
-                  isActive ? 'bg-brand-50 text-brand-700' : 'text-slate-700 hover:bg-slate-100'
-                }`
-              }
-            >
-              <span className="relative">
-                <span className="material-symbols-outlined text-2xl">shopping_cart</span>
-                {itemCount > 0 && (
-                  <span className="absolute -right-2 -top-1.5 min-w-[18px] rounded-full bg-brand-600 px-1 text-center text-[10px] font-bold leading-[18px] text-white">
-                    {itemCount}
+                <NavLink
+                  to="/cart"
+                  className={({ isActive }) =>
+                    `flex items-center gap-1.5 rounded-xl px-2.5 py-2 text-sm font-bold transition-colors sm:px-3 ${
+                      isActive ? 'bg-brand-50 text-brand-700' : 'text-slate-700 hover:bg-slate-100'
+                    }`
+                  }
+                >
+                  <span className="relative">
+                    <span className="material-symbols-outlined text-2xl">shopping_cart</span>
+                    {itemCount > 0 && (
+                      <span className="absolute -right-2 -top-1.5 min-w-[18px] rounded-full bg-brand-600 px-1 text-center text-[10px] font-bold leading-[18px] text-white">
+                        {itemCount}
+                      </span>
+                    )}
                   </span>
-                )}
-              </span>
-              <span className="hidden sm:inline">Cart</span>
-            </NavLink>
+                  <span className="hidden sm:inline">Cart</span>
+                </NavLink>
+              </>
+            )}
 
             <div className="relative" ref={accountRef}>
               {isAuthenticated && user ? (
@@ -151,12 +168,18 @@ export const Navbar: React.FC = () => {
                     <p className="truncate text-xs text-slate-500">{user.email}</p>
                   </div>
                   <div className="py-1">
-                    {user.role === 'admin' && (
-                      <MenuLink to="/admin" icon="dashboard" label="Admin Dashboard" highlight />
+                    {isAdmin ? (
+                      <>
+                        <MenuLink to="/admin" icon="dashboard" label="Admin Dashboard" highlight />
+                        <MenuLink to="/profile" icon="manage_accounts" label="Admin Profile" />
+                      </>
+                    ) : (
+                      <>
+                        <MenuLink to="/orders" icon="package_2" label="My Orders" />
+                        <MenuLink to="/wishlist" icon="favorite" label="My Wishlist" />
+                        <MenuLink to="/profile" icon="manage_accounts" label="Profile & Addresses" />
+                      </>
                     )}
-                    <MenuLink to="/orders" icon="package_2" label="My Orders" />
-                    <MenuLink to="/wishlist" icon="favorite" label="My Wishlist" />
-                    <MenuLink to="/profile" icon="manage_accounts" label="Profile & Addresses" />
                   </div>
                   <div className="border-t border-slate-100 pt-1">
                     <button
@@ -205,9 +228,18 @@ export const Navbar: React.FC = () => {
           </div>
           {isAuthenticated && (
             <div className="mt-3 space-y-1 border-t border-slate-100 pt-3">
-              {user?.role === 'admin' && <MenuLink to="/admin" icon="dashboard" label="Admin Dashboard" highlight />}
-              <MenuLink to="/orders" icon="package_2" label="My Orders" />
-              <MenuLink to="/profile" icon="person" label="Profile & Addresses" />
+              {isAdmin ? (
+                <>
+                  <MenuLink to="/admin" icon="dashboard" label="Admin Dashboard" highlight />
+                  <MenuLink to="/profile" icon="person" label="Admin Profile" />
+                </>
+              ) : (
+                <>
+                  <MenuLink to="/orders" icon="package_2" label="My Orders" />
+                  <MenuLink to="/wishlist" icon="favorite" label="My Wishlist" />
+                  <MenuLink to="/profile" icon="person" label="Profile & Addresses" />
+                </>
+              )}
             </div>
           )}
         </div>

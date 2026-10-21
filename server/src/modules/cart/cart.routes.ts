@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { cartController } from './cart.controller.js';
 import { authenticate } from '../../middleware/auth.js';
+import { authorize } from '../../middleware/rbac.js';
 import { validate } from '../../middleware/validate.js';
 import {
   addToCartSchema,
@@ -11,8 +12,8 @@ import { asyncHandler } from '../../utils/asyncHandler.js';
 
 export const cartRouter = Router();
 
-// All cart routes require active authentication
-cartRouter.use(authenticate);
+// All cart routes require active authentication and customer role (admins do not shop or maintain carts)
+cartRouter.use(authenticate, authorize('customer'));
 
 // GET /api/v1/cart
 cartRouter.get(

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { formatRupees, getCategoryName, getPricing, getProductId, type Product } from '../types';
 import { useCartStore } from '../store/useCartStore';
 import { useToastStore } from '../store/useToastStore';
+import { useAuthStore } from '../store/useAuthStore';
 import { WishlistButton } from './WishlistButton';
 import { PLACEHOLDER_IMAGE } from './ProductCard';
 import { FREE_SHIPPING_THRESHOLD } from '../lib/validation';
@@ -11,6 +12,8 @@ import { FREE_SHIPPING_THRESHOLD } from '../lib/validation';
 export const ProductListItem: React.FC<{ product: Product }> = ({ product }) => {
   const addToCart = useCartStore((s) => s.addToCart);
   const addToast = useToastStore((s) => s.addToast);
+  const user = useAuthStore((s) => s.user);
+  const isAdmin = user?.role === 'admin';
   const [isAdded, setIsAdded] = useState(false);
 
   const productId = getProductId(product);
@@ -62,7 +65,7 @@ export const ProductListItem: React.FC<{ product: Product }> = ({ product }) => 
               </h3>
             </Link>
           </div>
-          <WishlistButton productId={productId} productName={product.name} className="shrink-0" />
+          {!isAdmin && <WishlistButton productId={productId} productName={product.name} className="shrink-0" />}
         </div>
 
         <p className="mt-1 hidden text-sm leading-relaxed text-slate-500 sm:line-clamp-2">{product.description}</p>
@@ -94,21 +97,31 @@ export const ProductListItem: React.FC<{ product: Product }> = ({ product }) => 
         </div>
 
         <div className="mt-auto pt-3">
-          <button
-            type="button"
-            onClick={handleAdd}
-            disabled={outOfStock}
-            className={`inline-flex items-center gap-1.5 rounded-full px-5 py-2 text-xs font-bold transition-all active:scale-95 disabled:cursor-not-allowed ${
-              outOfStock
-                ? 'bg-slate-100 text-slate-400'
-                : isAdded
-                  ? 'bg-emerald-600 text-white'
-                  : 'bg-amber-400 text-slate-900 hover:bg-amber-500'
-            }`}
-          >
-            <span className="material-symbols-outlined text-base">{isAdded ? 'check' : 'add_shopping_cart'}</span>
-            {outOfStock ? 'Unavailable' : isAdded ? 'Added' : 'Add to Cart'}
-          </button>
+          {isAdmin ? (
+            <Link
+              to="/admin"
+              className="inline-flex items-center gap-1.5 rounded-full bg-slate-900 px-5 py-2 text-xs font-bold text-white transition-all hover:bg-black active:scale-95"
+            >
+              <span className="material-symbols-outlined text-base">admin_panel_settings</span>
+              <span>Manage in Admin</span>
+            </Link>
+          ) : (
+            <button
+              type="button"
+              onClick={handleAdd}
+              disabled={outOfStock}
+              className={`inline-flex items-center gap-1.5 rounded-full px-5 py-2 text-xs font-bold transition-all active:scale-95 disabled:cursor-not-allowed ${
+                outOfStock
+                  ? 'bg-slate-100 text-slate-400'
+                  : isAdded
+                    ? 'bg-emerald-600 text-white'
+                    : 'bg-amber-400 text-slate-900 hover:bg-amber-500'
+              }`}
+            >
+              <span className="material-symbols-outlined text-base">{isAdded ? 'check' : 'add_shopping_cart'}</span>
+              {outOfStock ? 'Unavailable' : isAdded ? 'Added' : 'Add to Cart'}
+            </button>
+          )}
         </div>
       </div>
     </article>

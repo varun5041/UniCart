@@ -9,17 +9,42 @@ type FilterTab = 'all' | 'pending_payment' | 'paid' | 'shipped' | 'delivered' | 
 
 export const OrdersPage: React.FC = () => {
   const { orders, fetchOrders, cancelOrder, isLoading } = useOrderStore();
-  const { isAuthenticated } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
   const { addToast } = useToastStore();
 
   const [activeTab, setActiveTab] = useState<FilterTab>('all');
   const [selectedOrderForTracking, setSelectedOrderForTracking] = useState<Order | null>(null);
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && user?.role !== 'admin') {
       void fetchOrders();
     }
-  }, [isAuthenticated, fetchOrders]);
+  }, [isAuthenticated, user?.role, fetchOrders]);
+
+  if (user?.role === 'admin') {
+    return (
+      <div className="bg-surface min-h-[75vh] flex items-center justify-center py-12 px-4">
+        <div className="bg-white rounded-3xl border border-slate-200/80 p-8 sm:p-12 max-w-md w-full text-center space-y-5 shadow-sm">
+          <div className="w-20 h-20 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center mx-auto shadow-inner">
+            <span className="material-symbols-outlined text-4xl">admin_panel_settings</span>
+          </div>
+          <div>
+            <h2 className="text-xl font-black text-slate-900">Administrator Orders View</h2>
+            <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+              Customer order history is separated from store administration. To view, update, and manage all customer orders across the platform, head to the Admin Dashboard.
+            </p>
+          </div>
+          <Link
+            to="/admin"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-md shadow-brand-500/25 transition-all"
+          >
+            <span className="material-symbols-outlined text-sm">dashboard</span>
+            <span>Go to Admin Dashboard</span>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   const filteredOrders = orders.filter((order) => {
     if (activeTab === 'all') return true;

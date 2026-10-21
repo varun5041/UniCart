@@ -8,17 +8,34 @@ import { ProductCard } from '../components/ProductCard';
 import { getProductId } from '../types';
 
 export const WishlistPage: React.FC = () => {
-  const { isAuthenticated, isInitialized } = useAuthStore();
+  const { user, isAuthenticated, isInitialized } = useAuthStore();
   const ids = useWishlistStore((s) => s.ids);
+
+  const isAdmin = Boolean(isAuthenticated && user?.role === 'admin');
 
   const { data = [], isLoading } = useQuery({
     queryKey: ['wishlist'],
     queryFn: async () => (await usersApi.getWishlist()).data ?? [],
-    enabled: isAuthenticated
+    enabled: isAuthenticated && !isAdmin
   });
 
   // Hide items removed on this page immediately, without waiting for a refetch
   const items = data.filter((p) => ids.includes(getProductId(p)));
+
+  if (isInitialized && isAdmin) {
+    return (
+      <Centered
+        icon="admin_panel_settings"
+        title="Administrator Account"
+        text="Wishlists and consumer shopping actions are disabled for administrator accounts."
+        action={
+          <Link to="/admin" className="rounded-xl bg-brand-600 px-6 py-3 text-sm font-bold text-white hover:bg-brand-700">
+            Go to Admin Dashboard
+          </Link>
+        }
+      />
+    );
+  }
 
   if (isInitialized && !isAuthenticated) {
     return (

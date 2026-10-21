@@ -54,7 +54,10 @@ export const App: React.FC = () => {
   useEffect(() => {
     // Silently restore session on application mount via rotating refresh token cookie
     void initAuth().then(() => {
-      void syncCart();
+      const currentUser = useAuthStore.getState().user;
+      if (currentUser?.role !== 'admin') {
+        void syncCart();
+      }
     });
   }, [initAuth, syncCart]);
 
