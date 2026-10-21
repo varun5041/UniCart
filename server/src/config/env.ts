@@ -34,6 +34,7 @@ export const envSchema = z.object({
     .union([z.boolean(), z.string()])
     .default(false)
     .transform((val) => (typeof val === 'boolean' ? val : val === 'true')),
+  COOKIE_SAME_SITE: z.enum(['strict', 'lax', 'none']).default('strict'),
   ADMIN_EMAIL: z.string().email().optional(),
   ADMIN_PASSWORD: z.string().min(8).optional(),
   GOOGLE_CLIENT_ID: z.string().optional(),
@@ -79,6 +80,7 @@ export const env: Env = (() => {
       JWT_ACCESS_TTL: '15m',
       REFRESH_TOKEN_TTL_DAYS: 7,
       COOKIE_SECURE: false,
+      COOKIE_SAME_SITE: 'strict',
       LOG_LEVEL: 'fatal'
     };
   }
@@ -98,6 +100,7 @@ export const env: Env = (() => {
         JWT_ACCESS_TTL: '15m',
         REFRESH_TOKEN_TTL_DAYS: 7,
         COOKIE_SECURE: false,
+        COOKIE_SAME_SITE: 'strict',
         LOG_LEVEL: 'fatal'
       };
     }

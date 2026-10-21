@@ -30,6 +30,9 @@ import { metricsMiddleware, metricsHandler } from './config/metrics.js';
 
 export const app = express();
 
+// Trust reverse proxy (e.g. Render, Railway, AWS ALB, Nginx, Cloudflare) for client IP rate-limiting & HTTPS detection
+app.set('trust proxy', 1);
+
 // 1. Request ID injection & Instance Hostname Tracking
 app.use(requestId);
 app.use((_req: Request, res: Response, next: NextFunction) => {

@@ -41,10 +41,12 @@ export function generateRefreshToken(): { rawToken: string; tokenHash: string } 
 }
 
 export function getRefreshTokenCookieOptions(): CookieOptions {
+  const sameSite = (env.COOKIE_SAME_SITE as CookieOptions['sameSite']) || 'strict';
   return {
     httpOnly: true,
-    secure: env.COOKIE_SECURE || env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    // When sameSite is 'none', modern browsers mandate secure: true
+    secure: sameSite === 'none' ? true : env.COOKIE_SECURE || env.NODE_ENV === 'production',
+    sameSite,
     path: '/api/v1/auth',
     maxAge: env.REFRESH_TOKEN_TTL_DAYS * 24 * 60 * 60 * 1000
   };

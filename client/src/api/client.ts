@@ -12,8 +12,12 @@ export function getAccessToken(): string | null {
   return inMemoryAccessToken;
 }
 
+const apiEnv = (import.meta as unknown as { env?: { VITE_API_URL?: string } })?.env;
+const rawBase = apiEnv?.VITE_API_URL ? apiEnv.VITE_API_URL.trim().replace(/\/$/, '') : '';
+export const API_BASE_URL = rawBase ? (rawBase.endsWith('/api/v1') ? rawBase : `${rawBase}/api/v1`) : '/api/v1';
+
 export const api = axios.create({
-  baseURL: '/api/v1',
+  baseURL: API_BASE_URL,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json'
@@ -79,10 +83,11 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
+        const refreshEndpoint = `${API_BASE_URL}/auth/refresh`;
         const { data } = await axios.post<{
           success: boolean;
           data: { accessToken: string; user?: unknown };
-        }>('/api/v1/auth/refresh', {}, { withCredentials: true });
+        }>(refreshEndpoint, {}, { withCredentials: true });
 
         const newToken = data.data.accessToken;
         setAccessToken(newToken);
