@@ -82,13 +82,25 @@ app.use(
 );
 
 // 4. CORS with configured origins allow-list
+const allowedOrigins = env.CLIENT_ORIGINS.map((o) => o.trim().replace(/\/+$/, '')).filter(Boolean);
+
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || env.CLIENT_ORIGINS.includes(origin)) {
+      if (!origin) return callback(null, true);
+      const cleanOrigin = origin.trim().replace(/\/+$/, '');
+      const isAllowed =
+        allowedOrigins.includes(cleanOrigin) ||
+        allowedOrigins.includes('*') ||
+        cleanOrigin.endsWith('.vercel.app') ||
+        cleanOrigin.includes('localhost') ||
+        cleanOrigin.includes('127.0.0.1');
+
+      if (isAllowed) {
         callback(null, true);
       } else {
-        callback(new Error(`Origin ${origin} not allowed by CORS policy`));
+        logger.warn({ origin: cleanOrigin, allowed: allowedOrigins }, '[CORS] Origin rejected');
+        callback(null, false);
       }
     },
     credentials: true,
