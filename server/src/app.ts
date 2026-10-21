@@ -127,7 +127,7 @@ app.get('/health/live', (_req: Request, res: Response) => {
   });
 });
 
-app.get(['/health', '/api/v1/health'], (_req: Request, res: Response) => {
+app.get(['/health', '/healthz', '/api/v1/health'], (_req: Request, res: Response) => {
   res.status(200).json({
     status: 'ok',
     service: 'unicart-api',
