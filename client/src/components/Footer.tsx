@@ -186,12 +186,12 @@ export const Footer: React.FC = () => {
         {/* Bottom Bar & Payment Icons */}
         <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center text-white font-bold text-sm">
-              <span className="material-symbols-outlined text-lg">shopping_bag</span>
+            <div className="flex items-center justify-center rounded-xl bg-white/95 p-1.5 shadow-sm">
+              <img src="/logo.png" alt="UniCart" className="h-6 w-auto object-contain" />
             </div>
             <div>
-              <p className="text-slate-300 font-semibold">UniCart Internet Private Limited</p>
-              <p className="text-slate-500 text-[11px]">
+              <p className="font-bold text-slate-200">UniCart Internet Private Limited</p>
+              <p className="text-slate-400 text-[11px]">
                 © {CURRENT_YEAR} UniCart. All rights reserved. Indian Rupee (₹) pricing.
               </p>
             </div>

@@ -123,9 +123,14 @@ export const AdminDashboard: React.FC = () => {
     <div className="min-h-screen bg-surface py-8">
       <div className="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-brand-600">Admin</p>
-            <h1 className="text-2xl font-extrabold text-slate-900 sm:text-3xl">Store Dashboard</h1>
+          <div className="flex items-center gap-3.5">
+            <Link to="/" className="shrink-0 transition-transform hover:scale-105" title="Go to storefront">
+              <img src="/logo.png" alt="UniCart" className="h-10 w-auto object-contain" />
+            </Link>
+            <div className="border-l border-slate-200 pl-3.5">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-brand-600">Admin Control Center</p>
+              <h1 className="text-2xl font-extrabold text-slate-900 sm:text-3xl">Store Dashboard</h1>
+            </div>
           </div>
           <Link to="/" className="self-start rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50 sm:self-auto">
             View storefront

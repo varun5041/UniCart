@@ -44,12 +44,9 @@ export const LoginPage: React.FC = () => {
     <div className="bg-surface min-h-[85vh] flex items-center justify-center py-12 px-4">
       <div className="bg-white rounded-3xl border border-slate-200/80 p-8 sm:p-10 max-w-md w-full shadow-lg space-y-6">
         {/* Header */}
-        <div className="text-center space-y-2">
-          <Link to="/" className="inline-flex items-center gap-2">
-            <div className="w-10 h-10 rounded-xl bg-brand-600 text-white flex items-center justify-center shadow-md">
-              <span className="material-symbols-outlined text-2xl">shopping_bag</span>
-            </div>
-            <span className="font-extrabold text-2xl tracking-tight text-slate-900">UniCart</span>
+        <div className="text-center space-y-3">
+          <Link to="/" className="inline-flex items-center justify-center">
+            <img src="/logo.png" alt="UniCart" className="h-12 w-auto object-contain transition-transform hover:scale-105" />
           </Link>
           <h1 className="text-xl font-black text-slate-900">Sign in to your account</h1>
           <p className="text-xs text-slate-500">

@@ -60,13 +60,12 @@ export const Navbar: React.FC = () => {
             <span className="material-symbols-outlined text-2xl">{isMobileMenuOpen ? 'close' : 'menu'}</span>
           </button>
 
-          <Link to="/" className="group flex shrink-0 items-center gap-2">
-            <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500 to-fuchsia-500 text-white shadow-md shadow-brand-500/30 transition-transform group-hover:rotate-[-6deg]">
-              <span className="material-symbols-outlined text-2xl">shopping_bag</span>
-            </span>
-            <span className="hidden text-2xl font-extrabold tracking-tight text-slate-900 sm:inline">
-              Uni<span className="text-brand-600">Cart</span>
-            </span>
+          <Link to="/" className="group flex shrink-0 items-center" aria-label="UniCart Home">
+            <img
+              src="/logo.png"
+              alt="UniCart"
+              className="h-9 sm:h-11 w-auto object-contain transition-transform group-hover:scale-105"
+            />
           </Link>
 
           <SearchBar className="hidden flex-1 md:block" />
