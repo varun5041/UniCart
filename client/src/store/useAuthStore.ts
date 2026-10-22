@@ -117,10 +117,12 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         return { success: true };
       }
       set({ isLoading: false });
-      return { success: false, error: res.error?.message || 'Login failed' };
+      const firstDetail = res.error?.details?.[0]?.message;
+      return { success: false, error: firstDetail || res.error?.message || 'Login failed' };
     } catch (err: any) {
       set({ isLoading: false });
-      const msg = err.response?.data?.error?.message || err.message || 'Login failed';
+      const firstDetail = err.response?.data?.error?.details?.[0]?.message;
+      const msg = firstDetail || err.response?.data?.error?.message || err.message || 'Login failed';
       return { success: false, error: msg };
     }
   },
@@ -149,10 +151,12 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         return { success: true };
       }
       set({ isLoading: false });
-      return { success: false, error: res.error?.message || 'Google sign-in failed' };
+      const firstDetail = res.error?.details?.[0]?.message;
+      return { success: false, error: firstDetail || res.error?.message || 'Google sign-in failed' };
     } catch (err: any) {
       set({ isLoading: false });
-      const msg = err.response?.data?.error?.message || err.message || 'Google sign-in failed';
+      const firstDetail = err.response?.data?.error?.details?.[0]?.message;
+      const msg = firstDetail || err.response?.data?.error?.message || err.message || 'Google sign-in failed';
       return { success: false, error: msg };
     }
   },
@@ -181,10 +185,12 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         return { success: true };
       }
       set({ isLoading: false });
-      return { success: false, error: res.error?.message || 'Registration failed' };
+      const firstDetail = res.error?.details?.[0]?.message;
+      return { success: false, error: firstDetail || res.error?.message || 'Registration failed' };
     } catch (err: any) {
       set({ isLoading: false });
-      const msg = err.response?.data?.error?.message || err.message || 'Registration failed';
+      const firstDetail = err.response?.data?.error?.details?.[0]?.message;
+      const msg = firstDetail || err.response?.data?.error?.message || err.message || 'Registration failed';
       return { success: false, error: msg };
     }
   },

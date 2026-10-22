@@ -25,7 +25,8 @@ export function errorHandler(
   } else if (err instanceof ZodError) {
     statusCode = 422;
     code = 'VALIDATION_ERROR';
-    message = 'Request validation failed';
+    const firstIssue = err.errors[0];
+    message = firstIssue?.message || 'Request validation failed';
     details = err.errors.map((e) => ({
       field: e.path.join('.'),
       message: e.message

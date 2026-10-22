@@ -138,7 +138,7 @@ export interface ApiResponse<T> {
   error?: {
     code: string;
     message: string;
-    details?: unknown[];
+    details?: Array<{ field?: string; message?: string } | any>;
   };
 }
 
