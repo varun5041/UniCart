@@ -17,6 +17,10 @@ Rather than bloating the application with non-essential features, UniCart is arc
 
 ## Architecture Overview
 
+<p align="center">
+  <img src="docs/architecture.jpg" alt="UniCart System Architecture" width="100%" style="border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);" />
+</p>
+
 ```
                             ┌────────────────────────────────────────┐
                             │               Clients                  │

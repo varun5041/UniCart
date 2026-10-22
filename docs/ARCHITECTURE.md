@@ -1,6 +1,11 @@
 # UniCart — System Architecture
 
 ## 1. High-level diagram
+
+<p align="center">
+  <img src="architecture.jpg" alt="UniCart System Architecture" width="100%" style="border-radius: 12px;" />
+</p>
+
 ```
                     ┌──────────────┐
   Browser ──HTTPS──▶│    Nginx     │  TLS, gzip, static React build, rate cap,
