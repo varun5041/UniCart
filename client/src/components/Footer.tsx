@@ -186,8 +186,8 @@ export const Footer: React.FC = () => {
         {/* Bottom Bar & Payment Icons */}
         <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center rounded-xl bg-white/95 p-1.5 shadow-sm">
-              <img src="/logo.png" alt="UniCart" className="h-6 w-auto object-contain" />
+            <div className="flex items-center justify-center rounded-xl bg-white p-2 shadow-sm">
+              <img src="/logo-icon.png" alt="UniCart" className="h-7 w-auto object-contain" />
             </div>
             <div>
               <p className="font-bold text-slate-200">UniCart Internet Private Limited</p>

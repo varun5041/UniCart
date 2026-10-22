@@ -46,7 +46,7 @@ export const LoginPage: React.FC = () => {
         {/* Header */}
         <div className="text-center space-y-3">
           <Link to="/" className="inline-flex items-center justify-center">
-            <img src="/logo.png" alt="UniCart" className="h-12 w-auto object-contain transition-transform hover:scale-105" />
+            <img src="/logo.png" alt="UniCart" className="h-12 sm:h-14 w-auto object-contain transition-transform hover:scale-105" />
           </Link>
           <h1 className="text-xl font-black text-slate-900">Sign in to your account</h1>
           <p className="text-xs text-slate-500">

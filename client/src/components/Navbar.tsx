@@ -64,7 +64,7 @@ export const Navbar: React.FC = () => {
             <img
               src="/logo.png"
               alt="UniCart"
-              className="h-9 sm:h-11 w-auto object-contain transition-transform group-hover:scale-105"
+              className="h-10 sm:h-12 w-auto object-contain transition-transform group-hover:scale-105"
             />
           </Link>
 
