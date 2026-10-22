@@ -28,8 +28,8 @@ export const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      setError('Image must be smaller than 5MB.');
+    if (file.size > 20 * 1024 * 1024) {
+      setError('Image must be smaller than 20MB.');
       return;
     }
 
@@ -56,7 +56,7 @@ export const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
       const img = new Image();
       img.onload = () => {
         try {
-          const maxDim = 1200;
+          const maxDim = 1000;
           let { width, height } = img;
           if (width > maxDim || height > maxDim) {
             if (width > height) {
@@ -79,7 +79,7 @@ export const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
           }
 
           ctx.drawImage(img, 0, 0, width, height);
-          const optimizedDataUrl = canvas.toDataURL('image/jpeg', 0.88);
+          const optimizedDataUrl = canvas.toDataURL('image/jpeg', 0.82);
           onChange(optimizedDataUrl);
           setIsProcessing(false);
         } catch {

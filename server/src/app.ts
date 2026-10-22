@@ -112,7 +112,12 @@ app.use(
 // 5. Response compression
 app.use(compression());
 
-// 6. Request body parsing with strict 10kb limit
+// 6. Request body parsing
+// Admin routes allow up to 20MB payloads to support high-resolution product and category image uploads
+app.use('/api/v1/admin', express.json({ limit: '20mb' }));
+app.use('/api/v1/admin', express.urlencoded({ extended: true, limit: '20mb' }));
+
+// General and customer endpoints retain strict 10kb limit to mitigate memory exhaustion & DoS
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 

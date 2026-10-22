@@ -7,7 +7,7 @@ import { formatRupees, getPricing, getProductId, type Product } from '../../type
 import { PLACEHOLDER_IMAGE } from '../../components/ProductCard';
 import { ConfirmDialog, Modal, Pager } from './shared';
 import { apiErrorMessage, inputClass } from './adminUtils';
-import { ImageUploadInput } from '../../components/ImageUploadInput';
+import { MultiImageUploadInput } from '../../components/MultiImageUploadInput';
 
 type StatusFilter = 'all' | 'listed' | 'unlisted';
 
@@ -17,7 +17,7 @@ interface ProductForm {
   mrpRupees: string;
   discountPercent: string;
   stock: string;
-  imageUrl: string;
+  images: string[];
   description: string;
   isActive: boolean;
 }
@@ -28,7 +28,7 @@ const EMPTY_FORM: ProductForm = {
   mrpRupees: '',
   discountPercent: '0',
   stock: '0',
-  imageUrl: '',
+  images: [],
   description: '',
   isActive: true
 };
@@ -48,7 +48,7 @@ function toForm(p: Product): ProductForm {
     mrpRupees: String(mrp / 100),
     discountPercent: String(discount),
     stock: String(p.stock),
-    imageUrl: p.images?.[0] || '',
+    images: Array.isArray(p.images) ? [...p.images] : [],
     description: p.description,
     isActive: p.isActive !== false
   };
@@ -63,8 +63,10 @@ function validateForm(f: ProductForm): string | null {
   if (!Number.isInteger(d) || d < 0 || d > 90) return 'Discount must be a whole number from 0 to 90';
   const stock = Number(f.stock);
   if (!Number.isInteger(stock) || stock < 0) return 'Stock must be a whole number, 0 or more';
-  if (f.imageUrl && !/^https?:\/\/\S+$/i.test(f.imageUrl.trim()) && !f.imageUrl.startsWith('data:image/')) {
-    return 'Image must be a valid URL or uploaded image';
+  for (const img of f.images) {
+    if (!/^https?:\/\/\S+$/i.test(img.trim()) && !img.startsWith('data:image/')) {
+      return 'Each image must be a valid URL or uploaded image';
+    }
   }
   if (f.description.trim().length < 10) return 'Description must be at least 10 characters';
   return null;
@@ -108,7 +110,7 @@ export const ProductsPanel: React.FC = () => {
         discountPercent: Number(form.discountPercent),
         stock: Number(form.stock),
         description: form.description.trim(),
-        images: form.imageUrl.trim() ? [form.imageUrl.trim()] : [],
+        images: form.images.filter(Boolean),
         isActive: form.isActive
       };
       return id ? adminApi.updateProduct(id, payload) : adminApi.createProduct(payload);
@@ -403,11 +405,12 @@ export const ProductsPanel: React.FC = () => {
               </p>
             </div>
 
-            <ImageUploadInput
-              label="Product Image"
-              value={f.imageUrl}
-              onChange={(img) => setEditing({ ...editing, form: { ...f, imageUrl: img } })}
-              helpText="Upload a product photo from your device, or enter an external image URL."
+            <MultiImageUploadInput
+              label="Product Images"
+              images={f.images}
+              onChange={(imgs) => setEditing({ ...editing, form: { ...f, images: imgs } })}
+              maxImages={8}
+              helpText="Upload multiple photos from your device or paste image URLs. The first image will be the primary cover."
             />
             <label className="block">
               <span className="mb-1 block text-xs font-bold text-slate-700">Description</span>
