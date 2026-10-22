@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { userService, toPublicUser } from './user.service.js';
+import { ApiError } from '../../utils/ApiError.js';
 
 export class UserController {
   getMe(req: Request, res: Response): void {
@@ -12,6 +13,9 @@ export class UserController {
   }
 
   async replaceAddresses(req: Request, res: Response): Promise<void> {
+    if (req.user?.role === 'admin') {
+      throw ApiError.forbidden('Admin accounts do not have delivery addresses', 'ADMIN_NO_ADDRESS');
+    }
     const user = await userService.replaceAddresses(req.user!._id.toString(), req.body.addresses);
     res.status(200).json({ success: true, data: { user } });
   }

@@ -44,6 +44,9 @@ export const ProfilePage: React.FC = () => {
   const nameError =
     trimmedName.length < 2 ? 'Name must be at least 2 characters' : trimmedName.length > 60 ? 'Name is too long' : '';
 
+  const isAdmin = Boolean(isAuthenticated && user?.role === 'admin');
+  const effectiveTab = isAdmin && activeTab === 'addresses' ? 'profile' : activeTab;
+
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     if (nameError) return;
@@ -72,7 +75,9 @@ export const ProfilePage: React.FC = () => {
 
   const tabs = [
     { id: 'profile' as const, icon: 'person', label: 'Personal info' },
-    { id: 'addresses' as const, icon: 'home_pin', label: `Saved addresses (${addresses.length})` },
+    ...(!isAdmin
+      ? [{ id: 'addresses' as const, icon: 'home_pin', label: `Saved addresses (${addresses.length})` }]
+      : []),
     { id: 'account' as const, icon: 'devices', label: 'Sign-in & devices' }
   ];
 
@@ -84,7 +89,14 @@ export const ProfilePage: React.FC = () => {
             {(user?.name || email || 'U').charAt(0).toUpperCase()}
           </span>
           <div>
-            <h1 className="text-2xl font-extrabold text-slate-900">{user?.name || 'My Account'}</h1>
+            <div className="flex items-center gap-2.5">
+              <h1 className="text-2xl font-extrabold text-slate-900">{user?.name || (isAdmin ? 'Admin Profile' : 'My Account')}</h1>
+              {isAdmin && (
+                <span className="rounded-full bg-purple-100 px-2.5 py-0.5 text-xs font-bold text-purple-800">
+                  Admin
+                </span>
+              )}
+            </div>
             <p className="text-sm text-slate-500">{email}</p>
           </div>
         </div>
@@ -95,7 +107,7 @@ export const ProfilePage: React.FC = () => {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`flex shrink-0 items-center gap-2 border-b-2 px-4 py-3 text-sm font-bold transition-colors ${
-                activeTab === tab.id ? 'border-brand-600 text-brand-700' : 'border-transparent text-slate-500 hover:text-slate-800'
+                effectiveTab === tab.id ? 'border-brand-600 text-brand-700' : 'border-transparent text-slate-500 hover:text-slate-800'
               }`}
             >
               <span className="material-symbols-outlined text-lg">{tab.icon}</span>
@@ -104,7 +116,7 @@ export const ProfilePage: React.FC = () => {
           ))}
         </div>
 
-        {activeTab === 'profile' && (
+        {effectiveTab === 'profile' && (
           <div className="max-w-xl rounded-3xl bg-white p-6 ring-1 ring-slate-200/70 sm:p-8">
             <form onSubmit={handleUpdateProfile} noValidate className="space-y-4">
               <div>
@@ -146,7 +158,7 @@ export const ProfilePage: React.FC = () => {
           </div>
         )}
 
-        {activeTab === 'addresses' && (
+        {effectiveTab === 'addresses' && !isAdmin && (
           <div className="space-y-5">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-extrabold text-slate-900">Delivery addresses</h2>
@@ -237,7 +249,7 @@ export const ProfilePage: React.FC = () => {
           </div>
         )}
 
-        {activeTab === 'account' && (
+        {effectiveTab === 'account' && (
           <div className="max-w-xl space-y-4 rounded-3xl bg-white p-6 ring-1 ring-slate-200/70 sm:p-8">
             <h2 className="flex items-center gap-2 text-lg font-extrabold text-slate-900">
               <span className="material-symbols-outlined text-xl text-brand-600">devices</span>
